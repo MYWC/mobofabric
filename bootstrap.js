@@ -1,6 +1,11 @@
 // ═══════════════════════════════════════════════════════════
 //  نقطه ورود — نسخه نهایی
-//  وضعیت: پروژه کامل (فاز ۱ تا ۱۲)
+//  وضعیت: پروژه کامل + فاز ۱۳
+//
+//  ⚠️ ترتیب لود فیچرها مهم است:
+//     از Object.entries(CONFIG.features) می‌آید.
+//     home در config.js بعد از products تعریف شده،
+//     پس بعد از آن لود می‌شود و route "/" را override می‌کند.
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -12,6 +17,9 @@ import { Header } from './shared/components/header/header.js';
 import { Footer } from './shared/components/footer/footer.js';
 import { toast } from './shared/components/toast/toast.js';
 
+// ═══════════════════════════════════════════════════════════
+//  نقشه فیچرها
+// ═══════════════════════════════════════════════════════════
 const featureLoaders = {
   products:      () => import('./features/products/products.js').then(m => m.products),
   productDetail: () => import('./features/product-detail/product-detail.js').then(m => m.productDetail),
@@ -28,8 +36,13 @@ const featureLoaders = {
   auth:          () => import('./features/auth/auth.js').then(m => m.auth),
   admin:         () => import('./features/admin/admin.js').then(m => m.admin),
   analytics:     () => import('./features/analytics/analytics.js').then(m => m.analytics),
+  // ── فاز ۱۳ ──
+  home:          () => import('./features/home/home.js').then(m => m.home),
 };
 
+// ═══════════════════════════════════════════════════════════
+//  راه‌اندازی
+// ═══════════════════════════════════════════════════════════
 async function bootstrap() {
   i18n.init();
   mountChrome();
@@ -84,6 +97,11 @@ async function loadFeatures() {
     } catch (err) {
       console.error(`[bootstrap] failed to load "${name}":`, err);
     }
+  }
+
+  // دیباگ: در کنسول لیست مسیرهای ثبت‌شده
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    console.debug('[bootstrap] registered routes:', router.list());
   }
 }
 

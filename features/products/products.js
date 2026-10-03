@@ -1,9 +1,19 @@
-import { h, qs, on, render, html } from '../../core/dom.js';
+// ═══════════════════════════════════════════════════════════
+//  Products — Phase 13 (تصحیح‌شده)
+//
+//  تغییرات نسبت به نسخه قبل:
+//  ✅ حذف route "/" — این route الان مال home است
+//  ✅ حذف route "/brands" — این route مال brands است
+//  ✅ حذف Hero() — به home منتقل شد
+//  ✅ حفظ Toolbar (فیلتر برند + مرتب‌سازی) — مخصوص این صفحه
+//  ✅ حفظ Grid + Load More + Empty/Error
+// ═══════════════════════════════════════════════════════════
+
+import { h, qs, on, render } from '../../core/dom.js';
 import { events } from '../../core/events.js';
 import { i18n } from '../../core/i18n.js';
 import { api } from '../../core/api.js';
 import { router } from '../../core/router.js';
-import { CONFIG } from '../../core/config.js';
 import { ProductCard } from '../../shared/components/product-card/product-card.js';
 import { Skeleton } from '../../shared/components/skeleton/skeleton.js';
 import { productsLang } from './products.lang.js';
@@ -12,15 +22,15 @@ import { productsLang } from './products.lang.js';
 //  State محلی فیچر
 // ═══════════════════════════════════════════════════════════
 const state = {
-  products: [],
-  brands:   [],
-  total:    0,
-  page:     1,
-  brand:    '',
-  sort:     'newest',
-  search:   '',
-  loading:  false,
-  error:    false,
+  products:  [],
+  brands:    [],
+  total:     0,
+  page:      1,
+  brand:     '',
+  sort:      'newest',
+  search:    '',
+  loading:   false,
+  error:     false,
   container: null,
 };
 
@@ -33,21 +43,18 @@ export const products = {
   register() {
     i18n.register('products', productsLang);
 
-    // ── روتر ──
-    router.register('/', (params, query) => showHome(query));
-    router.register('/products', (params, query) => showHome(query));
-    router.register('/brands', () => showHome({}));   // تا فاز 4، موقت
+    // ⚠️ فقط /products — نه "/" (مال home) نه "/brands" (مال brands)
+    router.register('/products', (params, query) => showProducts(query));
 
-    // ── گوش دادن به تغییر زبان ──
     offLang = events.on('lang:changed', () => {
-      if (state.container) renderInto(state.container);
+      if (state.container) renderPage();
     });
   },
 
   async load() {
     state.loading = true;
     state.error = false;
-    renderInto(state.container);
+    renderPage();
 
     try {
       const [brandsRes, productsRes] = await Promise.all([
@@ -65,10 +72,11 @@ export const products = {
         : [...state.products, ...productsRes.data];
       state.total = productsRes.count;
     } catch (err) {
+      console.error('[products]', err);
       state.error = true;
     } finally {
       state.loading = false;
-      renderInto(state.container);
+      renderPage();
     }
   },
 };
@@ -76,53 +84,41 @@ export const products = {
 // ═══════════════════════════════════════════════════════════
 //  Handlers
 // ═══════════════════════════════════════════════════════════
-function showHome(query = {}) {
+function showProducts(query = {}) {
   state.brand  = query.brand ?? '';
-  state.sort   = query.sort ?? 'newest';
-  state.search = query.q ?? '';
+  state.sort   = query.sort  ?? 'newest';
+  state.search = query.q     ?? '';
   state.page   = 1;
   state.products = [];
+  state.container = qs('#app');
 
-  // اجازه بده روتر کار خودش را بکند، بعد رندر کنیم
-  requestAnimationFrame(() => {
-    const main = qs('#app');
-    render(main, ProductsPage());
-    state.container = main;
-    products.load();
-  });
+  // صفحه‌ی Products فقط Toolbar + Grid داره (بدون Hero)
+  renderPage();
+  products.load();
 }
 
-function renderInto(main) {
-  // جایگزینی بخش محصولات، بدون دست زدن به هدر/فوتر
-  const old = qs('.products-root', main);
-  if (!old) return;
+function renderPage() {
+  if (!state.container) return;
 
-  const fresh = ProductsRoot();
-  old.replaceWith(fresh);
+  const page = h('div', { class: 'products-page' },
+    h('div', { class: 'container' },
+      PageHeader(),
+      ProductsRoot(),
+    ),
+  );
 
-  // دوباره ترجمه‌ها را اعمال کن
-  i18n.applyToDOM(main);
+  render(state.container, page);
 }
 
 // ═══════════════════════════════════════════════════════════
 //  Views
 // ═══════════════════════════════════════════════════════════
-function ProductsPage() {
-  return h('div', { class: 'products-page' },
-    Hero(),
-    h('div', { class: 'container' }, ProductsRoot()),
-  );
-}
-
-function Hero() {
-  return h('section', { class: 'hero' },
-    h('div', { class: 'container hero__inner' },
-      h('h1', { class: 'hero__title', 'data-i18n': 'products.heroTitle' }, i18n.t('products.heroTitle')),
-      h('p',  { class: 'hero__subtitle', 'data-i18n': 'products.heroSubtitle' }, i18n.t('products.heroSubtitle')),
-      h('a',  { class: 'btn btn--accent hero__cta', href: '#products' },
-        h('span', { 'data-i18n': 'products.heroCta' }, i18n.t('products.heroCta')),
-      ),
-    ),
+function PageHeader() {
+  return h('header', { class: 'products-header' },
+    h('h1', { class: 'products-header__title' },
+      i18n.t('products.allProducts')),
+    h('p', { class: 'products-header__subtitle' },
+      i18n.t('products.pageSubtitle')),
   );
 }
 
@@ -150,8 +146,15 @@ function ProductsRoot() {
     if (state.products.length < state.total) {
       root.append(
         h('div', { class: 'products-more' },
-          h('button', { class: 'btn btn--ghost', onclick: loadMore },
-            h('span', { 'data-i18n': 'products.loadMore' }, i18n.t('products.loadMore')),
+          h('button', {
+            class: 'btn btn--ghost',
+            type: 'button',
+            onclick: loadMore,
+          },
+            i18n.t('products.loadMore'),
+            ' ',
+            h('span', { class: 'products-more__count' },
+              `(${i18n.formatNumber(state.products.length)} / ${i18n.formatNumber(state.total)})`),
           ),
         ),
       );
@@ -165,7 +168,8 @@ function Toolbar() {
   return h('div', { class: 'toolbar' },
     // ── فیلتر برند ──
     h('div', { class: 'toolbar__group' },
-      h('span', { class: 'toolbar__label', 'data-i18n': 'products.filterBrand' }, i18n.t('products.filterBrand')),
+      h('span', { class: 'toolbar__label' },
+        i18n.t('products.filterBrand')),
       h('div', { class: 'chips' },
         chip(i18n.t('products.filterAll'), '', state.brand === ''),
         ...state.brands.map(b => {
@@ -177,7 +181,8 @@ function Toolbar() {
 
     // ── مرتب‌سازی ──
     h('div', { class: 'toolbar__group' },
-      h('span', { class: 'toolbar__label', 'data-i18n': 'products.sortLabel' }, i18n.t('products.sortLabel')),
+      h('span', { class: 'toolbar__label' },
+        i18n.t('products.sortLabel')),
       sortSelect(),
     ),
   );
@@ -192,32 +197,39 @@ function chip(label, value, active) {
 }
 
 function sortSelect() {
-  const sel = h('select', { class: 'input toolbar__select', onchange: (e) => setSort(e.target.value) });
+  const sel = h('select', {
+    class: 'input toolbar__select',
+    onchange: (e) => setSort(e.target.value),
+  });
+
   const options = [
     ['newest',     'products.sortNewest'],
     ['price_asc',  'products.sortPriceAsc'],
     ['price_desc', 'products.sortPriceDesc'],
   ];
+
   for (const [val, key] of options) {
     const opt = h('option', { value: val }, i18n.t(key));
     if (state.sort === val) opt.selected = true;
     sel.append(opt);
   }
+
   return sel;
 }
 
 function EmptyState() {
   return h('div', { class: 'empty-state' },
-    h('h3', { 'data-i18n': 'products.noResults' }, i18n.t('products.noResults')),
-    h('p',  { 'data-i18n': 'products.noResultsHint' }, i18n.t('products.noResultsHint')),
+    h('h3', {}, i18n.t('products.noResults')),
+    h('p',  {}, i18n.t('products.noResultsHint')),
   );
 }
 
 function ErrorState() {
   return h('div', { class: 'empty-state empty-state--error' },
-    h('h3', { 'data-i18n': 'products.errorLoading' }, i18n.t('products.errorLoading')),
+    h('h3', {}, i18n.t('products.errorLoading')),
     h('button', {
       class: 'btn btn--accent',
+      type: 'button',
       onclick: () => products.load(),
     }, i18n.t('products.retry')),
   );

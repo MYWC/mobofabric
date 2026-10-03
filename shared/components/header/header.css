@@ -1,9 +1,17 @@
+/* ═══════════════════════════════════════════════════════════
+   Header — Phase 13
+   شامل: Header اصلی + Drawer موبایل + Focus + RTL/LTR + Dark
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
+   Header اصلی
+   ═══════════════════════════════════════════════════════════ */
 .header {
   position: sticky;
   top: 0;
   z-index: 100;
   height: var(--header-height);
-  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--color-border);
@@ -13,10 +21,25 @@
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
+/* ── دکمه منو (فقط موبایل) ── */
+.header__menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: background var(--t-fast), color var(--t-fast);
+  flex-shrink: 0;
+}
+.header__menu-btn:hover { background: var(--color-bg-secondary); color: var(--color-text); }
+.header__menu-btn svg { width: 20px; height: 20px; }
+
+/* ── برند ── */
 .header__brand {
   display: flex;
   align-items: center;
@@ -24,20 +47,48 @@
   font-weight: 700;
   font-size: var(--text-lg);
   letter-spacing: -0.02em;
+  color: var(--color-text);
+  flex-shrink: 0;
 }
+
 .header__logo { display: flex; color: var(--color-accent); }
+.header__logo svg { width: 26px; height: 26px; }
 
-.header__nav { display: flex; gap: var(--space-5); }
-.header__link {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  transition: color var(--t-fast);
+/* ── ناوبری دسکتاپ ── */
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: var(--space-4);
 }
-.header__link:hover { color: var(--color-text); }
 
-.header__actions { display: flex; align-items: center; gap: var(--space-1); }
+.header__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: background var(--t-fast), color var(--t-fast);
+  white-space: nowrap;
+}
+.header__link:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
 
+/* ── Action ها ── */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: auto;
+}
+
+/* ── دکمه آیکون ── */
 .icon-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -46,10 +97,30 @@
   border-radius: var(--radius-full);
   color: var(--color-text-secondary);
   transition: background var(--t-fast), color var(--t-fast);
-  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
 }
-.icon-btn:hover { background: var(--color-bg-secondary); color: var(--color-text); }
 
+.icon-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.icon-btn svg,
+.icon-btn__icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.icon-btn__icon { display: inline-flex; }
+
+/* ── Badge ── */
 .header__badge {
   position: absolute;
   top: 2px;
@@ -61,15 +132,209 @@
   background: var(--color-accent);
   color: #fff;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1;
   display: none;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--color-bg);
 }
 .header__badge--visible { display: inline-flex; }
 
-@media (max-width: 640px) {
+.header__fav .header__badge { background: var(--color-danger); }
+
+/* ═══════════════════════════════════════════════════════════
+   Drawer موبایل
+   ═══════════════════════════════════════════════════════════ */
+.header-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 200ms var(--ease);
+}
+.header-drawer-overlay.is-visible { opacity: 1; }
+
+.header-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: min(320px, 88vw);
+  z-index: 999;
+  background: var(--color-bg-elevated);
+  border-inline-end: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 250ms var(--ease);
+  overflow-y: auto;
+}
+
+[dir="rtl"] .header-drawer { transform: translateX(100%); }
+
+.header-drawer.is-visible { transform: translateX(0) !important; }
+
+/* ── Head ── */
+.header-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header-drawer__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  font-size: var(--text-base);
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+.header-drawer__logo { display: flex; color: var(--color-accent); }
+.header-drawer__logo svg { width: 24px; height: 24px; }
+
+.header-drawer__close {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.header-drawer__close:hover { background: var(--color-bg-secondary); color: var(--color-text); }
+.header-drawer__close svg { width: 18px; height: 18px; }
+
+/* ── Nav ── */
+.header-drawer__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  flex: 1;
+}
+
+.header-drawer__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.header-drawer__link:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+.header-drawer__link.is-active {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+}
+
+.header-drawer__link-icon {
+  display: inline-flex;
+  width: 22px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.header-drawer__link-icon svg { width: 20px; height: 20px; }
+
+/* ── Footer ── */
+.header-drawer__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.header-drawer__setting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  transition: background var(--t-fast), color var(--t-fast);
+  text-align: start;
+  width: 100%;
+}
+.header-drawer__setting:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.header-drawer__setting-icon {
+  display: inline-flex;
+  width: 22px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.header-drawer__setting-icon svg { width: 18px; height: 18px; }
+
+.header-drawer__setting-label { flex: 1; }
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── تبلت (≤ 900px): مخفی کردن nav دسکتاپ، نمایش دکمه منو ── */
+@media (max-width: 900px) {
   .header__nav { display: none; }
+  .header__menu-btn { display: inline-flex; }
+
+  /* در تبلت: زبان و تم مخفی، میرن تو Drawer */
+  .header__actions [data-action="lang"],
+  .header__actions [data-action="theme"] {
+    display: none;
+  }
+}
+
+/* ── موبایل کوچک (≤ 640px): مخفی کردن متن برند + favorites ── */
+@media (max-width: 640px) {
   .header__brand-text { display: none; }
+
+  .header__actions [data-action="favorites"] {
+    display: none;
+  }
+
+  .header__inner { gap: var(--space-2); }
+  .header__actions { gap: 0; }
+}
+
+/* ── موبایل خیلی کوچک (≤ 380px): فشرده‌تر ── */
+@media (max-width: 380px) {
+  .icon-btn,
+  .header__menu-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .icon-btn svg,
+  .icon-btn__icon svg { width: 18px; height: 18px; }
+}
+
+/* ── Reduce motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .header-drawer,
+  .header-drawer-overlay { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Dark Mode — بهبود رنگ overlay
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="dark"] .header-drawer-overlay {
+  background: rgba(0, 0, 0, 0.6);
 }

@@ -1,6 +1,17 @@
 // ═══════════════════════════════════════════════════════════
 //  Hash Router — سازگار با GitHub Pages subpath
-//  نسخه ۲: پشتیبانی از route override (last-registered wins)
+//  نسخه ۳: آخرین route ثبت‌شده برنده است + unregister
+//
+//  ── منطق کلی ──
+//  از انتها به ابتدا match می‌کند، پس آخرین register برنده است.
+//  این به فیچرها اجازه می‌دهد routeهای قبلی را override کنند
+//  بدون نیاز به تغییر این فایل یا فیچرهای دیگر.
+//
+//  ── مثال (فاز ۱۳) ──
+//  products.js: router.register('/', ProductsPage)
+//  home.js:     router.register('/', HomePage)   ← این برنده است
+//  نتیجه:       #/  →  HomePage
+//               #/products  →  ProductsPage
 // ═══════════════════════════════════════════════════════════
 
 import { events } from './events.js';
@@ -26,7 +37,7 @@ function match() {
   const [path, search = ''] = hash.split('?');
   const query = parseQuery(search);
 
-  // آخرین route ثبت‌شده برنده است — اجازه override از فیچرها
+  // آخرین route ثبت‌شده برنده است — از انتها به ابتدا
   for (let i = routes.length - 1; i >= 0; i--) {
     const route = routes[i];
     const m = path.match(route.regex);
@@ -56,10 +67,30 @@ function dispatch() {
 }
 
 export const router = {
-  /** ثبت مسیر — pattern: "/product/:slug" */
+  /**
+   * ثبت مسیر
+   * @param {string} pattern — مثل "/product/:slug"
+   * @param {Function} handler — (params, query) => void
+   */
   register(pattern, handler) {
     const { regex, keys } = compile(pattern);
     routes.push({ pattern, regex, keys, handler });
+  },
+
+  /**
+   * حذف یک مسیر ثبت‌شده (اختیاری — مفید برای تست یا override صریح)
+   * @param {string} pattern
+   */
+  unregister(pattern) {
+    const idx = routes.findIndex(r => r.pattern === pattern);
+    if (idx > -1) routes.splice(idx, 1);
+  },
+
+  /**
+   * لیست مسیرهای ثبت‌شده (دیباگ)
+   */
+  list() {
+    return routes.map(r => r.pattern);
   },
 
   navigate(path) {

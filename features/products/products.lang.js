@@ -1,41 +1,51 @@
+// ═══════════════════════════════════════════════════════════
+//  Products — ترجمه‌ها (فاز ۱۳)
+//  Hero به home منتقل شد — این فایل فقط Catalog است
+// ═══════════════════════════════════════════════════════════
+
 export const productsLang = {
   fa: {
-    pageTitle:      'فروشگاه گوشی',
-    heroTitle:      'گوشی بعدی‌ات اینجاست',
-    heroSubtitle:   'جدیدترین پرچم‌داران و میان‌رده‌ها، با قیمت رقابتی و ضمانت اصالت.',
-    heroCta:        'مشاهده فروشگاه',
+    // ── Page Header ──
     allProducts:    'همه محصولات',
-    featured:       'محصولات ویژه',
-    filters:        'فیلترها',
+    pageTitle:      'فروشگاه گوشی',
+    pageSubtitle:   'همه‌ی گوشی‌های موجود، قابل فیلتر و مرتب‌سازی',
+
+    // ── Toolbar ──
     filterBrand:    'برند',
     filterAll:      'همه',
     sortLabel:      'مرتب‌سازی',
     sortNewest:     'جدیدترین',
     sortPriceAsc:   'ارزان‌ترین',
     sortPriceDesc:  'گران‌ترین',
+
+    // ── Grid ──
     count:          '{n} محصول',
+    countOne:       '۱ محصول',
     loadMore:       'نمایش بیشتر',
+
+    // ── States ──
     noResults:      'محصولی یافت نشد',
     noResultsHint:  'فیلترها را تغییر دهید یا بعداً سر بزنید.',
     errorLoading:   'خطا در بارگذاری محصولات',
     retry:          'تلاش مجدد',
   },
+
   en: {
-    pageTitle:      'Phone Store',
-    heroTitle:      'Your next phone is here',
-    heroSubtitle:   'The latest flagships and mid-rangers, at competitive prices, guaranteed authentic.',
-    heroCta:        'Browse the store',
     allProducts:    'All products',
-    featured:       'Featured products',
-    filters:        'Filters',
+    pageTitle:      'Phone Store',
+    pageSubtitle:   'All available phones, ready to filter and sort',
+
     filterBrand:    'Brand',
     filterAll:      'All',
     sortLabel:      'Sort',
     sortNewest:     'Newest',
     sortPriceAsc:   'Price: low to high',
     sortPriceDesc:  'Price: high to low',
+
     count:          '{n} products',
+    countOne:       '1 product',
     loadMore:       'Load more',
+
     noResults:      'No products found',
     noResultsHint:  'Try different filters or check back later.',
     errorLoading:   'Failed to load products',
