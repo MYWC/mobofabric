@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════════════════════════════
+   Floating Input — Phase 19
+   ═══════════════════════════════════════════════════════════ */
+
+.fi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* ═══ Box ═══ */
+.fi__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 62px;
+  padding-block: 6px;
+  padding-inline: 48px 46px;
+  background: color-mix(in srgb, var(--color-bg-elevated) 70%, transparent);
+  border: 1.5px solid var(--color-border);
+  border-radius: 14px;
+  transition:
+    border-color 220ms cubic-bezier(.4, 0, .2, 1),
+    background 220ms cubic-bezier(.4, 0, .2, 1),
+    box-shadow 220ms cubic-bezier(.4, 0, .2, 1),
+    transform 220ms cubic-bezier(.4, 0, .2, 1);
+  will-change: border-color, box-shadow;
+}
+
+[data-theme="dark"] .fi__box {
+  background: color-mix(in srgb, var(--color-bg-elevated) 55%, transparent);
+}
+
+/* ── Focus ── */
+.fi--focused .fi__box {
+  border-color: var(--color-accent);
+  background: var(--color-bg-elevated);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-accent) 15%, transparent),
+    0 8px 24px color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+/* ── Error ── */
+.fi--error .fi__box {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg-elevated));
+}
+.fi--error.fi--focused .fi__box {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-danger) 15%, transparent),
+    0 8px 24px color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+
+/* ── Success ── */
+.fi--success .fi__box {
+  border-color: var(--color-success);
+}
+.fi--success.fi--focused .fi__box {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-success) 15%, transparent),
+    0 8px 24px color-mix(in srgb, var(--color-success) 10%, transparent);
+}
+
+/* ── Disabled ── */
+.fi__input:disabled {
+  cursor: not-allowed;
+}
+.fi__input:disabled ~ *,
+.fi:has(.fi__input:disabled) {
+  opacity: 0.6;
+}
+
+/* ═══ Icon (شروع) ═══ */
+.fi__icon {
+  position: absolute;
+  inset-inline-start: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: color 220ms ease;
+}
+
+.fi--focused .fi__icon { color: var(--color-accent); }
+.fi--error   .fi__icon { color: var(--color-danger); }
+.fi--success .fi__icon { color: var(--color-success); }
+
+/* ═══ Input ═══ */
+.fi__input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  padding-top: 18px;   /* جا برای label شناور در حالت فعال */
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+
+.fi__input:-webkit-autofill,
+.fi__input:-webkit-autofill:hover,
+.fi__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-bg-elevated) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ═══ Label شناور ═══ */
+.fi__label {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 48px;
+  transform: translateY(-50%);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+  transition:
+    top 220ms cubic-bezier(.4, 0, .2, 1),
+    font-size 220ms cubic-bezier(.4, 0, .2, 1),
+    color 220ms cubic-bezier(.4, 0, .2, 1),
+    transform 220ms cubic-bezier(.4, 0, .2, 1);
+  transform-origin: start center;
+  white-space: nowrap;
+  max-width: calc(100% - 100px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* حالت شناور: focus یا مقدار داره */
+.fi__input:focus ~ .fi__label,
+.fi__input:not(:placeholder-shown) ~ .fi__label {
+  top: 12px;
+  font-size: 11.5px;
+  transform: translateY(0);
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+}
+
+.fi--focused .fi__label { color: var(--color-accent); }
+.fi--error   .fi__label { color: var(--color-danger); }
+.fi--success .fi__label { color: var(--color-success); }
+
+/* اگه placeholder داره، لیبل مخفی نشه */
+.fi__input:focus:not(:placeholder-shown) ~ .fi__label,
+.fi__input:not(:placeholder-shown) ~ .fi__label {
+  /* همینطور شناور بمونه */
+}
+
+/* ═══ Toggle (رمز) ═══ */
+.fi__toggle {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+  padding: 0;
+}
+.fi__toggle:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+.fi__toggle svg { width: 18px; height: 18px; }
+
+/* اگه toggle هست، status میره عقب‌تر */
+.fi:has(.fi__toggle) .fi__status {
+  inset-inline-end: 52px;
+}
+
+/* ═══ Status (check / alert) ═══ */
+.fi__status {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.7);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 180ms ease, transform 180ms cubic-bezier(.34, 1.56, .64, 1);
+  pointer-events: none;
+}
+
+.fi__status[data-type="error"] {
+  color: var(--color-danger);
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.fi__status[data-type="success"] {
+  color: var(--color-success);
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* ═══ Error message ═══ */
+.fi__error {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-danger);
+  min-height: 0;
+  max-height: 0;
+  overflow: hidden;
+  padding-inline-start: 4px;
+  transition: max-height 220ms ease, margin-top 220ms ease;
+  line-height: 1.5;
+}
+
+.fi--error .fi__error {
+  max-height: 40px;
+  margin-top: 2px;
+}
+
+/* ═══ Shake animation ═══ */
+.fi--shake .fi__box {
+  animation: fi-shake-kf 480ms cubic-bezier(.36, .07, .19, .97);
+}
+
+@keyframes fi-shake-kf {
+  0%, 100% { transform: translateX(0); }
+  10%      { transform: translateX(-6px); }
+  20%      { transform: translateX(6px); }
+  30%      { transform: translateX(-4px); }
+  40%      { transform: translateX(4px); }
+  50%      { transform: translateX(-3px); }
+  60%      { transform: translateX(3px); }
+  70%      { transform: translateX(-2px); }
+  80%      { transform: translateX(2px); }
+  90%      { transform: translateX(-1px); }
+}
+
+/* ═══ Reduced Motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+  .fi__box,
+  .fi__label,
+  .fi__status,
+  .fi__error { transition: none; }
+  .fi--shake .fi__box { animation: none; }
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 480px) {
+  .fi__box {
+    min-height: 58px;
+    padding-inline: 44px 42px;
+    border-radius: 12px;
+  }
+  .fi__icon { inset-inline-start: 14px; }
+  .fi__label { inset-inline-start: 44px; }
+  .fi__input { font-size: 14.5px; }
+}
