@@ -22,7 +22,7 @@ export const CONFIG = {
     theme:         true,
     productDetail: true,
     cart:          true,
-    brands:        false,
+    brands:        true,
     search:        false,
     about:         false,
     contact:       false,

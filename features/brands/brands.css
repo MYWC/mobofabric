@@ -1,0 +1,162 @@
+/* ═══════════════════════════════════════════════════════════
+   Brands Page — Phase 4
+   ═══════════════════════════════════════════════════════════ */
+
+.brands-page { padding-block: var(--space-6) var(--space-8); }
+
+/* ── Header ── */
+.brands-header {
+  text-align: center;
+  max-width: 620px;
+  margin-inline: auto;
+  margin-bottom: var(--space-7);
+}
+
+.brands-header__title {
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-3);
+}
+
+.brands-header__subtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+}
+
+/* ── Grid ── */
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ── Card ── */
+.brand-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+  position: relative;
+}
+
+.brand-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+}
+
+.brand-card--empty {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.brand-card__logo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-card__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.brand-card__initial {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: -0.02em;
+}
+
+.brand-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.brand-card__name {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+.brand-card__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.brand-card__arrow {
+  color: var(--color-text-tertiary);
+  transition: color var(--t-fast);
+  display: flex;
+}
+
+.brand-card:hover .brand-card__arrow {
+  color: var(--color-accent);
+}
+
+/* در LTR فلش را آینه کن */
+[dir="ltr"] .brand-card__arrow svg {
+  transform: scaleX(-1);
+}
+
+/* ── Skeleton ── */
+.brand-card--skeleton {
+  pointer-events: none;
+  opacity: 1;
+}
+
+.brand-card__skeleton-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+/* ── Empty / Error ── */
+.brands-empty {
+  text-align: center;
+  padding: var(--space-9) var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.brands-empty h3 {
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xl);
+}
+
+.brands-empty--error h3 { color: var(--color-danger); }
+
+.brands-empty .btn { margin-top: var(--space-4); }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .brands-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .brand-card {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+  .brand-card__logo {
+    width: 48px;
+    height: 48px;
+  }
+  .brand-card__initial { font-size: 20px; }
+  .brand-card__name    { font-size: var(--text-base); }
+}

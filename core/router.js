@@ -1,15 +1,12 @@
 // ═══════════════════════════════════════════════════════════
 //  Hash Router — سازگار با GitHub Pages subpath
+//  نسخه ۲: پشتیبانی از route override (last-registered wins)
 // ═══════════════════════════════════════════════════════════
 
 import { events } from './events.js';
 
 const routes = [];
 
-/**
- * تبدیل pattern به regex
- * "/product/:slug" → /^\/product\/([^/]+)$/
- */
 function compile(pattern) {
   const keys = [];
   const regexStr = pattern
@@ -29,23 +26,26 @@ function match() {
   const [path, search = ''] = hash.split('?');
   const query = parseQuery(search);
 
-  for (const { pattern, regex, keys, handler } of routes) {
-    const m = path.match(regex);
+  // آخرین route ثبت‌شده برنده است — اجازه override از فیچرها
+  for (let i = routes.length - 1; i >= 0; i--) {
+    const route = routes[i];
+    const m = path.match(route.regex);
     if (m) {
       const params = {};
-      keys.forEach((k, i) => { params[k] = decodeURIComponent(m[i + 1]); });
-      return { pattern, params, query, path };
+      route.keys.forEach((k, idx) => {
+        params[k] = decodeURIComponent(m[idx + 1]);
+      });
+      return { pattern: route.pattern, params, query, path, handler: route.handler };
     }
   }
-  return { path, params: {}, query, pattern: null };
+  return { pattern: null, params: {}, query, path, handler: null };
 }
 
 function dispatch() {
   const ctx = match();
-  const handler = routes.find(r => r.pattern === ctx.pattern)?.handler;
 
-  if (handler) {
-    try { handler(ctx.params, ctx.query); }
+  if (ctx.handler) {
+    try { ctx.handler(ctx.params, ctx.query); }
     catch (err) { console.error('[router] handler error:', err); }
   } else {
     events.emit('route:notfound', ctx);

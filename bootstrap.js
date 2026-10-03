@@ -1,18 +1,16 @@
 // ═══════════════════════════════════════════════════════════
 //  نقطه ورود — یک بار نوشته می‌شود، هرگز تغییر نمی‌کند
-//  هر فاز فقط یک فلگ در config.js را true می‌کند
+//  نسخه ۲: با CSS auto-loader
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
 import { events } from './core/events.js';
 import { i18n } from './core/i18n.js';
 import { router } from './core/router.js';
-import { api } from './core/api.js';
 
 import { Header } from './shared/components/header/header.js';
 import { Footer } from './shared/components/footer/footer.js';
 import { toast } from './shared/components/toast/toast.js';
-import { icons } from './shared/icons/icons.js';
 
 // ═══════════════════════════════════════════════════════════
 //  نقشه فیچرها — از روز اول کامل
@@ -32,19 +30,10 @@ const featureLoaders = {
 //  راه‌اندازی
 // ═══════════════════════════════════════════════════════════
 async function bootstrap() {
-  // ۱. موتور دوزبانه — اول از همه
   i18n.init();
-
-  // ۲. هدر و فوتر — همیشه هستند
   mountChrome();
-
-  // ۳. رویدادهای سراسری
   wireGlobalEvents();
-
-  // ۴. فیچرها — بر اساس CONFIG
   await loadFeatures();
-
-  // ۵. روتر — آخر از همه (تا همه handlerها ثبت شده باشند)
   router.start();
 }
 
@@ -58,25 +47,22 @@ function mountChrome() {
 
 // ── رویدادهای سراسری ──
 function wireGlobalEvents() {
-  // خطاها → toast
   events.on('error', ({ message }) => {
     toast.show({ type: 'error', message: message || i18n.t('common.error') });
   });
 
-  // ۴۰۴
   events.on('route:notfound', () => {
     const app = document.querySelector('#app');
     if (!app) return;
     app.innerHTML = `
       <div class="container" style="padding:120px 24px;text-align:center">
-        <h1>۴۰۴</h1>
-        <p style="margin-top:16px">${i18n.t('common.not_found') ?? 'صفحه یافت نشد'}</p>
-        <a class="btn btn--accent" href="#/" style="margin-top:24px">${i18n.t('common.back_home') ?? 'بازگشت به خانه'}</a>
+        <h1 style="font-size:96px;color:var(--color-text-tertiary);line-height:1;letter-spacing:-0.05em">۴۰۴</h1>
+        <p style="margin-top:16px;color:var(--color-text-secondary)">${i18n.t('common.not_found')}</p>
+        <a class="btn btn--accent" href="#/" style="margin-top:24px">${i18n.t('common.back_home')}</a>
       </div>
     `;
   });
 
-  // cart:add — اگر cart فعال نباشد، پیام "به‌زودی"
   events.on('cart:add', () => {
     if (!CONFIG.features.cart) {
       toast.show({ type: 'info', message: i18n.t('common.coming_soon') });
@@ -84,7 +70,7 @@ function wireGlobalEvents() {
   });
 }
 
-// ── لود فیچرهای فعال ──
+// ── لود فیچرهای فعال + CSS خودکار ──
 async function loadFeatures() {
   const enabled = Object.entries(CONFIG.features)
     .filter(([, on]) => on)
@@ -96,6 +82,10 @@ async function loadFeatures() {
       console.warn(`[bootstrap] feature "${name}" has no loader`);
       continue;
     }
+
+    // لود خودکار CSS فیچر
+    loadFeatureCSS(name);
+
     try {
       const feature = await loader();
       feature.register?.();
@@ -105,21 +95,32 @@ async function loadFeatures() {
   }
 }
 
+// ── CSS auto-loader ──
+function loadFeatureCSS(name) {
+  const kebab = name.replace(/[A-Z]/g, ch => '-' + ch.toLowerCase());
+  const href = `./features/${kebab}/${kebab}.css`;
+
+  if (document.querySelector(`link[href="${href}"]`)) return;
+
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = href;
+  document.head.append(link);
+}
+
 bootstrap().catch(err => {
   console.error('[bootstrap] fatal:', err);
   document.body.innerHTML = `
     <div style="padding:80px 24px;text-align:center;font-family:system-ui">
       <h1>خطای راه‌اندازی</h1>
       <p style="margin-top:12px;color:#666">${err.message}</p>
-      <p style="margin-top:8px;font-size:14px;color:#999">
-        لطفاً کنسول مرورگر را بررسی کنید.
-      </p>
+      <p style="margin-top:8px;font-size:14px;color:#999">لطفاً کنسول مرورگر را بررسی کنید.</p>
     </div>
   `;
 });
 
 // ═══════════════════════════════════════════════════════════
-//  i18n کلیدهای عمومی — یک‌جا ثبت می‌شوند (کم و ثابت)
+//  i18n کلیدهای عمومی
 // ═══════════════════════════════════════════════════════════
 i18n.register('common', {
   fa: {
