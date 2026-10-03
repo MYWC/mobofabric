@@ -1,28 +1,34 @@
+// ═══════════════════════════════════════════════════════════
+//  Auth — Phase 19 (Redesign + Animations)
+// ═══════════════════════════════════════════════════════════
+
 import { h, qs, on, render } from '../../core/dom.js';
 import { events } from '../../core/events.js';
 import { i18n } from '../../core/i18n.js';
 import { api } from '../../core/api.js';
 import { router } from '../../core/router.js';
+import { CONFIG } from '../../core/config.js';
 import { icons } from '../../shared/icons/icons.js';
 import { authLang } from './auth.lang.js';
+import { createSplitHero } from './auth-components/split-hero.js';
+import { createGlassForm } from './auth-components/glass-form.js';
+import { authAnimations } from './auth-animations.js';
 
 // ═══════════════════════════════════════════════════════════
 //  State
 // ═══════════════════════════════════════════════════════════
 const state = {
-  mode:        'login',   // 'login' | 'signup'
-  loading:     false,
-  error:       '',
-  showPass:    false,
-  container:   null,
-  // Header dropdown
-  menuOpen:    false,
-  profile:     null,
-  headerEl:    null,
+  mode:      'login',
+  container: null,
+  heroEl:    null,
+  formEl:    null,
+  profile:   null,
+  menuOpen:  false,
+  headerEl:  null,
 };
 
-let offLang = null;
 let offAuth = null;
+let offLang = null;
 let offOutside = null;
 
 // ═══════════════════════════════════════════════════════════
@@ -31,16 +37,9 @@ let offOutside = null;
 export const auth = {
   register() {
     i18n.register('auth', authLang);
-
-    router.register('/login', () => showLogin());
-
-    // گوش دادن به تغییرات auth
+    router.register('/login', () => showAuth());
     offAuth = api.auth.onChange(() => refreshProfile());
-
-    // دکمه‌ی auth در هدر — بدون تغییر فایل هدر
     injectHeaderButton();
-
-    // بارگذاری اولیه
     refreshProfile();
 
     offLang = events.on('lang:changed', () => {
@@ -51,246 +50,157 @@ export const auth = {
 };
 
 // ═══════════════════════════════════════════════════════════
-//  Login/Signup Page
+//  Auth Page
 // ═══════════════════════════════════════════════════════════
-function showLogin(query = {}) {
+function showAuth(query = {}) {
   state.container = qs('#app');
   state.mode = 'login';
-  state.loading = false;
-  state.error = '';
-  state.showPass = false;
+  state.heroEl = null;
+  state.formEl = null;
+
+  if (state.profile) {
+    router.navigate('/');
+    return;
+  }
+
   renderPage();
 }
 
 function renderPage() {
   if (!state.container) return;
 
-  const redirect = new URLSearchParams(location.hash.split('?')[1] || '').get('redirect');
+  if (state.heroEl?.destroy) state.heroEl.destroy();
 
-  const page = h('div', { class: 'auth-page' },
-    h('div', { class: 'auth-card' },
-      h('div', { class: 'auth-brand' },
-        h('span', { class: 'auth-brand__logo', innerHTML: icons.logo }),
-        h('span', { class: 'auth-brand__text' }, 'Phone Store'),
-      ),
-      state.mode === 'login' ? LoginForm(redirect) : SignupForm(redirect),
-      SwitchTab(),
-    ),
+  state.heroEl = CONFIG.authUI.splitLayout ? createSplitHero() : null;
+
+  state.formEl = createGlassForm({
+    mode: state.mode,
+    onSubmit: handleAuthSubmit,
+    onSwitch: (newMode) => {
+      state.mode = newMode;
+      // 🎬 انیمیشن تعویض mode
+      requestAnimationFrame(() => {
+        const card = qs('.glass-card', state.container);
+        if (card) authAnimations.playModeSwitch(card);
+      });
+    },
+  });
+
+  const page = h('div', { class: `auth-page is-entering ${CONFIG.authUI.splitLayout ? 'auth-page--split' : ''}` },
+    state.heroEl,
+    h('div', { class: 'auth-page__form-side' }, state.formEl),
   );
 
   render(state.container, page);
-  requestAnimationFrame(() => wireForm());
-}
 
-function LoginForm(redirect) {
-  return h('form', { class: 'auth-form', novalidate: true, onsubmit: onSubmit },
-    h('h1', { class: 'auth-form__title' }, i18n.t('auth.loginTitle')),
-    h('p',  { class: 'auth-form__subtitle' }, i18n.t('auth.loginSubtitle')),
-
-    state.error ? h('div', { class: 'auth-error' }, state.error) : null,
-
-    FormField({
-      name: 'email', type: 'email', label: 'auth.email',
-      placeholder: 'auth.emailPlaceholder', autocomplete: 'email', required: true,
-    }),
-
-    PasswordField('login'),
-
-    h('button', {
-      class: 'btn btn--accent auth-form__submit',
-      type: 'submit',
-      disabled: state.loading,
-    }, state.loading ? i18n.t('auth.loggingIn') : i18n.t('auth.login')),
-
-    h('input', { type: 'hidden', name: 'redirect', value: redirect || '' }),
-  );
-}
-
-function SignupForm(redirect) {
-  return h('form', { class: 'auth-form', novalidate: true, onsubmit: onSubmit },
-    h('h1', { class: 'auth-form__title' }, i18n.t('auth.signupTitle')),
-    h('p',  { class: 'auth-form__subtitle' }, i18n.t('auth.signupSubtitle')),
-
-    state.error ? h('div', { class: 'auth-error' }, state.error) : null,
-
-    FormField({
-      name: 'full_name', type: 'text', label: 'auth.fullName',
-      placeholder: 'auth.fullNamePlaceholder', autocomplete: 'name', required: true,
-    }),
-
-    FormField({
-      name: 'email', type: 'email', label: 'auth.email',
-      placeholder: 'auth.emailPlaceholder', autocomplete: 'email', required: true,
-    }),
-
-    PasswordField('signup'),
-
-    h('button', {
-      class: 'btn btn--accent auth-form__submit',
-      type: 'submit',
-      disabled: state.loading,
-    }, state.loading ? i18n.t('auth.signingUp') : i18n.t('auth.signup')),
-
-    h('input', { type: 'hidden', name: 'redirect', value: redirect || '' }),
-  );
-}
-
-function FormField({ name, type = 'text', label, placeholder, autocomplete, required }) {
-  return h('div', { class: 'auth-field' },
-    h('label', { class: 'auth-field__label', for: `auth-${name}` },
-      i18n.t(label),
-      required ? h('span', { class: 'auth-field__req' }, '*') : null,
-    ),
-    h('input', {
-      class: 'auth-field__input',
-      id: `auth-${name}`,
-      name,
-      type,
-      placeholder: i18n.t(placeholder),
-      autocomplete: autocomplete || 'off',
-      'data-required': required ? '1' : '0',
-    }),
-  );
-}
-
-function PasswordField(kind) {
-  const name = 'password';
-  const input = h('input', {
-    class: 'auth-field__input',
-    id: `auth-${name}`,
-    name,
-    type: state.showPass ? 'text' : 'password',
-    placeholder: i18n.t('auth.passwordPlaceholder'),
-    autocomplete: kind === 'signup' ? 'new-password' : 'current-password',
-    'data-required': '1',
-    minlength: '6',
+  // 🎬 اجرای entrance animation
+  requestAnimationFrame(() => {
+    authAnimations.playEntrance(page);
   });
-
-  return h('div', { class: 'auth-field' },
-    h('label', { class: 'auth-field__label', for: `auth-${name}` },
-      i18n.t('auth.password'),
-      h('span', { class: 'auth-field__req' }, '*'),
-    ),
-    h('div', { class: 'auth-field__pass' },
-      input,
-      h('button', {
-        class: 'auth-field__eye',
-        type: 'button',
-        'aria-label': state.showPass ? i18n.t('auth.hidePassword') : i18n.t('auth.showPassword'),
-        dataset: { role: 'toggle-pass' },
-        innerHTML: state.showPass ? icons.eyeOff : icons.eye,
-      }),
-    ),
-  );
-}
-
-function SwitchTab() {
-  return h('div', { class: 'auth-switch' },
-    h('span', {},
-      state.mode === 'login' ? i18n.t('auth.noAccount') : i18n.t('auth.haveAccount'),
-    ),
-    h('button', {
-      class: 'auth-switch__btn',
-      type: 'button',
-      onclick: () => {
-        state.mode = state.mode === 'login' ? 'signup' : 'login';
-        state.error = '';
-        renderPage();
-      },
-    }, state.mode === 'login' ? i18n.t('auth.switchToSignup') : i18n.t('auth.switchToLogin')),
-  );
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Form submission
+//  Submit Handler
 // ═══════════════════════════════════════════════════════════
-function wireForm() {
-  if (!state.container) return;
-
-  const toggle = qs('[data-role="toggle-pass"]', state.container);
-  if (toggle) {
-    on(toggle, 'click', () => {
-      state.showPass = !state.showPass;
-      const input = qs('#auth-password', state.container);
-      if (input) input.type = state.showPass ? 'text' : 'password';
-      toggle.innerHTML = state.showPass ? icons.eyeOff : icons.eye;
-      toggle.setAttribute('aria-label',
-        state.showPass ? i18n.t('auth.hidePassword') : i18n.t('auth.showPassword'));
-    });
-  }
-}
-
-async function onSubmit(e) {
-  e.preventDefault();
-  if (state.loading) return;
-
-  const form = e.currentTarget;
-  const data = Object.fromEntries(new FormData(form));
-
-  // اعتبارسنجی سریع
-  const err = validate(data);
-  if (err) {
-    state.error = err;
-    renderPage();
-    return;
-  }
-
-  state.loading = true;
-  state.error = '';
-  renderPage();
-
+async function handleAuthSubmit(data) {
   try {
     if (state.mode === 'login') {
-      await api.auth.signIn(data.email.trim(), data.password);
+      await api.auth.signIn(data.email, data.password);
       events.emit('toast:show', { type: 'success', message: i18n.t('auth.loginSuccess') });
+      playSuccessAnimation();
+      if (CONFIG.authUI.confetti) fireConfetti();
+      setTimeout(() => router.navigate('/'), 800);
     } else {
-      await api.auth.signUp(data.email.trim(), data.password, data.full_name.trim());
+      await api.auth.signUp(data.email, data.password, data.full_name);
       events.emit('toast:show', { type: 'success', message: i18n.t('auth.signupSuccess') });
+      playSuccessAnimation();
+      if (CONFIG.authUI.confetti) fireConfetti();
+      setTimeout(() => router.navigate('/'), 800);
     }
-
-    // ریدایرکت
-    const redirect = data.redirect || '/';
-    router.navigate(redirect);
   } catch (err) {
-    state.loading = false;
-    state.error = mapError(err);
-    renderPage();
+    state.formEl.setError(mapError(err));
+    requestAnimationFrame(() => {
+      const card = qs('.glass-card', state.container);
+      if (card) authAnimations.playShake(card);
+    });
+    throw err;
   }
 }
 
-function validate(data) {
-  const email = (data.email || '').trim();
-  const pass = data.password || '';
-
-  if (!email) return i18n.t('auth.errEmail');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return i18n.t('auth.errEmailInvalid');
-  if (!pass) return i18n.t('auth.errPassword');
-  if (pass.length < 6) return i18n.t('auth.errPasswordShort');
-
-  if (state.mode === 'signup') {
-    const name = (data.full_name || '').trim();
-    if (!name) return i18n.t('auth.errName');
-    if (name.length < 2) return i18n.t('auth.errNameShort');
-  }
-  return '';
+function playSuccessAnimation() {
+  requestAnimationFrame(() => {
+    const card = qs('.glass-card', state.container);
+    if (card) authAnimations.playSuccess(card);
+  });
 }
 
 function mapError(err) {
   const msg = String(err?.message || '').toLowerCase();
-  if (msg.includes('invalid login') || msg.includes('invalid credentials')) return i18n.t('auth.errInvalidCreds');
-  if (msg.includes('already registered') || msg.includes('user already')) return i18n.t('auth.errEmailTaken');
-  if (msg.includes('password') && msg.includes('short')) return i18n.t('auth.errWeakPassword');
-  if (msg.includes('password') && msg.includes('weak')) return i18n.t('auth.errWeakPassword');
+  if (msg.includes('invalid login') || msg.includes('invalid credentials'))
+    return i18n.t('auth.errInvalidCreds');
+  if (msg.includes('already registered') || msg.includes('user already'))
+    return i18n.t('auth.errEmailTaken');
+  if (msg.includes('password') && (msg.includes('short') || msg.includes('weak')))
+    return i18n.t('auth.errWeakPassword');
   return i18n.t('auth.errGeneric');
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Header Auth Button (injection — no header.js change)
+//  Confetti
+// ═══════════════════════════════════════════════════════════
+function fireConfetti() {
+  const COLORS = ['#0071e3', '#5856d6', '#af52de', '#34c759', '#ffcc00'];
+  const COUNT = 40;
+
+  for (let i = 0; i < COUNT; i++) {
+    const p = document.createElement('span');
+    const size = 6 + Math.random() * 6;
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const startX = window.innerWidth / 2;
+    const startY = window.innerHeight / 2;
+
+    p.style.cssText = `
+      position: fixed;
+      left: ${startX}px;
+      top: ${startY}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      will-change: transform, opacity;
+    `;
+    document.body.appendChild(p);
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 120 + Math.random() * 240;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance - 60;
+
+    p.animate(
+      [
+        { transform: 'translate(-50%, -50%) rotate(0deg) scale(0.3)', opacity: 0 },
+        { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)',   opacity: 1, offset: 0.15 },
+        { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${Math.random() * 720}deg) scale(0.2)`, opacity: 0 },
+      ],
+      {
+        duration: 1400 + Math.random() * 600,
+        easing: 'cubic-bezier(.4, 0, .2, 1)',
+        fill: 'forwards',
+      }
+    ).addEventListener('finish', () => p.remove());
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Header Auth Button
 // ═══════════════════════════════════════════════════════════
 function injectHeaderButton() {
   const actions = qs('.header__actions');
   if (!actions) return;
-  if (qs('.header-auth')) return;   // قبلاً تزریق شده
+  if (qs('.header-auth')) return;
 
   const el = h('div', { class: 'header-auth', dataset: { role: 'header-auth' } });
   actions.append(el);
@@ -362,8 +272,6 @@ function renderHeaderMenu() {
 
 function wireHeaderMenu() {
   if (!state.headerEl) return;
-
-  // حذف لیسنر قبلی
   if (offOutside) offOutside();
 
   on(state.headerEl, 'click', (e) => {
@@ -379,7 +287,6 @@ function wireHeaderMenu() {
     renderHeaderMenu();
   });
 
-  // بستن با کلیک بیرون
   offOutside = on(document, 'click', (e) => {
     if (!state.menuOpen) return;
     if (state.headerEl && state.headerEl.contains(e.target)) return;
@@ -403,7 +310,6 @@ async function doLogout() {
     await api.auth.signOut();
     events.emit('toast:show', { type: 'info', message: i18n.t('auth.logoutSuccess') });
 
-    // اگر در صفحه admin هستیم، برو به خانه
     if (location.hash.startsWith('#/admin')) {
       router.navigate('/');
     } else {

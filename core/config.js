@@ -89,5 +89,7 @@ export const CONFIG = {
     recentlyViewed:    true,
     // ── فاز 18 ──
     sound:             true,
+    // ── فاز 19 ──
+    authAnimations:    true,
   },
 };

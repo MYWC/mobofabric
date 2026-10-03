@@ -1,8 +1,72 @@
 /* ═══════════════════════════════════════════════════════════
-   Auth — Phase 11
+   Auth — Phase 19 (Redesign)
    ═══════════════════════════════════════════════════════════ */
 
-/* ═══ Header Auth Button ═══ */
+/* ═══════════════════════════════════════════════════════════
+   Auth Page Layout
+   ═══════════════════════════════════════════════════════════ */
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  background: var(--color-bg);
+  position: relative;
+}
+
+/* ── Split (desktop) ── */
+.auth-page--split {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── Without split (fallback) ── */
+.auth-page:not(.auth-page--split) {
+  grid-template-columns: 1fr;
+}
+
+/* ═══ Form Side ═══ */
+.auth-page__form-side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+/* الگوی نقطه‌ای ظریف */
+.auth-page__form-side::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, var(--color-border) 1px, transparent 0);
+  background-size: 24px 24px;
+  opacity: 0.35;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+}
+
+/* Glow ظریف */
+.auth-page__form-side::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--color-accent) 12%, transparent) 0%,
+    transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Header Auth (keep existing)
+   ═══════════════════════════════════════════════════════════ */
 .header-auth { position: relative; }
 
 .header-auth__btn {
@@ -14,6 +78,9 @@
   justify-content: center;
   color: var(--color-text-secondary);
   transition: background var(--t-fast), color var(--t-fast);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 .header-auth__btn:hover { background: var(--color-bg-secondary); color: var(--color-text); }
 .header-auth__btn.is-logged { padding: 0; }
@@ -34,7 +101,6 @@
   text-transform: uppercase;
 }
 
-/* ── Menu ── */
 .header-auth__menu {
   position: absolute;
   top: calc(100% + 8px);
@@ -131,6 +197,8 @@
   width: 100%;
   transition: background var(--t-fast), color var(--t-fast);
   cursor: pointer;
+  background: transparent;
+  border: 0;
 }
 .header-auth__menu-link:hover { background: var(--color-bg-secondary); }
 .header-auth__menu-link span:first-child { display: inline-flex; color: var(--color-text-tertiary); }
@@ -142,160 +210,33 @@
   background: color-mix(in srgb, var(--color-danger) 10%, transparent);
 }
 
-/* ═══ Login Page ═══ */
-.auth-page {
-  min-height: calc(100vh - var(--header-height));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6) var(--space-4);
-  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg) 60%);
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+
+/* موبایل و تبلت کوچک — Split رو حذف کن */
+@media (max-width: 900px) {
+  .auth-page,
+  .auth-page--split {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-page__form-side {
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
 }
 
-.auth-card {
-  width: 100%;
-  max-width: 440px;
-  padding: var(--space-7);
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-}
-
-.auth-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.auth-brand__logo { display: flex; color: var(--color-accent); }
-
-/* ── Form ── */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.auth-form__title {
-  font-size: var(--text-2xl);
-  letter-spacing: -0.025em;
-  text-align: center;
-}
-
-.auth-form__subtitle {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  text-align: center;
-  margin-bottom: var(--space-2);
-}
-
-.auth-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.auth-field__label {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.auth-field__req {
-  color: var(--color-danger);
-  margin-inline-start: 2px;
-}
-
-.auth-field__input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: var(--text-base);
-  font-family: inherit;
-  transition: border-color var(--t-fast), box-shadow var(--t-fast);
-}
-
-.auth-field__input:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
-}
-
-.auth-field__pass { position: relative; }
-
-.auth-field__pass .auth-field__input { padding-inline-end: 44px; }
-
-.auth-field__eye {
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 8px;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-tertiary);
-  transition: background var(--t-fast), color var(--t-fast);
-}
-.auth-field__eye:hover { background: var(--color-bg-secondary); color: var(--color-text); }
-
-.auth-form__submit {
-  padding: 14px;
-  font-size: var(--text-base);
-  margin-top: var(--space-2);
-}
-.auth-form__submit:disabled { opacity: 0.6; cursor: wait; }
-
-/* ── Error ── */
-.auth-error {
-  padding: 12px 14px;
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  color: var(--color-danger);
-  animation: auth-error-in var(--t-fast);
-}
-
-@keyframes auth-error-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Switch ── */
-.auth-switch {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  margin-top: var(--space-5);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--color-border);
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-}
-
-.auth-switch__btn {
-  color: var(--color-accent);
-  font-weight: 500;
-  transition: opacity var(--t-fast);
-}
-.auth-switch__btn:hover { opacity: 0.8; text-decoration: underline; }
-
-/* ═══ Responsive ═══ */
+/* موبایل کوچک */
 @media (max-width: 480px) {
-  .auth-card { padding: var(--space-5); border-radius: var(--radius-lg); }
-  .auth-form__title { font-size: var(--text-xl); }
-  .header-auth__menu { min-width: 220px; }
+  .auth-page__form-side {
+    padding: 16px 12px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .header-auth__menu { animation: none; }
 }

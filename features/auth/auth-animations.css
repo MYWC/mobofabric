@@ -1,0 +1,180 @@
+/* ═══════════════════════════════════════════════════════════
+   Auth Animations — Phase 19
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
+   Entrance — Split
+   ═══════════════════════════════════════════════════════════ */
+.auth-page.is-entering .split-hero {
+  will-change: opacity, transform;
+}
+
+.auth-page.is-entering .auth-page__form-side {
+  will-change: opacity, transform;
+}
+
+.auth-page.is-entering .glass-card {
+  will-change: opacity, transform;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Form Inputs — stagger ready state
+   ═══════════════════════════════════════════════════════════ */
+.auth-page .glass-form > .fi,
+.auth-page .glass-form > .glass-checkbox,
+.auth-page .glass-form > .glass-submit,
+.auth-page .glass-card__brand,
+.auth-page .glass-card__header,
+.auth-page .glass-divider,
+.auth-page .glass-social,
+.auth-page .glass-switch,
+.auth-page .pws-wrap {
+  will-change: opacity, transform;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Social Buttons — hover effect enhancement
+   ═══════════════════════════════════════════════════════════ */
+.glass-social__btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-social__btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center,
+    color-mix(in srgb, var(--color-accent) 15%, transparent),
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.glass-social__btn:hover::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Switch button — pulse on hover
+   ═══════════════════════════════════════════════════════════ */
+.glass-switch__btn {
+  position: relative;
+}
+
+.glass-switch__btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.glass-switch__btn:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Submit — pulse when active
+   ═══════════════════════════════════════════════════════════ */
+.glass-submit:not(:disabled):active {
+  animation: auth-submit-pulse 350ms ease;
+}
+
+@keyframes auth-submit-pulse {
+  0%   { box-shadow: 0 8px 20px rgba(0, 113, 227, 0.35), 0 0 0 0 rgba(0, 113, 227, 0.6); }
+  50%  { box-shadow: 0 8px 20px rgba(0, 113, 227, 0.35), 0 0 0 12px rgba(0, 113, 227, 0); }
+  100% { box-shadow: 0 8px 20px rgba(0, 113, 227, 0.35), 0 0 0 0 rgba(0, 113, 227, 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Floating Input — success pulse
+   ═══════════════════════════════════════════════════════════ */
+.fi--success .fi__box {
+  animation: fi-success-pulse 500ms ease;
+}
+
+@keyframes fi-success-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Password Strength — entrance
+   ═══════════════════════════════════════════════════════════ */
+.pws-wrap.is-visible {
+  animation: pws-wrap-in 400ms cubic-bezier(.4, 0, .2, 1);
+}
+
+@keyframes pws-wrap-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Card — subtle hover elevate
+   ═══════════════════════════════════════════════════════════ */
+.glass-card:hover {
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.14),
+    0 10px 28px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] .glass-card:hover {
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.6),
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .auth-page.is-entering .split-hero,
+  .auth-page.is-entering .auth-page__form-side,
+  .auth-page.is-entering .glass-card,
+  .auth-page .glass-form > .fi,
+  .auth-page .glass-form > .glass-checkbox,
+  .auth-page .glass-form > .glass-submit,
+  .auth-page .glass-card__brand,
+  .auth-page .glass-card__header,
+  .auth-page .glass-divider,
+  .auth-page .glass-social,
+  .auth-page .glass-switch,
+  .auth-page .pws-wrap {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+
+  .glass-submit:not(:disabled):active,
+  .fi--success .fi__box,
+  .pws-wrap.is-visible {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* روی موبایل، انیمیشن Slide ساده‌تر */
+  .auth-page.is-entering .split-hero {
+    transform: translateY(-30px) !important;
+  }
+
+  .auth-page.is-entering .auth-page__form-side {
+    transform: translateY(30px) !important;
+  }
+}
