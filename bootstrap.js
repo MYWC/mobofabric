@@ -1,6 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-//  نقطه ورود — یک بار نوشته می‌شود، هرگز تغییر نمی‌کند
-//  نسخه ۴: با CSS auto-loader + تا فاز ۱۰
+//  نقطه ورود — نسخه ۵: تا فاز ۱۱
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -12,9 +11,6 @@ import { Header } from './shared/components/header/header.js';
 import { Footer } from './shared/components/footer/footer.js';
 import { toast } from './shared/components/toast/toast.js';
 
-// ═══════════════════════════════════════════════════════════
-//  نقشه فیچرها
-// ═══════════════════════════════════════════════════════════
 const featureLoaders = {
   products:      () => import('./features/products/products.js').then(m => m.products),
   productDetail: () => import('./features/product-detail/product-detail.js').then(m => m.productDetail),
@@ -24,21 +20,14 @@ const featureLoaders = {
   about:         () => import('./features/about/about.js').then(m => m.about),
   contact:       () => import('./features/contact/contact.js').then(m => m.contact),
   theme:         () => import('./features/theme/theme.js').then(m => m.theme),
-
-  // ── فاز ۸ ──
   favorites:     () => import('./features/favorites/favorites.js').then(m => m.favorites),
   comparison:    () => import('./features/comparison/comparison.js').then(m => m.comparison),
-
-  // ── فاز ۹ ──
   reviews:       () => import('./features/reviews/reviews.js').then(m => m.reviews),
-
-  // ── فاز ۱۰ ──
   discounts:     () => import('./features/discounts/discounts.js').then(m => m.discounts),
+  auth:          () => import('./features/auth/auth.js').then(m => m.auth),
+  admin:         () => import('./features/admin/admin.js').then(m => m.admin),
 };
 
-// ═══════════════════════════════════════════════════════════
-//  راه‌اندازی
-// ═══════════════════════════════════════════════════════════
 async function bootstrap() {
   i18n.init();
   mountChrome();
@@ -85,13 +74,8 @@ async function loadFeatures() {
 
   for (const name of enabled) {
     const loader = featureLoaders[name];
-    if (!loader) {
-      console.warn(`[bootstrap] feature "${name}" has no loader`);
-      continue;
-    }
-
+    if (!loader) { console.warn(`[bootstrap] feature "${name}" has no loader`); continue; }
     loadFeatureCSS(name);
-
     try {
       const feature = await loader();
       feature.register?.();
@@ -104,9 +88,7 @@ async function loadFeatures() {
 function loadFeatureCSS(name) {
   const kebab = name.replace(/[A-Z]/g, ch => '-' + ch.toLowerCase());
   const href = `./features/${kebab}/${kebab}.css`;
-
   if (document.querySelector(`link[href="${href}"]`)) return;
-
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.href = href;
@@ -124,9 +106,6 @@ bootstrap().catch(err => {
   `;
 });
 
-// ═══════════════════════════════════════════════════════════
-//  i18n کلیدهای عمومی
-// ═══════════════════════════════════════════════════════════
 i18n.register('common', {
   fa: {
     error:       'خطایی رخ داد',

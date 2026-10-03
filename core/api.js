@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  لایه داده — تنها راه دسترسی به Supabase
-//  نسخه: تا فاز ۱۰ (discounts)
+//  نسخه: تا فاز ۱۱ (auth + admin)
 // ═══════════════════════════════════════════════════════════
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -27,6 +27,73 @@ function handleError(error) {
 
 export const api = {
   // ═══════════════════════════════════════════════════════════
+  //  Auth
+  // ═══════════════════════════════════════════════════════════
+  auth: {
+    async signIn(email, password) {
+      const { data, error } = await client().auth.signInWithPassword({ email, password });
+      if (error) handleError(error);
+      return data;
+    },
+
+    async signUp(email, password, fullName) {
+      const { data, error } = await client().auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName || '' } },
+      });
+      if (error) handleError(error);
+      return data;
+    },
+
+    async signOut() {
+      const { error } = await client().auth.signOut();
+      if (error) handleError(error);
+    },
+
+    async getSession() {
+      const { data: { session } } = await client().auth.getSession();
+      return session;
+    },
+
+    async getUser() {
+      const { data: { user } } = await client().auth.getUser();
+      return user;
+    },
+
+    async getProfile() {
+      const user = await api.auth.getUser();
+      if (!user) return null;
+      const { data, error } = await client()
+        .from('profiles')
+        .select('id, email, full_name, role, created_at')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+
+    async isAdmin() {
+      const { data, error } = await client().rpc('is_admin');
+      if (error) return false;
+      return Boolean(data);
+    },
+
+    async claimAdmin() {
+      const { data, error } = await client().rpc('claim_admin');
+      if (error) handleError(error);
+      return data;
+    },
+
+    onChange(callback) {
+      const { data: { subscription } } = client().auth.onAuthStateChange((event, session) => {
+        callback(event, session);
+      });
+      return () => subscription.unsubscribe();
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════
   //  محصولات
   // ═══════════════════════════════════════════════════════════
   products: {
@@ -48,7 +115,6 @@ export const api = {
       switch (sort) {
         case 'price_asc':  q = q.order('price', { ascending: true });  break;
         case 'price_desc': q = q.order('price', { ascending: false }); break;
-        case 'newest':
         default:           q = q.order('created_at', { ascending: false });
       }
 
@@ -96,7 +162,7 @@ export const api = {
   },
 
   // ═══════════════════════════════════════════════════════════
-  //  نظرات — فاز ۹
+  //  نظرات
   // ═══════════════════════════════════════════════════════════
   reviews: {
     async list(productId, { limit = 100 } = {}) {
@@ -123,7 +189,6 @@ export const api = {
 
     async statsBatch(productIds) {
       if (!Array.isArray(productIds) || productIds.length === 0) return {};
-
       const { data, error } = await client()
         .from('reviews')
         .select('product_id, rating')
@@ -132,14 +197,9 @@ export const api = {
       if (error) handleError(error);
 
       const grouped = {};
-      (data ?? []).forEach(r => {
-        (grouped[r.product_id] ??= []).push({ rating: r.rating });
-      });
-
+      (data ?? []).forEach(r => { (grouped[r.product_id] ??= []).push({ rating: r.rating }); });
       const result = {};
-      for (const id of productIds) {
-        result[id] = aggregateStats(grouped[id] ?? []);
-      }
+      for (const id of productIds) result[id] = aggregateStats(grouped[id] ?? []);
       return result;
     },
 
@@ -152,7 +212,6 @@ export const api = {
         comment:    String(comment).trim().slice(0, 2000),
         is_approved: true,
       };
-
       const { data, error } = await client()
         .from('reviews')
         .insert(payload)
@@ -164,37 +223,185 @@ export const api = {
   },
 
   // ═══════════════════════════════════════════════════════════
-  //  کدهای تخفیف — فاز ۱۰
+  //  کدهای تخفیف
   // ═══════════════════════════════════════════════════════════
   discounts: {
-    /**
-     * اعتبارسنجی کد تخفیف از طریق RPC
-     * @returns {Promise<{ valid: boolean, reason?: string, ... }>}
-     */
     async validate(code) {
       const clean = String(code || '').trim();
       if (!clean) return { valid: false, reason: 'empty' };
-
       const { data, error } = await client()
         .rpc('validate_discount_code', { p_code: clean });
       if (error) handleError(error);
       return data || { valid: false, reason: 'not_found' };
     },
   },
+
+  // ═══════════════════════════════════════════════════════════
+  //  Admin — CRUD
+  // ═══════════════════════════════════════════════════════════
+  admin: {
+    products: {
+      async list({ search = '', limit = 500 } = {}) {
+        let q = client()
+          .from('products')
+          .select('*, brands(id, slug, name_fa, name_en)')
+          .order('created_at', { ascending: false })
+          .limit(limit);
+        if (search) q = q.or(`name_fa.ilike.%${search}%,name_en.ilike.%${search}%,slug.ilike.%${search}%`);
+        const { data, error } = await q;
+        if (error) handleError(error);
+        return data ?? [];
+      },
+      async getById(id) {
+        const { data, error } = await client()
+          .from('products').select('*').eq('id', id).maybeSingle();
+        if (error) handleError(error);
+        return data;
+      },
+      async create(payload) {
+        const { data, error } = await client()
+          .from('products').insert(payload).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async update(id, payload) {
+        const { data, error } = await client()
+          .from('products').update(payload).eq('id', id).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async remove(id) {
+        const { error } = await client().from('products').delete().eq('id', id);
+        if (error) handleError(error);
+      },
+    },
+
+    brands: {
+      async list() {
+        const { data, error } = await client()
+          .from('brands').select('*').order('sort_order');
+        if (error) handleError(error);
+        return data ?? [];
+      },
+      async getById(id) {
+        const { data, error } = await client()
+          .from('brands').select('*').eq('id', id).maybeSingle();
+        if (error) handleError(error);
+        return data;
+      },
+      async create(payload) {
+        const { data, error } = await client()
+          .from('brands').insert(payload).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async update(id, payload) {
+        const { data, error } = await client()
+          .from('brands').update(payload).eq('id', id).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async remove(id) {
+        const { error } = await client().from('brands').delete().eq('id', id);
+        if (error) handleError(error);
+      },
+    },
+
+    discounts: {
+      async list() {
+        const { data, error } = await client()
+          .from('discount_codes').select('*').order('created_at', { ascending: false });
+        if (error) handleError(error);
+        return data ?? [];
+      },
+      async getById(id) {
+        const { data, error } = await client()
+          .from('discount_codes').select('*').eq('id', id).maybeSingle();
+        if (error) handleError(error);
+        return data;
+      },
+      async create(payload) {
+        const { data, error } = await client()
+          .from('discount_codes').insert(payload).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async update(id, payload) {
+        const { data, error } = await client()
+          .from('discount_codes').update(payload).eq('id', id).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async remove(id) {
+        const { error } = await client().from('discount_codes').delete().eq('id', id);
+        if (error) handleError(error);
+      },
+    },
+
+    reviews: {
+      async list({ filter = 'all', limit = 500 } = {}) {
+        let q = client()
+          .from('reviews')
+          .select('*, products(id, slug, name_fa, name_en)')
+          .order('created_at', { ascending: false })
+          .limit(limit);
+        if (filter === 'pending') q = q.eq('is_approved', false);
+        if (filter === 'approved') q = q.eq('is_approved', true);
+        const { data, error } = await q;
+        if (error) handleError(error);
+        return data ?? [];
+      },
+      async setApproval(id, isApproved) {
+        const { data, error } = await client()
+          .from('reviews').update({ is_approved: isApproved }).eq('id', id).select().single();
+        if (error) handleError(error);
+        return data;
+      },
+      async remove(id) {
+        const { error } = await client().from('reviews').delete().eq('id', id);
+        if (error) handleError(error);
+      },
+    },
+
+    profiles: {
+      async list() {
+        const { data, error } = await client()
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) handleError(error);
+        return data ?? [];
+      },
+    },
+
+    stats: {
+      async dashboard() {
+        const [products, brands, reviews, reviewsPending, discounts, discountsActive] = await Promise.all([
+          client().from('products').select('id', { count: 'exact', head: true }),
+          client().from('brands').select('id', { count: 'exact', head: true }),
+          client().from('reviews').select('id', { count: 'exact', head: true }),
+          client().from('reviews').select('id', { count: 'exact', head: true }).eq('is_approved', false),
+          client().from('discount_codes').select('id', { count: 'exact', head: true }),
+          client().from('discount_codes').select('id', { count: 'exact', head: true }).eq('is_active', true),
+        ]);
+
+        return {
+          products:         products.count ?? 0,
+          brands:           brands.count ?? 0,
+          reviews:          reviews.count ?? 0,
+          reviewsPending:   reviewsPending.count ?? 0,
+          discounts:        discounts.count ?? 0,
+          discountsActive:  discountsActive.count ?? 0,
+        };
+      },
+    },
+  },
 };
 
-// ═══════════════════════════════════════════════════════════
-//  Helper — محاسبه آمار نظرات
-// ═══════════════════════════════════════════════════════════
 function aggregateStats(rows) {
   const count = rows.length;
   const sum   = rows.reduce((s, r) => s + (r.rating || 0), 0);
   const dist  = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   rows.forEach(r => { dist[r.rating] = (dist[r.rating] || 0) + 1; });
-
-  return {
-    count,
-    avg: count ? sum / count : 0,
-    dist,
-  };
+  return { count, avg: count ? sum / count : 0, dist };
 }
