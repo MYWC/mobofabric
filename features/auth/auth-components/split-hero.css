@@ -1,0 +1,341 @@
+/* ═══════════════════════════════════════════════════════════
+   Split Hero — Phase 19
+   نیمه‌ی برندینگ صفحه Auth
+   ═══════════════════════════════════════════════════════════ */
+
+.split-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 40px;
+  overflow: hidden;
+  color: #ffffff;
+  isolation: isolate;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Background Layers
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Gradient متحرک ── */
+.split-hero__bg-gradient {
+  position: absolute;
+  inset: -20%;
+  z-index: -3;
+  background: linear-gradient(
+    135deg,
+    #0071e3 0%,
+    #5856d6 35%,
+    #af52de 70%,
+    #0071e3 100%
+  );
+  background-size: 400% 400%;
+  animation: split-gradient-shift 18s ease infinite;
+}
+
+@keyframes split-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── الگوی شبکه ── */
+.split-hero__bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* ── Glow مرکزی ── */
+.split-hero__bg-glow {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -50%);
+  z-index: -2;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.18) 0%,
+    transparent 65%
+  );
+  filter: blur(40px);
+  animation: split-glow-pulse 8s ease-in-out infinite;
+}
+
+@keyframes split-glow-pulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* ── Particles Host ── */
+.split-hero__particles {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.split-hero__particles .particles-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.split-hero__particles .particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity, left, top;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Content
+   ═══════════════════════════════════════════════════════════ */
+.split-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 32px;
+}
+
+/* ═══ Brand ═══ */
+.split-hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  animation: split-fade-in 600ms 100ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+.split-hero__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.split-hero__logo svg { width: 24px; height: 24px; }
+
+.split-hero__brand-text {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ═══ Center — Phone + Text ═══ */
+.split-hero__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  margin-block: auto;
+}
+
+/* ── Phone Wrap ── */
+.split-hero__phone-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 340 / 480;
+  animation: split-fade-in 800ms 200ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+.split-hero__phone-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.35));
+  animation: split-phone-float 6s ease-in-out infinite;
+}
+
+@keyframes split-phone-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50%      { transform: translateY(-14px) rotate(1deg); }
+}
+
+/* ── Title + Subtitle ── */
+.split-hero__title {
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  max-width: 360px;
+  animation: split-fade-in 600ms 400ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+.split-hero__subtitle {
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.7;
+  max-width: 340px;
+  color: rgba(255, 255, 255, 0.82);
+  animation: split-fade-in 600ms 500ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+/* ═══ Footer — Stats + Benefits ═══ */
+.split-hero__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: split-fade-in 600ms 600ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+/* ── Stats ── */
+.split-hero__stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+}
+
+.split-hero__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.split-hero__stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.split-hero__stat-value--stars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+}
+
+.split-hero__stat-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #ffcc00;
+}
+.split-hero__stat-stars svg { width: 14px; height: 14px; }
+
+.split-hero__stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.split-hero__stat-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Benefits ── */
+.split-hero__benefits {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.split-hero__benefit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.4;
+}
+
+.split-hero__benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+.split-hero__benefit-icon svg { width: 11px; height: 11px; }
+
+.split-hero__benefit-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════════ */
+@keyframes split-fade-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .split-hero__bg-gradient,
+  .split-hero__bg-glow,
+  .split-hero__phone-svg,
+  .split-hero__brand,
+  .split-hero__phone-wrap,
+  .split-hero__title,
+  .split-hero__subtitle,
+  .split-hero__footer {
+    animation: none !important;
+  }
+  .split-hero__particles { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+
+/* تبلت — فشرده‌تر */
+@media (max-width: 1024px) and (min-width: 901px) {
+  .split-hero { padding: 32px 28px; }
+  .split-hero__phone-wrap { max-width: 180px; }
+  .split-hero__title { font-size: 22px; }
+  .split-hero__subtitle { font-size: 13.5px; }
+  .split-hero__stat-value { font-size: 18px; }
+}
+
+/* موبایل — این component مخفی می‌شه (auth.js مدیریت می‌کنه) */
+@media (max-width: 900px) {
+  .split-hero {
+    display: none;
+  }
+}
