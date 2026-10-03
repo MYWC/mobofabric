@@ -63,7 +63,10 @@ function dispatch() {
   }
 
   events.emit('route:changed', ctx);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+// اسکرول فوری — بدون smooth تا اسکرول کاربر رو خراب نکنه
+if (window.scrollY > 0) {
+  window.scrollTo(0, 0);
+}
 }
 
 export const router = {

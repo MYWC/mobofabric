@@ -60,12 +60,12 @@ export function Header() {
 
         // جستجو
         h('button', {
-          class: 'icon-btn',
-          type: 'button',
-          'aria-label': i18n.t('header.search'),
-          dataset: { action: 'search' },
-          innerHTML: icons.search,
-        }),
+  class: 'icon-btn',
+  'aria-label': i18n.t('header.search'),
+  dataset: { action: 'search' },
+},
+  h('span', { class: 'icon-btn__icon', innerHTML: icons.search }),
+),
 
         // علاقه‌مندی‌ها
         h('a', {
