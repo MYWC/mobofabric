@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════════════════════════
+   Preloader — Phase 17 (مکمل)
+   اکثر استایل‌ها به‌صورت inline در index.html هستن
+   این فایل فقط ریزیات اضافی رو مدیریت می‌کنه
+   ═══════════════════════════════════════════════════════════ */
+
+/* RTL: progress bar همیشه LTR (از چپ به راست پر می‌شه) */
+[dir="rtl"] .preloader-bar {
+  direction: ltr;
+}
+
+/* Focus visible برای دسترسی‌پذیری */
+#preloader:focus {
+  outline: none;
+}
+
+/* اگه کاربر با keyboard چیزی بزنه، preloader بسته بشه */
+@media (prefers-reduced-motion: reduce) {
+  #preloader {
+    transition: opacity 100ms linear, visibility 100ms;
+  }
+}

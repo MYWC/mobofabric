@@ -70,6 +70,7 @@ export const CONFIG = {
     // ── فاز 13 — صفحه اصلی جدید ──
     //  ⚠️ home باید AFTER products لود شود
     //  تا router.register('/', ...) آن، route محصولات را override کند
+    preloader:     true,
     home:          true,
   },
 };

@@ -1,11 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-//  نقطه ورود — نسخه نهایی
-//  وضعیت: پروژه کامل + فاز ۱۳
-//
-//  ⚠️ ترتیب لود فیچرها مهم است:
-//     از Object.entries(CONFIG.features) می‌آید.
-//     home در config.js بعد از products تعریف شده،
-//     پس بعد از آن لود می‌شود و route "/" را override می‌کند.
+//  نقطه ورود — نسخه ۷ (با Preloader)
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -36,19 +30,40 @@ const featureLoaders = {
   auth:          () => import('./features/auth/auth.js').then(m => m.auth),
   admin:         () => import('./features/admin/admin.js').then(m => m.admin),
   analytics:     () => import('./features/analytics/analytics.js').then(m => m.analytics),
-  // ── فاز ۱۳ ──
   home:          () => import('./features/home/home.js').then(m => m.home),
 };
+
+// ═══════════════════════════════════════════════════════════
+//  فیچرهایی که CSS اختصاصی ندارن
+// ═══════════════════════════════════════════════════════════
+const featuresWithoutCSS = [
+  'theme',       // CSS نداره
+  'analytics',   // فقط tracker هست
+  'preloader',   // CSS داره ولی inline توی index.html
+];
 
 // ═══════════════════════════════════════════════════════════
 //  راه‌اندازی
 // ═══════════════════════════════════════════════════════════
 async function bootstrap() {
+  // ⚡ Preloader اول از همه — قبل از هر چیز
+  if (CONFIG.features.preloader) {
+    try {
+      const { preloader } = await import('./features/preloader/preloader.js');
+      preloader.register();
+    } catch (err) {
+      console.warn('[bootstrap] preloader failed:', err);
+    }
+  }
+
   i18n.init();
   mountChrome();
   wireGlobalEvents();
   await loadFeatures();
   router.start();
+
+  // ⚡ اطلاع به preloader که همه چیز آماده‌ست
+  events.emit('app:ready');
 }
 
 function mountChrome() {
@@ -88,9 +103,19 @@ async function loadFeatures() {
     .map(([name]) => name);
 
   for (const name of enabled) {
+    // preloader قبلاً لود شده — skip کن
+    if (name === 'preloader') continue;
+
     const loader = featureLoaders[name];
-    if (!loader) { console.warn(`[bootstrap] feature "${name}" has no loader`); continue; }
-    loadFeatureCSS(name);
+    if (!loader) {
+      console.warn(`[bootstrap] feature "${name}" has no loader`);
+      continue;
+    }
+
+    if (!featuresWithoutCSS.includes(name)) {
+      loadFeatureCSS(name);
+    }
+
     try {
       const feature = await loader();
       feature.register?.();
@@ -98,25 +123,32 @@ async function loadFeatures() {
       console.error(`[bootstrap] failed to load "${name}":`, err);
     }
   }
-
-  // دیباگ: در کنسول لیست مسیرهای ثبت‌شده
-  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-    console.debug('[bootstrap] registered routes:', router.list());
-  }
 }
 
 function loadFeatureCSS(name) {
   const kebab = name.replace(/[A-Z]/g, ch => '-' + ch.toLowerCase());
   const href = `./features/${kebab}/${kebab}.css`;
+
   if (document.querySelector(`link[href="${href}"]`)) return;
+
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.href = href;
+  link.onerror = () => {
+    console.warn(`[bootstrap] CSS not found (skipped): ${href}`);
+    link.remove();
+  };
   document.head.append(link);
 }
 
 bootstrap().catch(err => {
   console.error('[bootstrap] fatal:', err);
+  // اگه bootstrap خطا داد، حتماً preloader رو حذف کن
+  const pl = document.getElementById('preloader');
+  if (pl) {
+    pl.classList.add('is-hidden');
+    document.body.classList.remove('preloader-active');
+  }
   document.body.innerHTML = `
     <div style="padding:80px 24px;text-align:center;font-family:system-ui">
       <h1>خطای راه‌اندازی</h1>

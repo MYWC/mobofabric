@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
 
-  <!-- ═══ Theme color — با تم فعلی هم‌گام می‌شود ═══ -->
   <meta name="theme-color" content="#ffffff" id="theme-color-meta">
   <script>
-    // اجرای فوری قبل از paint — جلوگیری از پرش رنگ
     (function () {
       try {
         var t = localStorage.getItem('ps_theme');
@@ -19,49 +17,36 @@
     })();
   </script>
 
-  <!-- ═══ Primary Meta Tags ═══ -->
+  <!-- ═══ SEO ═══ -->
   <title>Phone Store — فروشگاه آنلاین گوشی موبایل</title>
   <meta name="title" content="Phone Store — فروشگاه آنلاین گوشی موبایل">
   <meta name="description" content="خرید آنلاین گوشی موبایل از برندهای اپل، سامسونگ، شیائومی و گوگل. قیمت رقابتی، ضمانت اصالت، ارسال سریع و پشتیبانی ۷ روز هفته.">
-  <meta name="keywords" content="خرید گوشی موبایل, فروشگاه گوشی, آیفون, سامسونگ, شیائومی, گوگل پیکسل, iPhone, Samsung, Xiaomi, Google Pixel">
-  <meta name="author" content="Phone Store">
+  <meta name="keywords" content="خرید گوشی موبایل, فروشگاه گوشی, آیفون, سامسونگ, شیائومی, گوگل پیکسل">
   <meta name="robots" content="index, follow, max-image-preview:large">
-  <meta name="language" content="Persian">
 
-  <!-- ═══ Canonical + hreflang ═══ -->
   <link rel="canonical" href="https://MYWC.github.io/mobofabric/">
   <link rel="alternate" hreflang="fa" href="https://MYWC.github.io/mobofabric/">
   <link rel="alternate" hreflang="en" href="https://MYWC.github.io/mobofabric/">
   <link rel="alternate" hreflang="x-default" href="https://MYWC.github.io/mobofabric/">
 
-  <!-- ═══ Open Graph ═══ -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://MYWC.github.io/mobofabric/">
   <meta property="og:title" content="Phone Store — فروشگاه آنلاین گوشی موبایل">
   <meta property="og:description" content="خرید آنلاین گوشی از برندهای معتبر با ضمانت اصالت و ارسال سریع.">
   <meta property="og:image" content="https://MYWC.github.io/mobofabric/assets/images/og-image.svg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Phone Store">
   <meta property="og:locale" content="fa_IR">
-  <meta property="og:locale:alternate" content="en_US">
   <meta property="og:site_name" content="Phone Store">
 
-  <!-- ═══ Twitter Card ═══ -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Phone Store — فروشگاه آنلاین گوشی موبایل">
   <meta name="twitter:description" content="خرید آنلاین گوشی از برندهای معتبر با ضمانت اصالت و ارسال سریع.">
   <meta name="twitter:image" content="https://MYWC.github.io/mobofabric/assets/images/og-image.svg">
 
-  <!-- ═══ Favicon ═══ -->
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="apple-touch-icon" href="./favicon.svg">
-  <link rel="mask-icon" href="./favicon.svg" color="#0071e3">
 
-  <!-- ═══ Manifest ═══ -->
   <link rel="manifest" href="./manifest.webmanifest">
 
-  <!-- ═══ Web App ═══ -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -72,38 +57,200 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://vfryimqanhragilrmtxf.supabase.co" crossorigin>
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <!-- ═══ Fonts ═══ -->
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- ═══ Structured Data (SEO) ═══ -->
+  <!-- ═══ Structured Data ═══ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Phone Store",
-    "alternateName": "فروشگاه گوشی",
     "url": "https://MYWC.github.io/mobofabric/",
-    "inLanguage": ["fa-IR", "en-US"],
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://MYWC.github.io/mobofabric/#/search?q={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Phone Store",
-      "url": "https://MYWC.github.io/mobofabric/",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://MYWC.github.io/mobofabric/favicon.svg"
-      }
-    }
+    "inLanguage": ["fa-IR", "en-US"]
   }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ⚡ PRELOADER — Critical CSS (inline, قبل از همه چیز)
+       ═══════════════════════════════════════════════════════════ -->
+  <style>
+    /* ═════ Preloader Base ═════ */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 24px;
+      transition: opacity 600ms cubic-bezier(.4, 0, .2, 1),
+                  visibility 600ms;
+    }
+
+    #preloader.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    html.skip-preloader #preloader {
+      display: none !important;
+    }
+
+    body.preloader-active {
+      overflow: hidden;
+    }
+
+    /* ═════ Logo ═════ */
+    .preloader-logo {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #0071e3 0%, #40a0ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 20px 60px rgba(0, 113, 227, 0.35),
+                  0 8px 20px rgba(0, 113, 227, 0.2);
+      animation: preloader-scale-in 700ms cubic-bezier(.34, 1.56, .64, 1) both;
+    }
+
+    .preloader-logo::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #0071e3, #40a0ff);
+      opacity: 0;
+      animation: preloader-pulse 2.2s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    .preloader-logo svg {
+      width: 42px;
+      height: 42px;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═════ Title ═════ */
+    .preloader-title {
+      font-family: 'Vazirmatn', 'Inter', system-ui, sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1d1d1f;
+      letter-spacing: -0.025em;
+      animation: preloader-fade-up 700ms 200ms cubic-bezier(.4, 0, .2, 1) both;
+    }
+
+    /* ═════ Progress Bar ═════ */
+    .preloader-bar {
+      width: 240px;
+      height: 4px;
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      animation: preloader-fade-up 700ms 350ms cubic-bezier(.4, 0, .2, 1) both;
+    }
+
+    .preloader-bar__fill {
+      position: relative;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #0071e3 0%, #40a0ff 100%);
+      border-radius: 999px;
+      transition: width 250ms cubic-bezier(.4, 0, .2, 1);
+      overflow: hidden;
+    }
+
+    .preloader-bar__fill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      );
+      animation: preloader-shimmer 1.4s linear infinite;
+    }
+
+    /* ═════ Keyframes ═════ */
+    @keyframes preloader-scale-in {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes preloader-fade-up {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes preloader-pulse {
+      0%, 100% { opacity: 0;    transform: scale(1); }
+      50%      { opacity: 0.3;  transform: scale(1.18); }
+    }
+
+    @keyframes preloader-shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ═════ Dark Mode ═════ */
+    [data-theme="dark"] #preloader {
+      background: #000000;
+    }
+    [data-theme="dark"] .preloader-title {
+      color: #f5f5f7;
+    }
+    [data-theme="dark"] .preloader-bar {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ═════ Reduced Motion ═════ */
+    @media (prefers-reduced-motion: reduce) {
+      .preloader-logo,
+      .preloader-title,
+      .preloader-bar {
+        animation: none !important;
+      }
+      .preloader-logo::before { animation: none !important; opacity: 0.15; }
+      .preloader-bar__fill::after { animation: none !important; }
+    }
+
+    /* ═════ Responsive ═════ */
+    @media (max-width: 480px) {
+      .preloader-logo {
+        width: 68px;
+        height: 68px;
+        border-radius: 18px;
+      }
+      .preloader-logo svg {
+        width: 36px;
+        height: 36px;
+      }
+      .preloader-title { font-size: 19px; }
+      .preloader-bar { width: 180px; }
+    }
+  </style>
+
+  <!-- ⚡ Skip Preloader اگه قبلاً دیده شده -->
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem('ps_preloader_shown') === '1') {
+          document.documentElement.classList.add('skip-preloader');
+        }
+      } catch (e) {}
+    })();
   </script>
 
   <!-- ═══ Core CSS ═══ -->
@@ -112,36 +259,60 @@
   <link rel="stylesheet" href="./assets/styles/base.css">
   <link rel="stylesheet" href="./assets/styles/utilities.css">
 
-  <!-- ═══ Shared Components CSS ═══ -->
+  <!-- ═══ Shared CSS ═══ -->
   <link rel="stylesheet" href="./shared/components/toast/toast.css">
   <link rel="stylesheet" href="./shared/components/skeleton/skeleton.css">
   <link rel="stylesheet" href="./shared/components/header/header.css">
   <link rel="stylesheet" href="./shared/components/footer/footer.css">
   <link rel="stylesheet" href="./shared/components/product-card/product-card.css">
 
-  <!-- ═══ Critical Feature CSS — فاز 1 (رندر اول) ═══ -->
+  <!-- ═══ Critical Feature CSS ═══ -->
   <link rel="stylesheet" href="./features/products/products.css">
 </head>
 <body>
 
-  <!-- Skip link برای دسترسی‌پذیری -->
+  <!-- ═══════════════════════════════════════════════════════════
+       ⚡ PRELOADER
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="preloader" role="status" aria-live="polite" aria-label="در حال بارگذاری">
+    <div class="preloader-logo" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="2" width="12" height="20" rx="3"/>
+        <circle cx="12" cy="18" r="1" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="preloader-title">Phone Store</div>
+    <div class="preloader-bar">
+      <div class="preloader-bar__fill" id="preloader-fill"></div>
+    </div>
+  </div>
+
+  <!-- Skip link -->
   <a href="#app" class="skip-link" style="position:absolute;inset-inline-start:-9999px;top:0;z-index:99999;padding:12px 20px;background:var(--color-accent);color:#fff;border-radius:0 0 8px 0" onfocus="this.style.insetInlineStart='0'" onblur="this.style.insetInlineStart='-9999px'">
     رفتن به محتوای اصلی
   </a>
 
-  <!-- هدر (bootstrap جایگزین می‌کند) -->
   <div data-component="header"></div>
 
-  <!-- محتوای اصلی -->
   <main id="app" role="main"></main>
 
-  <!-- فوتر -->
   <div data-component="footer"></div>
 
-  <!-- نقطه ورود -->
+  <!-- ═══ Fail-safe: اگه بعد از ۶ ثانیه preloader گیر کرد ═══ -->
+  <script>
+    setTimeout(function () {
+      var el = document.getElementById('preloader');
+      if (el && !el.classList.contains('is-hidden')) {
+        console.warn('[preloader] fail-safe hide');
+        el.classList.add('is-hidden');
+        document.body.classList.remove('preloader-active');
+        setTimeout(function () { el.remove(); }, 700);
+      }
+    }, 6000);
+  </script>
+
   <script type="module" src="./bootstrap.js"></script>
 
-  <!-- Noscript -->
   <noscript>
     <div style="padding:80px 24px;text-align:center;font-family:system-ui">
       <h1>Phone Store</h1>
