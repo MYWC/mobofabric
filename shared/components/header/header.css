@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   Header — Phase 16 (Fixed)
+   Header — Phase 16 (Final Fix)
    ═══════════════════════════════════════════════════════════ */
 
 .header {
@@ -11,7 +11,6 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-/* ═══ Inner ═══ */
 .header__inner {
   height: 100%;
   display: flex;
@@ -19,23 +18,21 @@
   gap: var(--space-3);
 }
 
-/* ── دکمه منو (موبایل) ── */
 .header__menu-btn {
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-md);
   align-items: center;
   justify-content: center;
   color: var(--color-text);
   background: var(--color-bg-secondary);
-  transition: background var(--t-fast);
-  flex-shrink: 0;
   cursor: pointer;
+  border: 0;
+  flex-shrink: 0;
 }
 .header__menu-btn:hover { background: var(--color-border); }
 
-/* ── برند ── */
 .header__brand {
   display: flex;
   align-items: center;
@@ -47,17 +44,8 @@
   flex-shrink: 0;
 }
 
-.header__logo {
-  display: flex;
-  color: var(--color-accent);
-}
-.header__logo svg {
-  width: 26px;
-  height: 26px;
-  display: block;
-}
+.header__logo { display: flex; color: var(--color-accent); }
 
-/* ── ناوبری دسکتاپ ── */
 .header__nav {
   display: flex;
   align-items: center;
@@ -81,7 +69,6 @@
   color: var(--color-text);
 }
 
-/* ═══ Action ها ═══ */
 .header__actions {
   display: flex;
   align-items: center;
@@ -89,7 +76,6 @@
   margin-inline-start: auto;
 }
 
-/* ── دکمه آیکون (اصلاح‌شده) ── */
 .icon-btn {
   position: relative;
   display: inline-flex;
@@ -106,33 +92,19 @@
   padding: 0;
   border: 0;
 }
-
 .icon-btn:hover {
   background: var(--color-bg-secondary);
   color: var(--color-accent);
-}
-
-.icon-btn:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-/* ✅ همه‌ی SVGهای داخل دکمه‌ها یک اندازه */
-.icon-btn svg,
-.icon-btn__icon svg {
-  width: 20px !important;
-  height: 20px !important;
-  display: block;
-  flex-shrink: 0;
 }
 
 .icon-btn__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
 }
 
-/* ── Badge ── */
 .header__badge {
   position: absolute;
   top: 4px;
@@ -207,14 +179,7 @@
   font-size: var(--text-base);
   color: var(--color-text);
 }
-.header-drawer__logo {
-  display: flex;
-  color: var(--color-accent);
-}
-.header-drawer__logo svg {
-  width: 24px;
-  height: 24px;
-}
+.header-drawer__logo { display: flex; color: var(--color-accent); }
 
 .header-drawer__close {
   width: 36px;
@@ -226,10 +191,7 @@
   color: var(--color-text);
   background: var(--color-bg-secondary);
   cursor: pointer;
-}
-.header-drawer__close svg {
-  width: 18px;
-  height: 18px;
+  border: 0;
 }
 
 .header-drawer__nav {
@@ -251,9 +213,7 @@
   color: var(--color-text);
   transition: background var(--t-fast), color var(--t-fast);
 }
-.header-drawer__link:hover {
-  background: var(--color-bg-secondary);
-}
+.header-drawer__link:hover { background: var(--color-bg-secondary); }
 .header-drawer__link.is-active {
   background: color-mix(in srgb, var(--color-accent) 12%, transparent);
   color: var(--color-accent);
@@ -264,10 +224,6 @@
   width: 22px;
   justify-content: center;
   flex-shrink: 0;
-}
-.header-drawer__link-icon svg {
-  width: 20px;
-  height: 20px;
 }
 
 .header-drawer__footer {
@@ -292,19 +248,13 @@
   width: 100%;
   border: 0;
 }
-.header-drawer__setting:hover {
-  background: var(--color-bg-secondary);
-}
+.header-drawer__setting:hover { background: var(--color-bg-secondary); }
 
 .header-drawer__setting-icon {
   display: inline-flex;
   width: 22px;
   justify-content: center;
   flex-shrink: 0;
-}
-.header-drawer__setting-icon svg {
-  width: 18px;
-  height: 18px;
 }
 
 .header-drawer__setting-label { flex: 1; }
@@ -315,25 +265,77 @@
   .header__menu-btn { display: inline-flex; }
 
   .header__actions [data-action="lang"],
-  .header__actions [data-action="theme"] {
-    display: none;
-  }
+  .header__actions [data-action="theme"] { display: none; }
 }
 
 @media (max-width: 640px) {
   .header__brand-text { display: none; }
-
-  .header__actions [data-action="favorites"] {
-    display: none;
-  }
-
+  .header__actions [data-action="favorites"] { display: none; }
   .header__inner { gap: var(--space-2); }
 }
 
-@media (max-width: 380px) {
-  .icon-btn,
-  .header__menu-btn {
-    width: 38px;
-    height: 38px;
-  }
+/* ═══════════════════════════════════════════════════════════
+   ⚡ FIX قطعی آیکون‌های نامرئی
+   ═══════════════════════════════════════════════════════════ */
+
+.header .icon-btn,
+.header .header__menu-btn,
+.header-drawer__close,
+.header-drawer__link,
+.header-drawer__setting {
+  color: var(--color-text) !important;
+}
+
+.header .icon-btn:hover,
+.header .header__menu-btn:hover,
+.header-drawer__close:hover {
+  color: var(--color-accent) !important;
+  background: var(--color-bg-secondary) !important;
+}
+
+/* همه‌ی SVGها — اندازه و رنگ قطعی */
+.header .icon-btn svg,
+.header .icon-btn__icon svg,
+.header .header__menu-btn svg,
+.header__logo svg,
+.header-drawer__close svg,
+.header-drawer__link-icon svg,
+.header-drawer__setting-icon svg,
+.header-drawer__logo svg {
+  display: inline-block !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  flex: 0 0 auto !important;
+}
+
+/* آیکون‌های fill دار (مثل قلب توپر) */
+.header .icon-btn svg[fill="currentColor"] {
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+/* لوگو کمی بزرگ‌تر */
+.header__logo svg {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
+}
+
+/* دکمه منو موبایل */
+.header__menu-btn svg {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
 }

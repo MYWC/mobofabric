@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-//  ابزارهای DOM — نسخه اصلاح‌شده
+//  ابزارهای DOM — نسخه اصلاح‌شده (رفع باگ innerHTML)
 // ═══════════════════════════════════════════════════════════
 
 export const qs  = (sel, root = document) => root.querySelector(sel);
@@ -10,21 +10,17 @@ export function on(el, evt, handler, opts) {
   return () => el.removeEventListener(evt, handler, opts);
 }
 
-/**
- * ساخت المان
- * @example h('div', { class: 'x' }, 'متن', h('span', {}, 'کودک'))
- */
 export function h(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
 
   for (const [k, v] of Object.entries(attrs)) {
     if (v == null || v === false) continue;
 
-    // ── ویژگی‌های خاص (Property، نه Attribute) ──
+    // ── Property های خاص (نه attribute) ──
     if (k === 'class' || k === 'className') {
       el.className = v;
     } else if (k === 'innerHTML') {
-      el.innerHTML = v;                        // ← این خط حیاتی!
+      el.innerHTML = v;                          // ← کلید حل مشکل
     } else if (k === 'textContent') {
       el.textContent = v;
     } else if (k === 'value') {
@@ -43,12 +39,10 @@ export function h(tag, attrs = {}, ...children) {
     } else if (k.startsWith('on') && typeof v === 'function') {
       el.addEventListener(k.slice(2).toLowerCase(), v);
     } else {
-      // ── Attribute های عادی ──
       el.setAttribute(k, v);
     }
   }
 
-  // ── کودکان ──
   for (const child of children.flat()) {
     if (child == null || child === false) continue;
     el.append(child instanceof Node ? child : document.createTextNode(String(child)));
@@ -57,9 +51,6 @@ export function h(tag, attrs = {}, ...children) {
   return el;
 }
 
-/**
- * Template literal امن در برابر XSS
- */
 export function html(strings, ...values) {
   return strings.reduce((acc, str, i) => {
     if (i === 0) return str;
