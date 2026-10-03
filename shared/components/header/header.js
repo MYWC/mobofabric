@@ -10,8 +10,6 @@ let els = {};
 export function Header() {
   i18n.register('header', headerLang);
 
-  const lang = i18n.getLang();
-
   const el = h('header', { class: 'header' },
     h('div', { class: 'container header__inner' },
 
@@ -30,7 +28,7 @@ export function Header() {
       // ── اکشن‌ها ──
       h('div', { class: 'header__actions' },
 
-        // جستجو — از روز اول وجود دارد، منتظر فیچر search است
+        // جستجو — منتظر فیچر search
         h('button', {
           class: 'icon-btn',
           'aria-label': i18n.t('header.search'),
@@ -38,7 +36,18 @@ export function Header() {
           innerHTML: icons.search,
         }),
 
-        // سبد — از روز اول وجود دارد، منتظر فیچر cart است
+        // علاقه‌مندی‌ها — منتظر فیچر favorites
+        h('a', {
+          class: 'icon-btn header__fav',
+          href: '#/favorites',
+          'aria-label': i18n.t('header.favorites'),
+          dataset: { action: 'favorites' },
+        },
+          h('span', { innerHTML: icons.heart }),
+          h('span', { class: 'header__badge', dataset: { count: 'fav' } }, '0'),
+        ),
+
+        // سبد — منتظر فیچر cart
         h('a', {
           class: 'icon-btn header__cart',
           href: '#/cart',
@@ -46,7 +55,7 @@ export function Header() {
           dataset: { action: 'cart' },
         },
           h('span', { innerHTML: icons.cart }),
-          h('span', { class: 'header__badge', dataset: { count: '' } }, '0'),
+          h('span', { class: 'header__badge', dataset: { count: 'cart' } }, '0'),
         ),
 
         // زبان
@@ -69,10 +78,12 @@ export function Header() {
   );
 
   els = {
-    root:  el,
-    badge: qs('[data-count]', el),
-    theme: qs('[data-action="theme"]', el),
-    lang:  qs('[data-action="lang"]', el),
+    root:      el,
+    cartBadge: qs('[data-count="cart"]', el),
+    favBadge:  qs('[data-count="fav"]',  el),
+    theme:     qs('[data-action="theme"]', el),
+    lang:      qs('[data-action="lang"]', el),
+    search:    qs('[data-action="search"]', el),
   };
 
   wire();
@@ -89,6 +100,9 @@ function wire() {
   // ── تغییر تم ──
   on(els.theme, 'click', () => events.emit('theme:toggle'));
 
+  // ── باز کردن جستجو ──
+  on(els.search, 'click', () => events.emit('search:open'));
+
   // ── وقتی زبان عوض شد، متن‌های ثابت هدر را دوباره بنویس ──
   events.on('lang:changed', () => {
     qs('a[href="#/"]', els.root).textContent = i18n.t('header.home');
@@ -96,15 +110,17 @@ function wire() {
   });
 
   // ── سبد — از روز اول گوش می‌دهد، حتی وقتی cart نیست ──
-  // این خط هرگز تغییر نمی‌کند. فقط منتظر event می‌ماند
   events.on('cart:changed', ({ count = 0 }) => {
-    els.badge.textContent = i18n.formatNumber(count);
-    els.badge.classList.toggle('header__badge--visible', count > 0);
+    if (!els.cartBadge) return;
+    els.cartBadge.textContent = i18n.formatNumber(count);
+    els.cartBadge.classList.toggle('header__badge--visible', count > 0);
   });
 
-  // ── جستجو — از روز اول گوش می‌دهد ──
-  on(qs('[data-action="search"]', els.root), 'click', () => {
-    events.emit('search:open');
+  // ── علاقه‌مندی‌ها — از فاز ۸ ──
+  events.on('favorites:changed', ({ count = 0 }) => {
+    if (!els.favBadge) return;
+    els.favBadge.textContent = i18n.formatNumber(count);
+    els.favBadge.classList.toggle('header__badge--visible', count > 0);
   });
 
   // ── تم — آیکون را با وضعیت هم‌گام کن ──

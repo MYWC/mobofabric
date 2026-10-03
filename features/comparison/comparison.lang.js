@@ -1,0 +1,76 @@
+export const comparisonLang = {
+  fa: {
+    title:        'مقایسه محصولات',
+    subtitle:     '{n} محصول در حال مقایسه',
+    empty:        'محصولی برای مقایسه انتخاب نشده',
+    emptyHint:    'با کلیک روی آیکون مقایسه در کارت محصولات، آن‌ها را اینجا اضافه کنید.',
+    emptyCta:     'مشاهده فروشگاه',
+
+    add:          'افزودن به مقایسه',
+    remove:       'حذف از مقایسه',
+    added:        'به مقایسه اضافه شد',
+    removed:      'از مقایسه حذف شد',
+    full:         'حداکثر ۴ محصول قابل مقایسه است',
+    minReached:   'حداقل ۲ محصول برای مقایسه لازم است',
+
+    compareNow:   'مقایسه کن',
+    clearAll:     'پاک کردن همه',
+    close:        'بستن',
+    clear:        'پاک کردن',
+
+    barTitle:     'مقایسه',
+    barCount:     '{n} محصول',
+
+    // Table
+    image:        'تصویر',
+    name:         'نام',
+    brand:        'برند',
+    price:        'قیمت',
+    stock:        'موجودی',
+    inStock:      'موجود',
+    outOfStock:   'ناموجود',
+    specs:        'مشخصات فنی',
+    description:  'توضیحات',
+    empty_spec:   '—',
+    viewProduct:  'مشاهده',
+    removeItem:   'حذف',
+    discount:     '{percent}٪ تخفیف',
+  },
+
+  en: {
+    title:        'Compare products',
+    subtitle:     '{n} products in comparison',
+    empty:        'No products selected for comparison',
+    emptyHint:    'Click the compare icon on product cards to add them here.',
+    emptyCta:     'Browse store',
+
+    add:          'Add to comparison',
+    remove:       'Remove from comparison',
+    added:        'Added to comparison',
+    removed:      'Removed from comparison',
+    full:         'Maximum 4 products can be compared',
+    minReached:   'At least 2 products needed for comparison',
+
+    compareNow:   'Compare now',
+    clearAll:     'Clear all',
+    close:        'Close',
+    clear:        'Clear',
+
+    barTitle:     'Compare',
+    barCount:     '{n} products',
+
+    image:        'Image',
+    name:         'Name',
+    brand:        'Brand',
+    price:        'Price',
+    stock:        'Stock',
+    inStock:      'In stock',
+    outOfStock:   'Out of stock',
+    specs:        'Specifications',
+    description:  'Description',
+    empty_spec:   '—',
+    viewProduct:  'View',
+    removeItem:   'Remove',
+    discount:     '{percent}% off',
+  },
+};

@@ -52,6 +52,13 @@ export function ProductCard(product) {
     e.preventDefault();
     events.emit('cart:add', { product, qty: 1 });
   });
+  
+    // ← ارتقاء فاز ۸: سیگنال برای افزونه‌ها (heart، compare، rating و ...)
+  // فیچرها به این event گوش می‌دن و خودشون رو به کارت اضافه می‌کنن
+  queueMicrotask(() => {
+    events.emit('product-card:created', { el, product });
+  });
 
   return el;
+
 }
