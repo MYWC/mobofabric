@@ -85,6 +85,13 @@ export const authLang = {
     passwordStrong:     'قوی',
     passwordVeryStrong: 'بسیار قوی',
 
+    // ── Password Strength — Checklist ──
+    pwsCheckLength:    'حداقل ۸ حرف',
+    pwsCheckUppercase: 'حرف بزرگ',
+    pwsCheckLowercase: 'حرف کوچک',
+    pwsCheckDigit:     'عدد',
+    pwsCheckSpecial:   'کاراکتر خاص',
+
     // ── Social ──
     socialGoogle: 'ورود با گوگل',
     socialGitHub: 'ورود با گیت‌هاب',
@@ -172,6 +179,13 @@ export const authLang = {
     passwordMedium:     'Medium',
     passwordStrong:     'Strong',
     passwordVeryStrong: 'Very strong',
+
+    // ── Password Strength — Checklist ──
+    pwsCheckLength:    'At least 8 chars',
+    pwsCheckUppercase: 'Uppercase letter',
+    pwsCheckLowercase: 'Lowercase letter',
+    pwsCheckDigit:     'Number',
+    pwsCheckSpecial:   'Special character',
 
     // ── Social ──
     socialGoogle: 'Sign in with Google',
