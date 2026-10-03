@@ -71,6 +71,7 @@ export const CONFIG = {
     //  ⚠️ home باید AFTER products لود شود
     //  تا router.register('/', ...) آن، route محصولات را override کند
     preloader:     true,
+    microInteractions:  true,
     home:          true,
   },
 };

@@ -1,0 +1,68 @@
+/* ═══════════════════════════════════════════════════════════
+   Micro-Interactions — Phase 17
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Product Card: پایه برای tilt ── */
+.product-card {
+  transform-style: preserve-3d;
+}
+
+/* ── Cart Bounce Animation ── */
+.mi-cart-bounce {
+  animation: mi-cart-bounce-kf 500ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes mi-cart-bounce-kf {
+  0%   { transform: scale(1) rotate(0deg); }
+  30%  { transform: scale(1.25) rotate(-8deg); }
+  60%  { transform: scale(0.92) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ── Global Scroll Reveal ── */
+.mi-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 600ms cubic-bezier(.4, 0, .2, 1),
+    transform 600ms cubic-bezier(.4, 0, .2, 1);
+  will-change: opacity, transform;
+}
+
+.mi-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+
+/* ── کارت‌های محصول staggered ── */
+.products-grid .product-card.mi-reveal {
+  transition-delay: calc(var(--mi-index, 0) * 60ms);
+}
+
+/* ── Ripple Container ── */
+.btn,
+.icon-btn,
+.chip,
+.qty__btn {
+  position: relative;
+}
+
+/* ── Reduced Motion — همه چیز رو خاموش کن ── */
+@media (prefers-reduced-motion: reduce) {
+  .mi-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .mi-cart-bounce {
+    animation: none;
+  }
+}
+
+/* ── Touch devices: Tilt رو غیرفعال کن ── */
+@media (hover: none) {
+  .product-card {
+    transform: none !important;
+  }
+}

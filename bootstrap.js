@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-//  نقطه ورود — نسخه ۷ (با Preloader)
+//  نقطه ورود — نسخه ۸ (با Micro-Interactions)
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -31,22 +31,23 @@ const featureLoaders = {
   admin:         () => import('./features/admin/admin.js').then(m => m.admin),
   analytics:     () => import('./features/analytics/analytics.js').then(m => m.analytics),
   home:          () => import('./features/home/home.js').then(m => m.home),
+  microInteractions: () => import('./features/micro-interactions/micro-interactions.js').then(m => m.microInteractions),
 };
 
 // ═══════════════════════════════════════════════════════════
-//  فیچرهایی که CSS اختصاصی ندارن
+//  فیچرهایی که CSS ندارن (یا CSS خودشون inline هست)
 // ═══════════════════════════════════════════════════════════
 const featuresWithoutCSS = [
-  'theme',       // CSS نداره
-  'analytics',   // فقط tracker هست
-  'preloader',   // CSS داره ولی inline توی index.html
+  'theme',
+  'analytics',
+  'preloader',
 ];
 
 // ═══════════════════════════════════════════════════════════
 //  راه‌اندازی
 // ═══════════════════════════════════════════════════════════
 async function bootstrap() {
-  // ⚡ Preloader اول از همه — قبل از هر چیز
+  // ⚡ Preloader اول از همه
   if (CONFIG.features.preloader) {
     try {
       const { preloader } = await import('./features/preloader/preloader.js');
@@ -62,7 +63,7 @@ async function bootstrap() {
   await loadFeatures();
   router.start();
 
-  // ⚡ اطلاع به preloader که همه چیز آماده‌ست
+  // ⚡ اطلاع به preloader
   events.emit('app:ready');
 }
 
@@ -103,7 +104,6 @@ async function loadFeatures() {
     .map(([name]) => name);
 
   for (const name of enabled) {
-    // preloader قبلاً لود شده — skip کن
     if (name === 'preloader') continue;
 
     const loader = featureLoaders[name];
@@ -143,7 +143,6 @@ function loadFeatureCSS(name) {
 
 bootstrap().catch(err => {
   console.error('[bootstrap] fatal:', err);
-  // اگه bootstrap خطا داد، حتماً preloader رو حذف کن
   const pl = document.getElementById('preloader');
   if (pl) {
     pl.classList.add('is-hidden');
