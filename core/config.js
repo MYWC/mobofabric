@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  تنظیمات متمرکز — نسخه نهایی
-//  وضعیت: پروژه کامل + فاز ۱۳ (Home جدا از Products)
+//  وضعیت: پروژه کامل + فازهای ۱۳ تا ۱۸
 // ═══════════════════════════════════════════════════════════
 
 export const CONFIG = {
@@ -25,6 +25,7 @@ export const CONFIG = {
     reviews:   'ps_my_reviews',
     discount:  'ps_discount',
     session:   'ps_session',
+    sound:     'ps_sound_enabled',
   },
 
   analytics: {
@@ -37,43 +38,42 @@ export const CONFIG = {
 
   // ═══════════════════════════════════════════════════════════
   //  فلگ فیچرها
-  //  نکته: ترتیب در آبجکت مهم نیست، ولی bootstrap.js
-  //  بر اساس همین ترتیب لود می‌کند (پایین به بالا -> آخرین ثبت برنده)
   // ═══════════════════════════════════════════════════════════
   features: {
     // ── فاز 1 ──
-    products:      true,
-    theme:         true,
+    products:          true,
+    theme:             true,
     // ── فاز 2 ──
-    productDetail: true,
+    productDetail:     true,
     // ── فاز 3 ──
-    cart:          true,
+    cart:              true,
     // ── فاز 4 ──
-    brands:        true,
+    brands:            true,
     // ── فاز 5 ──
-    search:        true,
+    search:            true,
     // ── فاز 6 ──
-    about:         true,
-    contact:       true,
+    about:             true,
+    contact:           true,
     // ── فاز 8 ──
-    favorites:     true,
-    comparison:    true,
+    favorites:         true,
+    comparison:        true,
     // ── فاز 9 ──
-    reviews:       true,
+    reviews:           true,
     // ── فاز 10 ──
-    discounts:     true,
+    discounts:         true,
     // ── فاز 11 ──
-    auth:          true,
-    admin:         true,
+    auth:              true,
+    admin:             true,
     // ── فاز 12 ──
-    analytics:     true,
-    // ── فاز 13 — صفحه اصلی جدید ──
-    //  ⚠️ home باید AFTER products لود شود
-    //  تا router.register('/', ...) آن، route محصولات را override کند
-    preloader:     true,
-    microInteractions:  true,
-    quickView:          true,
-    recentlyViewed:     true,
-    home:          true,
+    analytics:         true,
+    // ── فاز 13 ──
+    home:              true,
+    // ── فاز 17 ──
+    preloader:         true,
+    microInteractions: true,
+    quickView:         true,
+    recentlyViewed:    true,
+    // ── فاز 18 ──
+    sound:             true,
   },
 };

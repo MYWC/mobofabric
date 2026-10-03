@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  نقطه ورود — نسخه ۹ (Final Package)
+//  نقطه ورود — نسخه ۱۰ (Final)
+//  فازهای ۱ تا ۱۸
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -15,25 +16,26 @@ import { toast } from './shared/components/toast/toast.js';
 //  نقشه فیچرها
 // ═══════════════════════════════════════════════════════════
 const featureLoaders = {
-  products:      () => import('./features/products/products.js').then(m => m.products),
-  productDetail: () => import('./features/product-detail/product-detail.js').then(m => m.productDetail),
-  cart:          () => import('./features/cart/cart.js').then(m => m.cart),
-  brands:        () => import('./features/brands/brands.js').then(m => m.brands),
-  search:        () => import('./features/search/search.js').then(m => m.search),
-  about:         () => import('./features/about/about.js').then(m => m.about),
-  contact:       () => import('./features/contact/contact.js').then(m => m.contact),
-  theme:         () => import('./features/theme/theme.js').then(m => m.theme),
-  favorites:     () => import('./features/favorites/favorites.js').then(m => m.favorites),
-  comparison:    () => import('./features/comparison/comparison.js').then(m => m.comparison),
-  reviews:       () => import('./features/reviews/reviews.js').then(m => m.reviews),
-  discounts:     () => import('./features/discounts/discounts.js').then(m => m.discounts),
-  auth:          () => import('./features/auth/auth.js').then(m => m.auth),
-  admin:         () => import('./features/admin/admin.js').then(m => m.admin),
-  analytics:     () => import('./features/analytics/analytics.js').then(m => m.analytics),
-  home:          () => import('./features/home/home.js').then(m => m.home),
+  products:          () => import('./features/products/products.js').then(m => m.products),
+  productDetail:     () => import('./features/product-detail/product-detail.js').then(m => m.productDetail),
+  cart:              () => import('./features/cart/cart.js').then(m => m.cart),
+  brands:            () => import('./features/brands/brands.js').then(m => m.brands),
+  search:            () => import('./features/search/search.js').then(m => m.search),
+  about:             () => import('./features/about/about.js').then(m => m.about),
+  contact:           () => import('./features/contact/contact.js').then(m => m.contact),
+  theme:             () => import('./features/theme/theme.js').then(m => m.theme),
+  favorites:         () => import('./features/favorites/favorites.js').then(m => m.favorites),
+  comparison:        () => import('./features/comparison/comparison.js').then(m => m.comparison),
+  reviews:           () => import('./features/reviews/reviews.js').then(m => m.reviews),
+  discounts:         () => import('./features/discounts/discounts.js').then(m => m.discounts),
+  auth:              () => import('./features/auth/auth.js').then(m => m.auth),
+  admin:             () => import('./features/admin/admin.js').then(m => m.admin),
+  analytics:         () => import('./features/analytics/analytics.js').then(m => m.analytics),
+  home:              () => import('./features/home/home.js').then(m => m.home),
   microInteractions: () => import('./features/micro-interactions/micro-interactions.js').then(m => m.microInteractions),
-  quickView:     () => import('./features/quick-view/quick-view.js').then(m => m.quickView),
-  recentlyViewed:() => import('./features/recently-viewed/recently-viewed.js').then(m => m.recentlyViewed),
+  quickView:         () => import('./features/quick-view/quick-view.js').then(m => m.quickView),
+  recentlyViewed:    () => import('./features/recently-viewed/recently-viewed.js').then(m => m.recentlyViewed),
+  sound:             () => import('./features/sound/sound.js').then(m => m.sound),
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -49,6 +51,7 @@ const featuresWithoutCSS = [
 //  راه‌اندازی
 // ═══════════════════════════════════════════════════════════
 async function bootstrap() {
+  // ⚡ Preloader — اول از همه
   if (CONFIG.features.preloader) {
     try {
       const { preloader } = await import('./features/preloader/preloader.js');
@@ -64,6 +67,7 @@ async function bootstrap() {
   await loadFeatures();
   router.start();
 
+  // ⚡ اطلاع به preloader
   events.emit('app:ready');
 }
 

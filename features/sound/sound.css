@@ -1,0 +1,19 @@
+/* ═══════════════════════════════════════════════════════════
+   Sound — Phase 18
+   ═══════════════════════════════════════════════════════════ */
+
+.icon-btn[data-action="sound"].is-active {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.icon-btn[data-action="sound"].is-active:hover {
+  background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+/* مخفی در موبایل — صدا رو کاربر می‌تونه در drawer فعال کنه */
+@media (max-width: 900px) {
+  .header__actions [data-action="sound"] {
+    display: none;
+  }
+}
