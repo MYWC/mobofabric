@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  لایه داده — تنها راه دسترسی به Supabase
-//  هیچ فیچری مستقیم به Supabase وصل نمی‌شود
+//  نسخه: تا فاز ۹ (reviews)
 // ═══════════════════════════════════════════════════════════
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -26,15 +26,15 @@ function handleError(error) {
 }
 
 export const api = {
+  // ═══════════════════════════════════════════════════════════
+  //  محصولات
+  // ═══════════════════════════════════════════════════════════
   products: {
-    /**
-     * لیست محصولات با فیلتر، مرتب‌سازی و صفحه‌بندی
-     * @returns {Promise<{ data: Product[], count: number }>}
-     */
-    async list({ brand, search, sort = 'newest', page = 1, limit } = {}) {
-      limit = limit ?? CONFIG.pagination.productsPerPage;
-      const from = (page - 1) * limit;
-      const to   = from + limit - 1;
+    async list({ brand, search, sort = 'newest', page = 1, offset, limit } = {}) {
+      const useOffset = typeof offset === 'number';
+      const lim = limit ?? CONFIG.pagination.productsPerPage;
+      const from = useOffset ? offset : (page - 1) * lim;
+      const to   = from + lim - 1;
 
       let q = client()
         .from('products')
@@ -81,6 +81,9 @@ export const api = {
     },
   },
 
+  // ═══════════════════════════════════════════════════════════
+  //  برندها
+  // ═══════════════════════════════════════════════════════════
   brands: {
     async list() {
       const { data, error } = await client()
@@ -91,4 +94,102 @@ export const api = {
       return data ?? [];
     },
   },
+
+  // ═══════════════════════════════════════════════════════════
+  //  نظرات — فاز ۹
+  // ═══════════════════════════════════════════════════════════
+  reviews: {
+    /**
+     * لیست نظرات یک محصول
+     */
+    async list(productId, { limit = 100 } = {}) {
+      const { data, error } = await client()
+        .from('reviews')
+        .select('id, name, rating, comment, created_at')
+        .eq('product_id', productId)
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      if (error) handleError(error);
+      return data ?? [];
+    },
+
+    /**
+     * آمار یک محصول — میانگین، تعداد، توزیع
+     */
+    async stats(productId) {
+      const { data, error } = await client()
+        .from('reviews')
+        .select('rating')
+        .eq('product_id', productId)
+        .eq('is_approved', true);
+      if (error) handleError(error);
+
+      return aggregateStats(data ?? []);
+    },
+
+    /**
+     * آمار گروهی برای چند محصول (یک کوئری)
+     * @returns { [productId]: { count, avg, dist } }
+     */
+    async statsBatch(productIds) {
+      if (!Array.isArray(productIds) || productIds.length === 0) return {};
+
+      const { data, error } = await client()
+        .from('reviews')
+        .select('product_id, rating')
+        .in('product_id', productIds)
+        .eq('is_approved', true);
+      if (error) handleError(error);
+
+      const grouped = {};
+      (data ?? []).forEach(r => {
+        (grouped[r.product_id] ??= []).push({ rating: r.rating });
+      });
+
+      const result = {};
+      for (const id of productIds) {
+        result[id] = aggregateStats(grouped[id] ?? []);
+      }
+      return result;
+    },
+
+    /**
+     * ثبت نظر جدید
+     */
+    async create({ productId, name, email, rating, comment }) {
+      const payload = {
+        product_id: productId,
+        name:       String(name).trim().slice(0, 60),
+        email:      email ? String(email).trim().slice(0, 120) : null,
+        rating:     Number(rating),
+        comment:    String(comment).trim().slice(0, 2000),
+        is_approved: true,
+      };
+
+      const { data, error } = await client()
+        .from('reviews')
+        .insert(payload)
+        .select('id, name, rating, comment, created_at')
+        .single();
+      if (error) handleError(error);
+      return data;
+    },
+  },
 };
+
+// ═══════════════════════════════════════════════════════════
+//  Helper — محاسبه آمار
+// ═══════════════════════════════════════════════════════════
+function aggregateStats(rows) {
+  const count = rows.length;
+  const sum   = rows.reduce((s, r) => s + (r.rating || 0), 0);
+  const dist  = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  rows.forEach(r => { dist[r.rating] = (dist[r.rating] || 0) + 1; });
+
+  return {
+    count,
+    avg: count ? sum / count : 0,
+    dist,
+  };
+}

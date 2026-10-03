@@ -1,11 +1,10 @@
 // ═══════════════════════════════════════════════════════════
 //  تنظیمات متمرکز — تنها فایلی که بین فازها تغییر می‌کند
-//  وضعیت: تا فاز ۸ (favorites + comparison)
+//  وضعیت: تا فاز ۹ (reviews)
 // ═══════════════════════════════════════════════════════════
 
 export const CONFIG = {
   supabase: {
-    // ⚠️ این دو مقدار را از Settings → API پروژه Supabase بردار
     url:     'https://vfryimqanhragilrmtxf.supabase.co',
     anonKey: 'sb_publishable_xTVrIVTrvnJKYgSojNuT0Q_EX9gGnxq',
   },
@@ -18,14 +17,14 @@ export const CONFIG = {
   pagination: { productsPerPage: 12 },
 
   storageKeys: {
-    lang:  'ps_lang',
-    theme: 'ps_theme',
-    cart:  'ps_cart',
+    lang:      'ps_lang',
+    theme:     'ps_theme',
+    cart:      'ps_cart',
+    favorites: 'ps_favorites',
+    compare:   'ps_comparison',
+    reviews:   'ps_my_reviews',
   },
 
-  // ═══════════════════════════════════════════════════════════
-  //  فلگ فیچرها — هر فاز فقط یک فلگ را true می‌کند
-  // ═══════════════════════════════════════════════════════════
   features: {
     // ── فاز 1 ──
     products:      true,
@@ -51,8 +50,10 @@ export const CONFIG = {
     favorites:     true,
     comparison:    true,
 
+    // ── فاز 9 ──
+    reviews:       true,
+
     // ── فازهای بعد (هنوز غیرفعال) ──
-    reviews:       false,   // فاز 9
     discounts:     false,   // فاز 10
     admin:         false,   // فاز 11
     analytics:     false,   // فاز 12

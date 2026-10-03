@@ -26,33 +26,26 @@ const state = {
 
 let offLang   = null;
 let offKey    = null;
-let offGlobal = null;
 
 // ═══════════════════════════════════════════════════════════
 //  Public API
 // ═══════════════════════════════════════════════════════════
 export const productDetail = {
   register() {
-    // ترجمه‌ها
     i18n.register('productDetail', productDetailLang);
-
-    // مسیر
     router.register('/product/:slug', (params) => showDetail(params.slug));
 
-    // تغییر زبان → رندر مجدد
     offLang = events.on('lang:changed', () => {
       if (state.product) renderDetail();
     });
 
-    // کلیدهای چپ/راست برای گالری
     offKey = on(document, 'keydown', onKeyNav);
   },
 
   destroy() {
     offLang?.();
     offKey?.();
-    offGlobal?.();
-    offLang = offKey = offGlobal = null;
+    offLang = offKey = null;
   },
 };
 
@@ -79,7 +72,6 @@ async function showDetail(slug) {
       state.notFound = true;
     } else {
       state.product = product;
-      // محصولات مشابه را در پس‌زمینه بگیر (خطا نباید صفحه را خراب کند)
       loadRelated(product.brands?.slug, product.id);
     }
   } catch (err) {
@@ -96,11 +88,9 @@ async function loadRelated(brandSlug, currentId) {
   try {
     const { data } = await api.products.list({ brand: brandSlug, limit: 8 });
     state.related = (data || []).filter(p => p.id !== currentId).slice(0, 4);
-    // رندر جزئی مجدد — فقط بخش مشابه
     const relatedHost = qs('.pd-related');
     if (relatedHost) relatedHost.replaceWith(RelatedSection());
   } catch (err) {
-    // silent — محصولات مشابه حیاتی نیستند
     console.warn('[product-detail] related failed:', err);
   }
 }
@@ -120,9 +110,10 @@ function renderDetail() {
 
   render(state.container, content);
 
-  // بعد از رندر، گالری را سیم‌کشی کن
   if (state.product && !state.loading) {
     requestAnimationFrame(wireGallery);
+    // ← فاز ۹: اطلاع به فیچر reviews که صفحه رندر شد
+    events.emit('product-detail:rendered', { product: state.product, container: state.container });
   }
 }
 
@@ -280,8 +271,6 @@ function InfoPanel() {
   const lowStock   = inStock && p.stock <= 5;
 
   return h('section', { class: 'pd-info' },
-
-    // برند
     brandName
       ? h('a', {
           class: 'pd-info__brand',
@@ -289,10 +278,8 @@ function InfoPanel() {
         }, brandName)
       : null,
 
-    // عنوان
     h('h1', { class: 'pd-info__title' }, name),
 
-    // قیمت
     h('div', { class: 'pd-info__price' },
       h('span', {
         class: `pd-info__price-current ${hasDiscount ? 'is-discount' : ''}`,
@@ -302,7 +289,6 @@ function InfoPanel() {
         : null,
     ),
 
-    // وضعیت موجودی
     h('div', { class: `pd-info__stock ${inStock ? (lowStock ? 'is-low' : 'is-ok') : 'is-out'}` },
       h('span', { class: 'pd-info__stock-dot', 'aria-hidden': 'true' }),
       h('span', {}, !inStock
@@ -313,7 +299,6 @@ function InfoPanel() {
       ),
     ),
 
-    // اکشن‌ها
     h('div', { class: 'pd-info__actions' },
       h('button', {
         class: 'btn btn--accent pd-info__cta',
@@ -336,16 +321,15 @@ function InfoPanel() {
       }),
     ),
 
-    // اعتماد
     TrustBadges(),
   );
 }
 
 function TrustBadges() {
   return h('ul', { class: 'pd-trust' },
-    TrustItem(icons.check,      i18n.t('productDetail.freeShipping'), i18n.t('productDetail.freeShippingHint')),
-    TrustItem(icons.check,      i18n.t('productDetail.warranty'),     i18n.t('productDetail.warrantyHint')),
-    TrustItem(icons.check,      i18n.t('productDetail.returnPolicy'), i18n.t('productDetail.returnPolicyHint')),
+    TrustItem(icons.check, i18n.t('productDetail.freeShipping'), i18n.t('productDetail.freeShippingHint')),
+    TrustItem(icons.check, i18n.t('productDetail.warranty'),     i18n.t('productDetail.warrantyHint')),
+    TrustItem(icons.check, i18n.t('productDetail.returnPolicy'), i18n.t('productDetail.returnPolicyHint')),
   );
 }
 
@@ -363,7 +347,6 @@ function TrustItem(icon, title, hint) {
 //  Views — Tabs
 // ═══════════════════════════════════════════════════════════
 function Tabs() {
-  const p = state.product;
   const tabs = [
     { id: 'description', label: i18n.t('productDetail.tabDescription') },
     { id: 'specs',       label: i18n.t('productDetail.tabSpecs') },
@@ -379,7 +362,7 @@ function Tabs() {
         onclick: () => setTab(t.id),
       }, t.label)),
     ),
-    h('div', { class: 'pd-tabs__panel' }, TabPanel(p)),
+    h('div', { class: 'pd-tabs__panel' }, TabPanel(state.product)),
   );
 }
 
@@ -422,7 +405,6 @@ function setTab(id) {
   const tabsEl = qs('.pd-tabs');
   if (!tabsEl) return;
 
-  // فقط کلاس دکمه‌ها + محتوای panel را عوض کن — بدون رندر کامل
   qsa('.pd-tabs__btn', tabsEl).forEach(btn => {
     const active = btn.textContent === i18n.t(
       id === 'description' ? 'productDetail.tabDescription' : 'productDetail.tabSpecs'
@@ -515,7 +497,5 @@ async function shareProduct(product) {
       type: 'success',
       message: i18n.t('productDetail.shareCopied'),
     });
-  } catch (err) {
-    // کاربر لغو کرد یا clipboard در دسترس نیست — بی‌صدا
-  }
+  } catch {}
 }

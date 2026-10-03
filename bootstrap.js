@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  نقطه ورود — یک بار نوشته می‌شود، هرگز تغییر نمی‌کند
-//  نسخه ۲: با CSS auto-loader
+//  نسخه ۳: با CSS auto-loader + فازهای ۸ و ۹
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -13,7 +13,7 @@ import { Footer } from './shared/components/footer/footer.js';
 import { toast } from './shared/components/toast/toast.js';
 
 // ═══════════════════════════════════════════════════════════
-//  نقشه فیچرها — از روز اول کامل
+//  نقشه فیچرها
 // ═══════════════════════════════════════════════════════════
 const featureLoaders = {
   products:      () => import('./features/products/products.js').then(m => m.products),
@@ -24,6 +24,13 @@ const featureLoaders = {
   about:         () => import('./features/about/about.js').then(m => m.about),
   contact:       () => import('./features/contact/contact.js').then(m => m.contact),
   theme:         () => import('./features/theme/theme.js').then(m => m.theme),
+
+  // ── فاز ۸ ──
+  favorites:     () => import('./features/favorites/favorites.js').then(m => m.favorites),
+  comparison:    () => import('./features/comparison/comparison.js').then(m => m.comparison),
+
+  // ── فاز ۹ ──
+  reviews:       () => import('./features/reviews/reviews.js').then(m => m.reviews),
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -37,7 +44,6 @@ async function bootstrap() {
   router.start();
 }
 
-// ── هدر + فوتر ──
 function mountChrome() {
   const headerHost = document.querySelector('[data-component="header"]');
   const footerHost = document.querySelector('[data-component="footer"]');
@@ -45,7 +51,6 @@ function mountChrome() {
   if (footerHost) footerHost.replaceWith(Footer());
 }
 
-// ── رویدادهای سراسری ──
 function wireGlobalEvents() {
   events.on('error', ({ message }) => {
     toast.show({ type: 'error', message: message || i18n.t('common.error') });
@@ -70,7 +75,6 @@ function wireGlobalEvents() {
   });
 }
 
-// ── لود فیچرهای فعال + CSS خودکار ──
 async function loadFeatures() {
   const enabled = Object.entries(CONFIG.features)
     .filter(([, on]) => on)
@@ -83,7 +87,6 @@ async function loadFeatures() {
       continue;
     }
 
-    // لود خودکار CSS فیچر
     loadFeatureCSS(name);
 
     try {
@@ -95,7 +98,6 @@ async function loadFeatures() {
   }
 }
 
-// ── CSS auto-loader ──
 function loadFeatureCSS(name) {
   const kebab = name.replace(/[A-Z]/g, ch => '-' + ch.toLowerCase());
   const href = `./features/${kebab}/${kebab}.css`;
