@@ -1,0 +1,61 @@
+:root {
+  /* ── رنگ — تم روشن ── */
+  --color-bg:             #ffffff;
+  --color-bg-secondary:   #f5f5f7;
+  --color-bg-elevated:    #ffffff;
+  --color-text:           #1d1d1f;
+  --color-text-secondary: #6e6e73;
+  --color-text-tertiary:  #86868b;
+  --color-border:         #d2d2d7;
+  --color-accent:         #0071e3;
+  --color-accent-hover:   #0077ed;
+  --color-success:        #34c759;
+  --color-danger:         #ff3b30;
+  --color-warning:        #ff9500;
+
+  /* ── فاصله ── */
+  --space-1: 4px;   --space-2: 8px;   --space-3: 12px;
+  --space-4: 16px;  --space-5: 24px;  --space-6: 32px;
+  --space-7: 48px;  --space-8: 64px;  --space-9: 96px;
+
+  /* ── گردی ── */
+  --radius-sm: 6px;  --radius-md: 10px;  --radius-lg: 16px;
+  --radius-xl: 24px; --radius-full: 9999px;
+
+  /* ── سایه ── */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.12);
+
+  /* ── فونت ── */
+  --font-fa: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  --font-en: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* ── اندازه متن ── */
+  --text-xs:   12px;  --text-sm:   14px;  --text-base: 16px;
+  --text-lg:   18px;  --text-xl:   22px;  --text-2xl:  28px;
+  --text-3xl:  36px;  --text-4xl:  48px;
+
+  /* ── انیمیشن ── */
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --t-fast: 150ms var(--ease);
+  --t-base: 250ms var(--ease);
+  --t-slow: 400ms var(--ease);
+
+  /* ── چیدمان ── */
+  --container-max: 1200px;
+  --header-height: 64px;
+}
+
+[data-theme="dark"] {
+  --color-bg:             #000000;
+  --color-bg-secondary:   #1d1d1f;
+  --color-bg-elevated:    #1d1d1f;
+  --color-text:           #f5f5f7;
+  --color-text-secondary: #a1a1a6;
+  --color-text-tertiary:  #86868b;
+  --color-border:         #2d2d2f;
+}
+
+[dir="rtl"] { font-family: var(--font-fa); }
+[dir="ltr"] { font-family: var(--font-en); }
