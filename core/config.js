@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  تنظیمات متمرکز — تنها فایلی که بین فازها تغییر می‌کند
-//  وضعیت: تا فاز ۹ (reviews)
+//  وضعیت: تا فاز ۱۰ (discount codes)
 // ═══════════════════════════════════════════════════════════
 
 export const CONFIG = {
@@ -23,6 +23,7 @@ export const CONFIG = {
     favorites: 'ps_favorites',
     compare:   'ps_comparison',
     reviews:   'ps_my_reviews',
+    discount:  'ps_discount',
   },
 
   features: {
@@ -53,8 +54,10 @@ export const CONFIG = {
     // ── فاز 9 ──
     reviews:       true,
 
+    // ── فاز 10 ──
+    discounts:     true,
+
     // ── فازهای بعد (هنوز غیرفعال) ──
-    discounts:     false,   // فاز 10
     admin:         false,   // فاز 11
     analytics:     false,   // فاز 12
   },

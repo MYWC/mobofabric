@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  نقطه ورود — یک بار نوشته می‌شود، هرگز تغییر نمی‌کند
-//  نسخه ۳: با CSS auto-loader + فازهای ۸ و ۹
+//  نسخه ۴: با CSS auto-loader + تا فاز ۱۰
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -31,6 +31,9 @@ const featureLoaders = {
 
   // ── فاز ۹ ──
   reviews:       () => import('./features/reviews/reviews.js').then(m => m.reviews),
+
+  // ── فاز ۱۰ ──
+  discounts:     () => import('./features/discounts/discounts.js').then(m => m.discounts),
 };
 
 // ═══════════════════════════════════════════════════════════

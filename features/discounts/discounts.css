@@ -1,0 +1,185 @@
+/* ═══════════════════════════════════════════════════════════
+   Discounts — Phase 10
+   ═══════════════════════════════════════════════════════════ */
+
+/* اسلات در خلاصه سفارش */
+.cart-summary__discount-slot {
+  margin-bottom: var(--space-2);
+}
+
+.cart-summary__discount-slot:empty {
+  display: none;
+}
+
+/* ═══ Box ═══ */
+.discount-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--t-fast);
+}
+
+.discount-box:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+}
+
+.discount-box__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.discount-box__label-icon {
+  display: inline-flex;
+  color: var(--color-accent);
+}
+.discount-box__label-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Input + Apply ── */
+.discount-box__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+.discount-box__input {
+  padding: 8px 12px;
+  font-size: var(--text-sm);
+  background: var(--color-bg-elevated);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  font-family: var(--font-en), ui-monospace, monospace;
+}
+
+.discount-box__input::placeholder {
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: inherit;
+  font-weight: 400;
+}
+
+.discount-box__apply {
+  padding: 8px 16px;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+
+.discount-box__apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error ── */
+.discount-box__error {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  margin: 0;
+  animation: discount-error-in var(--t-fast);
+}
+
+@keyframes discount-error-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ Applied state ═══ */
+.discount-box--applied {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-success) 8%, var(--color-bg-secondary));
+  animation: discount-applied-in var(--t-base);
+}
+
+@keyframes discount-applied-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.discount-box__applied-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.discount-box__applied-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.discount-box__applied-code {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.discount-box__applied-code strong {
+  font-family: var(--font-en), ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+}
+
+.discount-box__applied-check {
+  display: inline-flex;
+  color: var(--color-success);
+}
+.discount-box__applied-check svg {
+  width: 16px;
+  height: 16px;
+}
+
+.discount-box__applied-desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.discount-box__remove {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.discount-box__remove:hover {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  color: var(--color-danger);
+}
+.discount-box__remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .discount-box__row {
+    grid-template-columns: 1fr;
+  }
+  .discount-box__apply {
+    width: 100%;
+  }
+}

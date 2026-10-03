@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  لایه داده — تنها راه دسترسی به Supabase
-//  نسخه: تا فاز ۹ (reviews)
+//  نسخه: تا فاز ۱۰ (discounts)
 // ═══════════════════════════════════════════════════════════
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -99,9 +99,6 @@ export const api = {
   //  نظرات — فاز ۹
   // ═══════════════════════════════════════════════════════════
   reviews: {
-    /**
-     * لیست نظرات یک محصول
-     */
     async list(productId, { limit = 100 } = {}) {
       const { data, error } = await client()
         .from('reviews')
@@ -114,9 +111,6 @@ export const api = {
       return data ?? [];
     },
 
-    /**
-     * آمار یک محصول — میانگین، تعداد، توزیع
-     */
     async stats(productId) {
       const { data, error } = await client()
         .from('reviews')
@@ -124,14 +118,9 @@ export const api = {
         .eq('product_id', productId)
         .eq('is_approved', true);
       if (error) handleError(error);
-
       return aggregateStats(data ?? []);
     },
 
-    /**
-     * آمار گروهی برای چند محصول (یک کوئری)
-     * @returns { [productId]: { count, avg, dist } }
-     */
     async statsBatch(productIds) {
       if (!Array.isArray(productIds) || productIds.length === 0) return {};
 
@@ -154,9 +143,6 @@ export const api = {
       return result;
     },
 
-    /**
-     * ثبت نظر جدید
-     */
     async create({ productId, name, email, rating, comment }) {
       const payload = {
         product_id: productId,
@@ -176,10 +162,29 @@ export const api = {
       return data;
     },
   },
+
+  // ═══════════════════════════════════════════════════════════
+  //  کدهای تخفیف — فاز ۱۰
+  // ═══════════════════════════════════════════════════════════
+  discounts: {
+    /**
+     * اعتبارسنجی کد تخفیف از طریق RPC
+     * @returns {Promise<{ valid: boolean, reason?: string, ... }>}
+     */
+    async validate(code) {
+      const clean = String(code || '').trim();
+      if (!clean) return { valid: false, reason: 'empty' };
+
+      const { data, error } = await client()
+        .rpc('validate_discount_code', { p_code: clean });
+      if (error) handleError(error);
+      return data || { valid: false, reason: 'not_found' };
+    },
+  },
 };
 
 // ═══════════════════════════════════════════════════════════
-//  Helper — محاسبه آمار
+//  Helper — محاسبه آمار نظرات
 // ═══════════════════════════════════════════════════════════
 function aggregateStats(rows) {
   const count = rows.length;
