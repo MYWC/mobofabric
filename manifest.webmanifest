@@ -1,0 +1,48 @@
+{
+  "name": "Phone Store — فروشگاه گوشی",
+  "short_name": "Phone Store",
+  "description": "فروشگاه آنلاین گوشی موبایل — مینیمال، حرفه‌ای، دوزبانه.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0071e3",
+  "categories": ["shopping", "electronics"],
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "فروشگاه",
+      "short_name": "فروشگاه",
+      "url": "./#/products",
+      "description": "مشاهده همه محصولات"
+    },
+    {
+      "name": "سبد خرید",
+      "short_name": "سبد",
+      "url": "./#/cart",
+      "description": "مشاهده سبد خرید"
+    },
+    {
+      "name": "جستجو",
+      "short_name": "جستجو",
+      "url": "./#/search",
+      "description": "جستجوی محصولات"
+    }
+  ]
+}

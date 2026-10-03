@@ -1,0 +1,12 @@
+# ═══════════════════════════════════════════════════════════
+#  Phone Store — robots.txt
+# ═══════════════════════════════════════════════════════════
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://MYWC.github.io/mobofabric/sitemap.xml
+
+# Crawl-delay برای سرورهای محترم
+Crawl-delay: 1
