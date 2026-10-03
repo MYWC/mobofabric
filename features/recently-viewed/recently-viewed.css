@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════════
+   Recently Viewed — Phase 17
+   ═══════════════════════════════════════════════════════════ */
+
+.rv-section {
+  margin-block: var(--space-8);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--color-border);
+}
+
+.rv-section__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.rv-section__title {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-1);
+}
+
+.rv-section__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.rv-section__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.rv-section__clear:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+.rv-section__clear-icon {
+  display: inline-flex;
+}
+.rv-section__clear-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ═══ Carousel ═══ */
+.rv-section__carousel {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: var(--space-3);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.rv-section__carousel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.rv-section__carousel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rv-section__carousel::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.rv-section__carousel::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+.rv-section__item {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+.rv-section__item .product-card {
+  height: 100%;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 640px) {
+  .rv-section {
+    margin-block: var(--space-6);
+    padding-block: var(--space-5);
+  }
+
+  .rv-section__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+
+  .rv-section__clear {
+    align-self: flex-start;
+  }
+
+  .rv-section__item {
+    flex-basis: 200px;
+  }
+
+  .rv-section__carousel {
+    gap: var(--space-3);
+  }
+}

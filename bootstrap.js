@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-//  نقطه ورود — نسخه ۸ (با Micro-Interactions)
+//  نقطه ورود — نسخه ۹ (Final Package)
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -32,6 +32,8 @@ const featureLoaders = {
   analytics:     () => import('./features/analytics/analytics.js').then(m => m.analytics),
   home:          () => import('./features/home/home.js').then(m => m.home),
   microInteractions: () => import('./features/micro-interactions/micro-interactions.js').then(m => m.microInteractions),
+  quickView:     () => import('./features/quick-view/quick-view.js').then(m => m.quickView),
+  recentlyViewed:() => import('./features/recently-viewed/recently-viewed.js').then(m => m.recentlyViewed),
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -47,7 +49,6 @@ const featuresWithoutCSS = [
 //  راه‌اندازی
 // ═══════════════════════════════════════════════════════════
 async function bootstrap() {
-  // ⚡ Preloader اول از همه
   if (CONFIG.features.preloader) {
     try {
       const { preloader } = await import('./features/preloader/preloader.js');
@@ -63,7 +64,6 @@ async function bootstrap() {
   await loadFeatures();
   router.start();
 
-  // ⚡ اطلاع به preloader
   events.emit('app:ready');
 }
 

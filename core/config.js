@@ -72,6 +72,8 @@ export const CONFIG = {
     //  تا router.register('/', ...) آن، route محصولات را override کند
     preloader:     true,
     microInteractions:  true,
+    quickView:          true,
+    recentlyViewed:     true,
     home:          true,
   },
 };
