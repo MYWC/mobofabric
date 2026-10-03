@@ -6,20 +6,17 @@ import { router } from '../../core/router.js';
 import { icons } from '../../shared/icons/icons.js';
 import { adminLang } from './admin.lang.js';
 
-// ── Sections (lazy) ──
 const sectionLoaders = {
   dashboard: () => import('./sections/dashboard.js').then(m => m.dashboard),
   products:  () => import('./sections/products.js').then(m => m.products),
   brands:    () => import('./sections/brands.js').then(m => m.brands),
   discounts: () => import('./sections/discounts.js').then(m => m.discounts),
   reviews:   () => import('./sections/reviews.js').then(m => m.reviews),
+  analytics: () => import('./sections/analytics.js').then(m => m.analytics),
 };
 
 const sectionCache = {};
 
-// ═══════════════════════════════════════════════════════════
-//  State
-// ═══════════════════════════════════════════════════════════
 const state = {
   profile:     null,
   isAdmin:     false,
@@ -34,38 +31,33 @@ const state = {
 
 let offLang = null;
 
-// ═══════════════════════════════════════════════════════════
-//  Public API
-// ═══════════════════════════════════════════════════════════
 export const admin = {
   register() {
     i18n.register('admin', adminLang);
 
-    router.register('/admin',           () => enter('dashboard'));
-    router.register('/admin/products',  () => enter('products'));
-    router.register('/admin/brands',    () => enter('brands'));
-    router.register('/admin/discounts', () => enter('discounts'));
-    router.register('/admin/reviews',   () => enter('reviews'));
+    router.register('/admin',            () => enter('dashboard'));
+    router.register('/admin/products',   () => enter('products'));
+    router.register('/admin/brands',     () => enter('brands'));
+    router.register('/admin/discounts',  () => enter('discounts'));
+    router.register('/admin/reviews',    () => enter('reviews'));
+    router.register('/admin/analytics',  () => enter('analytics'));
 
     offLang = events.on('lang:changed', () => {
       if (state.profile) renderShell();
     });
 
-    // اگر کاربر logout کرد، از admin خارج شو
-    events.on('auth:changed', () => { if (location.hash.startsWith('#/admin')) enter(currentSection()); });
+    events.on('auth:changed', () => {
+      if (location.hash.startsWith('#/admin')) enter(currentSection());
+    });
   },
 };
 
-// ═══════════════════════════════════════════════════════════
-//  Entry point
-// ═══════════════════════════════════════════════════════════
 async function enter(section) {
   state.activeSection = section || 'dashboard';
 
   const container = qs('#app');
   if (!container) return;
 
-  // اگر قبلاً در admin هستیم و فقط section عوض شده
   const existingShell = qs('.admin-shell', container);
   if (existingShell && state.isAdmin) {
     mountSection(state.activeSection);
@@ -73,7 +65,6 @@ async function enter(section) {
     return;
   }
 
-  // بررسی auth
   state.loading = true;
   state.forbidden = false;
   state.needLogin = false;
@@ -93,7 +84,6 @@ async function enter(section) {
     state.profile = profile;
 
     if (profile.role !== 'admin') {
-      // آیا هیچ ادمینی هست؟
       const admins = await api.admin.profiles.list();
       const hasAdmin = admins.some(p => p.role === 'admin');
 
@@ -110,7 +100,6 @@ async function enter(section) {
       return;
     }
 
-    // ادمین هست
     state.isAdmin = true;
     state.loading = false;
     renderShell();
@@ -128,9 +117,6 @@ function currentSection() {
   return m?.[1] || 'dashboard';
 }
 
-// ═══════════════════════════════════════════════════════════
-//  Shell
-// ═══════════════════════════════════════════════════════════
 function renderShell() {
   const container = qs('#app');
   if (!container) return;
@@ -141,7 +127,6 @@ function renderShell() {
       Topbar(),
       h('main', { class: 'admin-content', dataset: { role: 'content' } }),
     ),
-    // overlay موبایل
     h('div', { class: 'admin-overlay', onclick: () => toggleSidebar(false) }),
   );
 
@@ -159,6 +144,7 @@ function Sidebar() {
     { id: 'brands',    label: 'admin.brands',    icon: 'tag' },
     { id: 'discounts', label: 'admin.discounts', icon: 'tag' },
     { id: 'reviews',   label: 'admin.reviews',   icon: 'star' },
+    { id: 'analytics', label: 'admin.analytics', icon: 'chart' },
   ];
 
   return h('aside', { class: 'admin-sidebar' },
@@ -196,6 +182,7 @@ function Topbar() {
     brands:    'admin.brandsTitle',
     discounts: 'admin.discountsTitle',
     reviews:   'admin.reviewsTitle',
+    analytics: 'admin.analyticsTitle',
   }[state.activeSection] || 'admin.panel';
 
   const name = state.profile?.full_name?.trim()
@@ -239,9 +226,6 @@ function toggleSidebar(open) {
   if (shell) shell.classList.toggle('is-sidebar-open', open);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  Section mounting
-// ═══════════════════════════════════════════════════════════
 async function mountSection(id) {
   if (!state.contentEl) return;
 
@@ -274,9 +258,6 @@ function onSectionNav(path) {
   router.navigate(path);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  Views: Loading
-// ═══════════════════════════════════════════════════════════
 function LoadingView() {
   return h('div', { class: 'admin-state' },
     h('div', { class: 'admin-state__card' },
@@ -332,7 +313,6 @@ async function doClaim() {
     const res = await api.auth.claimAdmin();
     if (res?.ok) {
       events.emit('toast:show', { type: 'success', message: i18n.t('admin.claimSuccess') });
-      // رفرش
       location.reload();
     } else {
       events.emit('toast:show', { type: 'warning', message: i18n.t('admin.claimTaken') });

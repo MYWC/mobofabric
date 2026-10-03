@@ -7,6 +7,7 @@ export const adminLang = {
     brands:         'برندها',
     discounts:      'کدهای تخفیف',
     reviews:        'نظرات',
+    analytics:      'تحلیل و آمار',
     settings:       'تنظیمات',
     backToSite:     'بازگشت به سایت',
 
@@ -138,6 +139,9 @@ export const adminLang = {
     reviewRating:      'امتیاز',
     reviewComment:     'متن',
     reviewDate:        'تاریخ',
+
+    // Analytics (بازتاب‌دهی به namespace analytics)
+    analyticsTitle:    'تحلیل و آمار',
   },
 
   en: {
@@ -147,6 +151,7 @@ export const adminLang = {
     brands:         'Brands',
     discounts:      'Discounts',
     reviews:        'Reviews',
+    analytics:      'Analytics',
     settings:       'Settings',
     backToSite:     'Back to site',
 
@@ -270,5 +275,7 @@ export const adminLang = {
     reviewRating:      'Rating',
     reviewComment:     'Comment',
     reviewDate:        'Date',
+
+    analyticsTitle:    'Analytics',
   },
 };

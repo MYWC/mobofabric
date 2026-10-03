@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  تنظیمات متمرکز
-//  وضعیت: تا فاز ۱۱ (auth + admin)
+//  تنظیمات متمرکز — نسخه نهایی
+//  وضعیت: پروژه کامل (فاز ۱ تا ۱۲)
 // ═══════════════════════════════════════════════════════════
 
 export const CONFIG = {
@@ -24,6 +24,15 @@ export const CONFIG = {
     compare:   'ps_comparison',
     reviews:   'ps_my_reviews',
     discount:  'ps_discount',
+    session:   'ps_session',
+  },
+
+  analytics: {
+    flushIntervalMs:  5000,      // ارسال هر ۵ ثانیه
+    maxQueueSize:     25,         // حداکثر رویداد قبل از فلاش فوری
+    trackPageViews:   true,
+    trackProducts:    true,
+    trackSearches:    true,
   },
 
   features: {
@@ -52,6 +61,6 @@ export const CONFIG = {
     auth:          true,
     admin:         true,
     // ── فاز 12 ──
-    analytics:     false,
+    analytics:     true,
   },
 };

@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  نقطه ورود — نسخه ۵: تا فاز ۱۱
+//  نقطه ورود — نسخه نهایی
+//  وضعیت: پروژه کامل (فاز ۱ تا ۱۲)
 // ═══════════════════════════════════════════════════════════
 
 import { CONFIG } from './core/config.js';
@@ -26,6 +27,7 @@ const featureLoaders = {
   discounts:     () => import('./features/discounts/discounts.js').then(m => m.discounts),
   auth:          () => import('./features/auth/auth.js').then(m => m.auth),
   admin:         () => import('./features/admin/admin.js').then(m => m.admin),
+  analytics:     () => import('./features/analytics/analytics.js').then(m => m.analytics),
 };
 
 async function bootstrap() {
@@ -101,7 +103,6 @@ bootstrap().catch(err => {
     <div style="padding:80px 24px;text-align:center;font-family:system-ui">
       <h1>خطای راه‌اندازی</h1>
       <p style="margin-top:12px;color:#666">${err.message}</p>
-      <p style="margin-top:8px;font-size:14px;color:#999">لطفاً کنسول مرورگر را بررسی کنید.</p>
     </div>
   `;
 });
