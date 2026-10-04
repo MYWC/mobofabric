@@ -1,12 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  Header — Phase 13
-//
-//  تغییرات:
-//  ✅ دکمه منوی موبایل (Hamburger)
-//  ✅ Drawer کشویی با ناوبری + اکشن‌ها
-//  ✅ Overlay + Esc برای بستن
-//  ✅ هماهنگ با RTL/LTR و Dark Mode
-//  ✅ بدون دست زدن به منطق auth (auth.js خودش تزریق می‌کند)
+//  Header — Velvet Luxury
+//  Phase 26
 // ═══════════════════════════════════════════════════════════
 
 import { h, qs, on } from '../../../core/dom.js';
@@ -19,17 +13,18 @@ let els = {};
 let drawerEl = null;
 let overlayEl = null;
 let offEsc = null;
+let offScroll = null;
 
 // ═══════════════════════════════════════════════════════════
-//  Header — چیدمان اصلی
+//  Header
 // ═══════════════════════════════════════════════════════════
 export function Header() {
   i18n.register('header', headerLang);
 
   const el = h('header', { class: 'header' },
-    h('div', { class: 'container header__inner' },
+    h('div', { class: 'header__inner' },
 
-      // ── دکمه منوی موبایل (فقط در موبایل دیده می‌شود) ──
+      // ── دکمه منو (موبایل) ──
       h('button', {
         class: 'header__menu-btn',
         type: 'button',
@@ -38,7 +33,7 @@ export function Header() {
         innerHTML: icons.menu,
       }),
 
-      // ── لوگو ──
+      // ── برند ──
       h('a', {
         class: 'header__brand',
         href: '#/',
@@ -48,24 +43,24 @@ export function Header() {
         h('span', { class: 'header__brand-text' }, 'Phone Store'),
       ),
 
-      // ── ناوبری دسکتاپ ──
+      // ── ناوبری ──
       h('nav', { class: 'header__nav', 'aria-label': i18n.t('header.menuTitle') },
-        h('a', { class: 'header__link', href: '#/' },         i18n.t('header.home')),
-        h('a', { class: 'header__link', href: '#/products' }, i18n.t('header.products')),
-        h('a', { class: 'header__link', href: '#/brands' },   i18n.t('header.brands')),
+        NavLink('#/',         'home',     'header.home'),
+        NavLink('#/products', 'products', 'header.products'),
+        NavLink('#/brands',   'brands',   'header.brands'),
       ),
 
-      // ── Action ها ──
+      // ── اکشن‌ها ──
       h('div', { class: 'header__actions' },
 
         // جستجو
         h('button', {
-  class: 'icon-btn',
-  'aria-label': i18n.t('header.search'),
-  dataset: { action: 'search' },
-},
-  h('span', { class: 'icon-btn__icon', innerHTML: icons.search }),
-),
+          class: 'icon-btn',
+          type: 'button',
+          'aria-label': i18n.t('header.search'),
+          dataset: { action: 'search' },
+          innerHTML: icons.search,
+        }),
 
         // علاقه‌مندی‌ها
         h('a', {
@@ -89,7 +84,7 @@ export function Header() {
           h('span', { class: 'header__badge', dataset: { count: 'cart' } }, '0'),
         ),
 
-        // ⚠️ auth.js دکمه‌ی خودش را اینجا تزریق می‌کند
+        // auth.js خودش دکمه‌اش رو اینجا تزریق می‌کنه
 
         // زبان
         h('button', {
@@ -127,7 +122,26 @@ export function Header() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Wire — اتصال رویدادها
+//  Nav Link (با is-active)
+// ═══════════════════════════════════════════════════════════
+function NavLink(href, id, labelKey) {
+  const isActive = isActiveRoute(href);
+  return h('a', {
+    class: `header__link ${isActive ? 'is-active' : ''}`,
+    href,
+    dataset: { nav: id },
+  }, i18n.t(labelKey));
+}
+
+function isActiveRoute(href) {
+  const current = '#' + (location.hash.slice(1).split('?')[0] || '/');
+  if (href === '#/' && current === '#/') return true;
+  if (href !== '#/' && current.startsWith(href)) return true;
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Wire
 // ═══════════════════════════════════════════════════════════
 function wire() {
   // ── تغییر زبان ──
@@ -142,27 +156,44 @@ function wire() {
   // ── باز کردن جستجو ──
   on(els.search, 'click', () => events.emit('search:open'));
 
-  // ── باز/بسته کردن Drawer موبایل ──
+  // ── باز کردن Drawer ──
   on(els.menuBtn, 'click', () => toggleDrawer(true));
 
-  // ── وقتی زبان عوض شد، متن‌های ثابت دسکتاپ + Drawer را دوباره بنویس ──
-  events.on('lang:changed', () => {
-    // ناوبری دسکتاپ
-    const navLinks = els.root.querySelectorAll('.header__link');
-    if (navLinks[0]) navLinks[0].textContent = i18n.t('header.home');
-    if (navLinks[1]) navLinks[1].textContent = i18n.t('header.products');
-    if (navLinks[2]) navLinks[2].textContent = i18n.t('header.brands');
+  // ── اسکرول: خط طلایی ──
+  let ticking = false;
+  const onScroll = () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrolled = window.scrollY > 8;
+        els.root.classList.toggle('is-scrolled', scrolled);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
 
-    // aria-labels
+  // ── تغییر زبان → آپدیت متن‌ها ──
+  events.on('lang:changed', () => {
+    qsa('.header__link', els.root).forEach(link => {
+      const id = link.dataset.nav;
+      if (id) link.textContent = i18n.t(`header.${id}`);
+    });
+
     els.search?.setAttribute('aria-label', i18n.t('header.search'));
     els.lang?.setAttribute('aria-label', i18n.t('header.toggleLang'));
     els.theme?.setAttribute('aria-label', i18n.t('header.toggleTheme'));
     els.menuBtn?.setAttribute('aria-label', i18n.t('header.menu'));
 
-    // Drawer اگه بازه، رندر مجدد
-    if (drawerEl) {
-      renderDrawer();
-    }
+    if (drawerEl) renderDrawer();
+  });
+
+  // ── تغییر روتر → آپدیت active link ──
+  events.on('route:changed', () => {
+    qsa('.header__link', els.root).forEach(link => {
+      const href = link.getAttribute('href');
+      link.classList.toggle('is-active', isActiveRoute(href));
+    });
   });
 
   // ── سبد ──
@@ -184,7 +215,6 @@ function wire() {
     if (!els.theme) return;
     els.theme.innerHTML = theme === 'dark' ? icons.sun : icons.moon;
 
-    // Drawer اگه بازه، آیکون تم رو هم آپدیت کن
     if (drawerEl) {
       const drawerThemeBtn = drawerEl.querySelector('[data-drawer-action="theme"]');
       if (drawerThemeBtn) {
@@ -195,7 +225,7 @@ function wire() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Drawer — ساخته‌شده در لحظه، حذف هنگام بستن
+//  Drawer
 // ═══════════════════════════════════════════════════════════
 function toggleDrawer(open) {
   if (open) mountDrawer();
@@ -205,7 +235,6 @@ function toggleDrawer(open) {
 function mountDrawer() {
   if (drawerEl) return;
 
-  // ── Overlay ──
   overlayEl = h('div', {
     class: 'header-drawer-overlay',
     onclick: () => unmountDrawer(),
@@ -214,7 +243,6 @@ function mountDrawer() {
   document.body.append(overlayEl);
   requestAnimationFrame(() => overlayEl.classList.add('is-visible'));
 
-  // ── Drawer ──
   drawerEl = h('aside', {
     class: 'header-drawer',
     role: 'dialog',
@@ -229,10 +257,8 @@ function mountDrawer() {
     drawerEl.classList.add('is-visible');
   });
 
-  // قفل اسکرول
   document.body.style.overflow = 'hidden';
 
-  // بستن با Esc
   offEsc = on(document, 'keydown', (e) => {
     if (e.key === 'Escape') unmountDrawer();
   });
@@ -255,10 +281,8 @@ function unmountDrawer() {
   drawerEl = null;
   overlayEl = null;
 
-  // بازگرداندن اسکرول
   document.body.style.overflow = '';
 
-  // حذف listener
   offEsc?.();
   offEsc = null;
 }
@@ -278,7 +302,7 @@ function renderDrawer() {
         onclick: () => unmountDrawer(),
       },
         h('span', { class: 'header-drawer__logo', innerHTML: icons.logo }),
-        h('span', { class: 'header-drawer__brand-text' }, 'Phone Store'),
+        h('span', {}, 'Phone Store'),
       ),
       h('button', {
         class: 'header-drawer__close',
@@ -289,7 +313,7 @@ function renderDrawer() {
       }),
     ),
 
-    // ── ناوبری اصلی ──
+    // ── Nav ──
     h('nav', { class: 'header-drawer__nav' },
       DrawerLink('#/',          'home',     icons.logo),
       DrawerLink('#/products',  'products', icons.box),
@@ -299,7 +323,7 @@ function renderDrawer() {
       DrawerLink('#/contact',   'contact',  icons.user),
     ),
 
-    // ── Footer: تنظیمات سریع ──
+    // ── Footer ──
     h('div', { class: 'header-drawer__footer' },
       h('button', {
         class: 'header-drawer__setting',
@@ -308,7 +332,6 @@ function renderDrawer() {
         onclick: () => {
           const next = i18n.getLang() === 'fa' ? 'en' : 'fa';
           i18n.setLang(next);
-          // بعد از تغییر زبان، Drawer را رندر مجدد کن
           setTimeout(renderDrawer, 50);
         },
       },
@@ -338,13 +361,20 @@ function renderDrawer() {
 }
 
 function DrawerLink(href, labelKey, icon) {
-  const isActive = href === '#' + (location.hash.slice(1).split('?')[0] || '/');
+  const isActive = isActiveRoute(href);
   return h('a', {
     class: `header-drawer__link ${isActive ? 'is-active' : ''}`,
     href,
     onclick: () => unmountDrawer(),
   },
     h('span', { class: 'header-drawer__link-icon', innerHTML: icon }),
-    h('span', { class: 'header-drawer__link-label' }, i18n.t(`header.${labelKey}`)),
+    h('span', {}, i18n.t(`header.${labelKey}`)),
   );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Helper
+// ═══════════════════════════════════════════════════════════
+function qsa(sel, root = document) {
+  return [...root.querySelectorAll(sel)];
 }

@@ -1,38 +1,43 @@
+// ═══════════════════════════════════════════════════════════
+//  Cart — ترجمه‌ها
+//  Phase 26 — Obsidian Vault
+// ═══════════════════════════════════════════════════════════
+
 export const cartLang = {
   fa: {
-    // Page
+    // ── Page ──
     pageTitle:    'سبد خرید',
     itemsCount:   '{n} کالا',
     itemsCountOne:'۱ کالا',
 
-    // Empty
+    // ── Empty ──
     empty:        'سبد خرید شما خالی است',
     emptyHint:    'محصولی به سبد اضافه نکرده‌اید.',
     emptyCta:     'شروع خرید',
 
-    // Item
+    // ── Item ──
     remove:       'حذف',
-    removeAll:    'حذف همه',
+    removeAll:    'خالی کردن',
     qty:          'تعداد',
-    increase:     'افزایش تعداد',
-    decrease:     'کاهش تعداد',
+    increase:     'افزایش',
+    decrease:     'کاهش',
     unitPrice:    'قیمت واحد',
     inStock:      'موجود',
     outOfStock:   'ناموجود',
     lowStock:     'تنها {n} عدد',
-    stockWarning: 'حداکثر موجودی این محصول {n} عدد است.',
+    stockWarning: 'حداکثر موجودی {n} عدد است.',
 
-    // Summary
+    // ── Summary ──
     summary:      'خلاصه سفارش',
     subtotal:     'جمع کالاها',
-    discount:     'تخفیف',
+    discount:     'تخفیف محصولات',
     shipping:     'هزینه ارسال',
     shippingFree: 'رایگان',
     tax:          'مالیات',
     total:        'مبلغ قابل پرداخت',
     savings:      'شما {amount} صرفه‌جویی کردید',
 
-    // Actions
+    // ── Actions ──
     continueShopping: 'ادامه خرید',
     checkout:         'ثبت سفارش',
     clearCart:        'خالی کردن سبد',
@@ -40,12 +45,12 @@ export const cartLang = {
     confirmClearYes:  'بله، خالی کن',
     confirmClearNo:   'انصراف',
 
-    // Checkout modal
+    // ── Checkout modal ──
     checkoutTitle:    'ثبت سفارش',
     checkoutHint:     'این نسخه نمایشی است. به‌زودی درگاه پرداخت اضافه می‌شود.',
     checkoutClose:    'بستن',
 
-    // Toasts
+    // ── Toasts ──
     added:         'به سبد خرید اضافه شد',
     addedQty:      '{name} ({n} عدد) اضافه شد',
     removed:       'از سبد خرید حذف شد',
@@ -54,7 +59,7 @@ export const cartLang = {
     qtyLimit:      'موجودی کافی نیست',
     qtyMin:        'حداقل تعداد ۱ است',
 
-    // Misc
+    // ── Misc ──
     loading:      'در حال بارگذاری...',
     notFound:     'محصول یافت نشد',
     backToShop:   'بازگشت به فروشگاه',
@@ -70,10 +75,10 @@ export const cartLang = {
     emptyCta:     'Start shopping',
 
     remove:       'Remove',
-    removeAll:    'Remove all',
+    removeAll:    'Clear',
     qty:          'Quantity',
-    increase:     'Increase quantity',
-    decrease:     'Decrease quantity',
+    increase:     'Increase',
+    decrease:     'Decrease',
     unitPrice:    'Unit price',
     inStock:      'In stock',
     outOfStock:   'Out of stock',
@@ -82,7 +87,7 @@ export const cartLang = {
 
     summary:      'Order summary',
     subtotal:     'Subtotal',
-    discount:     'Discount',
+    discount:     'Product discount',
     shipping:     'Shipping',
     shippingFree: 'Free',
     tax:          'Tax',

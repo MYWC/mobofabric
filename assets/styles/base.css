@@ -1,52 +1,262 @@
+/* ═══════════════════════════════════════════════════════════
+   Base — Typography & Foundation
+   Phase 26 — Obsidian Vault
+   ═══════════════════════════════════════════════════════════ */
+
 body {
   background: var(--color-bg);
   color: var(--color-text);
+  font-family: inherit;
   font-size: var(--text-base);
-  transition: background var(--t-base), color var(--t-base);
+  font-weight: var(--fw-regular);
+  line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-main { flex: 1; padding-block: var(--space-6); }
+main {
+  flex: 1;
+  padding-block: var(--space-6);
+}
 
-h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
+/* ═══════════════════════════════════════════════════════════
+   Typography
+   ═══════════════════════════════════════════════════════════ */
 
-p { color: var(--color-text-secondary); }
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  font-weight: var(--fw-bold);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-variation-settings: 'wght' 700;
+}
 
+h1 {
+  font-size: clamp(36px, 5vw, var(--text-5xl));
+  font-weight: var(--fw-black);
+  font-variation-settings: 'wght' 900;
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  font-size: clamp(28px, 3.5vw, var(--text-4xl));
+  font-weight: var(--fw-black);
+  font-variation-settings: 'wght' 900;
+  letter-spacing: -0.035em;
+}
+
+h3 {
+  font-size: clamp(22px, 2.5vw, var(--text-3xl));
+  font-weight: var(--fw-bold);
+  font-variation-settings: 'wght' 700;
+}
+
+h4 {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  font-variation-settings: 'wght' 700;
+}
+
+h5 {
+  font-size: var(--text-xl);
+  font-weight: var(--fw-semibold);
+  font-variation-settings: 'wght' 600;
+}
+
+h6 {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-semibold);
+  font-variation-settings: 'wght' 600;
+}
+
+p {
+  color: var(--color-text-secondary);
+  line-height: 1.75;
+}
+
+/* ── Eyebrow (برچسب کوچک بالای تیتر) ── */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: var(--space-3);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--color-gold);
+  opacity: 0.6;
+}
+
+/* ── تیتر با خط طلایی ── */
+.title-accent {
+  position: relative;
+  padding-inline-start: 0;
+}
+
+.title-accent::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+  margin-top: var(--space-4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Links
+   ═══════════════════════════════════════════════════════════ */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--t-fast);
+}
+
+.link-gold {
+  color: var(--color-gold);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-fast);
+}
+.link-gold:hover {
+  border-bottom-color: var(--color-gold);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Buttons
+   ═══════════════════════════════════════════════════════════ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding: 10px 20px;
-  border-radius: var(--radius-full);
-  font-weight: 500;
+  padding: 14px 28px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
   font-size: var(--text-sm);
-  transition: all var(--t-fast);
-  cursor: pointer;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
   border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--t-base);
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
 }
-.btn--accent  { background: var(--color-accent); color: #fff; }
-.btn--accent:hover  { background: var(--color-accent-hover); transform: translateY(-1px); }
-.btn--ghost   { background: transparent; color: var(--color-text); border-color: var(--color-border); }
-.btn--ghost:hover   { background: var(--color-bg-secondary); }
-.btn--block   { width: 100%; }
 
+/* ── Accent (مشکی در روشن / طلایی در تاریک) ── */
+.btn--accent {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: var(--fw-bold);
+}
+
+.btn--accent:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .btn--accent {
+  color: #0B0B0F;
+  box-shadow: 0 8px 24px var(--color-gold-glow);
+}
+
+[data-theme="dark"] .btn--accent:hover {
+  box-shadow:
+    0 12px 32px var(--color-gold-glow),
+    0 0 40px var(--color-gold-glow);
+}
+
+/* ── Ghost ── */
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.btn--ghost:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-text);
+}
+
+/* ── Block ── */
+.btn--block {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Input Base
+   ═══════════════════════════════════════════════════════════ */
 .input {
   width: 100%;
-  padding: 10px 16px;
+  padding: 12px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-bg);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
   color: var(--color-text);
-  transition: border-color var(--t-fast);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  transition: all var(--t-fast);
 }
-.input:focus { outline: none; border-color: var(--color-accent); }
 
-::selection { background: var(--color-accent); color: #fff; }
+.input:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 4px var(--color-gold-glow);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Selection
+   ═══════════════════════════════════════════════════════════ */
+::selection {
+  background: var(--color-gold);
+  color: #0B0B0F;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Scrollbar (لوکس)
+   ═══════════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 5px;
+  border: 2px solid var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

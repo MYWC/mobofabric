@@ -1,3 +1,8 @@
+// ═══════════════════════════════════════════════════════════
+//  Search — Velvet Luxury
+//  Phase 26 — Obsidian Vault
+// ═══════════════════════════════════════════════════════════
+
 import { h, qs, qsa, on, render, html } from '../../core/dom.js';
 import { events } from '../../core/events.js';
 import { i18n } from '../../core/i18n.js';
@@ -9,7 +14,7 @@ import { icons } from '../../shared/icons/icons.js';
 import { searchLang } from './search.lang.js';
 
 // ═══════════════════════════════════════════════════════════
-//  ثابت‌ها
+//  Constants
 // ═══════════════════════════════════════════════════════════
 const RECENT_KEY  = 'ps_recent_searches';
 const MAX_RECENT  = 6;
@@ -28,10 +33,10 @@ const state = {
   results:     [],
   loading:     false,
   activeIndex: -1,
-  mode:        'recent',   // 'recent' | 'search' | 'empty'
+  mode:        'recent',
   recent:      [],
   debounceId:  null,
-  reqId:       0,          // برای جلوگیری از race condition
+  reqId:       0,
 
   // Full page
   page: {
@@ -55,16 +60,10 @@ export const search = {
     i18n.register('search', searchLang);
     state.recent = loadRecent();
 
-    // باز شدن مودال (از هدر — فاز 0)
     events.on('search:open', () => openModal());
-
-    // صفحه کامل نتایج
     router.register('/search', (params, query) => showFullPage(query));
-
-    // شورتکات سراسری Ctrl/Cmd+K
     offGlobalKey = on(document, 'keydown', onGlobalKey);
 
-    // تغییر زبان
     offLang = events.on('lang:changed', () => {
       if (state.open) refreshModal();
     });
@@ -124,7 +123,7 @@ function openModal(initialQuery = '') {
   document.body.dataset.searchOpen = 'true';
 
   requestAnimationFrame(() => {
-    const input = qs('.search-modal__input', el);
+    const input = qs('.vault-search__input', el);
     if (input) {
       input.value = initialQuery;
       input.focus();
@@ -151,7 +150,7 @@ function refreshModal() {
   const fresh = Modal();
   state.modalEl.replaceWith(fresh);
   state.modalEl = fresh;
-  const input = qs('.search-modal__input', fresh);
+  const input = qs('.vault-search__input', fresh);
   if (input) {
     input.value = state.query;
     input.focus();
@@ -164,20 +163,20 @@ function refreshModal() {
 // ═══════════════════════════════════════════════════════════
 function Modal() {
   const overlay = h('div', {
-    class: 'search-modal-overlay',
+    class: 'vault-search-overlay',
     onclick: onOverlayClick,
     role: 'presentation',
   });
 
   const modal = h('div', {
-    class: 'search-modal',
+    class: 'vault-search',
     role: 'dialog',
     'aria-modal': 'true',
     'aria-label': i18n.t('search.title'),
     onclick: e => e.stopPropagation(),
   },
     ModalHeader(),
-    h('div', { class: 'search-modal__results' }, ResultsSection()),
+    h('div', { class: 'vault-search__results' }, ResultsSection()),
     ModalFooter(),
   );
 
@@ -187,7 +186,7 @@ function Modal() {
 
 function ModalHeader() {
   const input = h('input', {
-    class: 'search-modal__input',
+    class: 'vault-search__input',
     type: 'search',
     placeholder: i18n.t('search.placeholder'),
     autocomplete: 'off',
@@ -201,93 +200,86 @@ function ModalHeader() {
   on(input, 'input', onInputChange);
   on(input, 'keydown', onInputKeyDown);
 
-  return h('div', { class: 'search-modal__header' },
-    h('span', { class: 'search-modal__icon', innerHTML: icons.search }),
+  return h('div', { class: 'vault-search__header' },
+    h('span', { class: 'vault-search__icon', innerHTML: icons.search }),
     input,
     h('button', {
-      class: 'search-modal__clear',
+      class: 'vault-search__clear',
       type: 'button',
       'aria-label': i18n.t('search.remove'),
       onclick: clearInput,
     }, '×'),
-    h('kbd', { class: 'search-modal__kbd' }, 'Esc'),
+    h('kbd', { class: 'vault-search__kbd' }, 'Esc'),
   );
 }
 
 function ModalFooter() {
-  return h('div', { class: 'search-modal__footer' },
-    h('span', { class: 'search-modal__hint' },
+  return h('div', { class: 'vault-search__footer' },
+    h('span', { class: 'vault-search__hint' },
       h('kbd', {}, '↑'),
       h('kbd', {}, '↓'),
       h('span', {}, i18n.t('search.hintNav')),
     ),
-    h('span', { class: 'search-modal__hint search-modal__hint--right' },
-      h('kbd', {}, 'Enter'),
+    h('span', { class: 'vault-search__hint vault-search__hint--right' },
+      h('kbd', {}, '↵'),
       h('span', {}, i18n.t('search.hint')),
     ),
   );
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Modal — Results Section (dynamic)
+//  Results Section
 // ═══════════════════════════════════════════════════════════
 function updateResultsSection() {
   if (!state.modalEl) return;
-  const host = qs('.search-modal__results', state.modalEl);
+  const host = qs('.vault-search__results', state.modalEl);
   if (!host) return;
   render(host, ResultsSection());
 }
 
 function ResultsSection() {
-  // حالت ۱: در حال جستجو
   if (state.loading) return LoadingState();
-
-  // حالت ۲: کوئری خالی → جستجوهای اخیر
   if (!state.query) return RecentState();
-
-  // حالت ۳: نتایج
   if (state.results.length > 0) return ResultsList();
-
-  // حالت ۴: بدون نتیجه
   return NoResultsState();
 }
 
 function LoadingState() {
-  return h('div', { class: 'search-modal__loading' },
-    h('span', { class: 'search-modal__spinner' }),
+  return h('div', { class: 'vault-search__loading' },
+    h('span', { class: 'vault-search__spinner' }),
     h('span', {}, i18n.t('search.loading')),
   );
 }
 
 function RecentState() {
   if (state.recent.length === 0) {
-    return h('div', { class: 'search-modal__empty' },
-      h('p', { class: 'search-modal__empty-title' }, i18n.t('search.noRecent')),
+    return h('div', { class: 'vault-search__empty' },
+      h('p', { class: 'vault-search__empty-title' }, i18n.t('search.noRecent')),
     );
   }
 
-  return h('div', { class: 'search-modal__section' },
-    h('header', { class: 'search-modal__section-header' },
+  return h('div', { class: 'vault-search__section' },
+    h('header', { class: 'vault-search__section-header' },
       h('span', {}, i18n.t('search.recent')),
       h('button', {
-        class: 'search-modal__section-action',
+        class: 'vault-search__section-action',
         type: 'button',
         onclick: (e) => { e.stopPropagation(); clearRecent(); },
       }, i18n.t('search.recentClear')),
     ),
-    h('ul', { class: 'search-modal__list' },
+    h('ul', { class: 'vault-search__list' },
       ...state.recent.map((q, i) =>
-        h('li', { class: 'search-modal__recent-item', dataset: { idx: String(i) } },
+        h('li', { class: 'vault-search__recent-item', dataset: { idx: String(i) } },
           h('button', {
-            class: 'search-modal__recent-btn',
+            class: 'vault-search__recent-btn',
             type: 'button',
             onclick: () => applyRecent(q),
           },
-            h('span', { class: 'search-modal__recent-icon', innerHTML: icons.search }),
-            h('span', { class: 'search-modal__recent-text' }, q),
+            h('span', { class: 'vault-search__recent-icon', innerHTML: icons.search }),
+            h('span', { class: 'vault-search__recent-text' }, q),
           ),
           h('button', {
-            class: 'search-modal__recent-remove',
+            class: 'vault-search__recent-remove',
             type: 'button',
             'aria-label': i18n.t('search.remove'),
             onclick: (e) => { e.stopPropagation(); removeRecent(q); },
@@ -300,24 +292,24 @@ function RecentState() {
 }
 
 function ResultsList() {
-  return h('div', { class: 'search-modal__section' },
-    h('header', { class: 'search-modal__section-header' },
+  return h('div', { class: 'vault-search__section' },
+    h('header', { class: 'vault-search__section-header' },
       h('span', {}, i18n.t('search.results')),
-      h('span', { class: 'search-modal__count' },
+      h('span', { class: 'vault-search__count' },
         state.results.length === 1
           ? i18n.t('search.resultCountOne')
           : i18n.t('search.resultCount', { n: i18n.formatNumber(state.results.length) })),
     ),
-    h('ul', { class: 'search-modal__list' },
+    h('ul', { class: 'vault-search__list' },
       ...state.results.map((p, i) => ResultRow(p, i)),
     ),
     h('button', {
-      class: 'search-modal__view-all',
+      class: 'vault-search__view-all',
       type: 'button',
       onclick: goToFullPage,
     },
       h('span', {}, i18n.t('search.viewAll')),
-      h('span', { class: 'search-modal__view-all-arrow', innerHTML: icons.arrowL }),
+      h('span', { class: 'vault-search__view-all-arrow', innerHTML: icons.arrowL }),
     ),
   );
 }
@@ -331,21 +323,21 @@ function ResultRow(product, index) {
   const active = index === state.activeIndex;
 
   const row = h('li', {
-    class: `search-modal__result ${active ? 'is-active' : ''}`,
+    class: `vault-search__result ${active ? 'is-active' : ''}`,
     dataset: { idx: String(index), slug: product.slug },
     onmouseenter: () => setActiveIndex(index),
   },
-    h('a', { class: 'search-modal__result-link', href: `#/product/${product.slug}`, onclick: onResultClick },
-      h('div', { class: 'search-modal__result-media' },
+    h('a', { class: 'vault-search__result-link', href: `#/product/${product.slug}`, onclick: onResultClick },
+      h('div', { class: 'vault-search__result-media' },
         h('img', { src: product.cover_url, alt: '', loading: 'lazy' }),
       ),
-      h('div', { class: 'search-modal__result-body' },
-        brand ? h('span', { class: 'search-modal__result-brand' }, brand) : null,
-        h('div', { class: 'search-modal__result-title' },
+      h('div', { class: 'vault-search__result-body' },
+        brand ? h('span', { class: 'vault-search__result-brand' }, brand) : null,
+        h('div', { class: 'vault-search__result-title' },
           highlightText(name, state.query),
         ),
       ),
-      h('div', { class: 'search-modal__result-price' },
+      h('div', { class: 'vault-search__result-price' },
         i18n.formatPrice(price),
       ),
     ),
@@ -355,13 +347,13 @@ function ResultRow(product, index) {
 }
 
 function NoResultsState() {
-  return h('div', { class: 'search-modal__empty' },
-    h('p', { class: 'search-modal__empty-title' },
+  return h('div', { class: 'vault-search__empty' },
+    h('p', { class: 'vault-search__empty-title' },
       i18n.t('search.noResults', { query: state.query })),
-    h('p', { class: 'search-modal__empty-hint' },
+    h('p', { class: 'vault-search__empty-hint' },
       i18n.t('search.noResultsHint')),
     h('button', {
-      class: 'search-modal__view-all',
+      class: 'vault-search__view-all',
       type: 'button',
       onclick: goToFullPage,
     }, i18n.t('search.viewAll')),
@@ -420,7 +412,6 @@ function onResultClick(e) {
 }
 
 function onGlobalKey(e) {
-  // Ctrl/Cmd + K
   if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
     e.preventDefault();
     if (state.open) closeModal();
@@ -428,7 +419,6 @@ function onGlobalKey(e) {
     return;
   }
 
-  // Esc
   if (e.key === 'Escape' && state.open) {
     e.preventDefault();
     closeModal();
@@ -446,8 +436,8 @@ async function runSearch() {
 
   try {
     const { data } = await api.products.list({ search: q, limit: MODAL_LIMIT });
-    if (myId !== state.reqId) return;  // جستجوی جدیدتری هست
-    if (state.query !== q) return;     // کاربر تایپ کرده
+    if (myId !== state.reqId) return;
+    if (state.query !== q) return;
     state.results = data || [];
   } catch (err) {
     if (myId !== state.reqId) return;
@@ -460,7 +450,7 @@ async function runSearch() {
 }
 
 function clearInput() {
-  const input = qs('.search-modal__input', state.modalEl);
+  const input = qs('.vault-search__input', state.modalEl);
   if (input) {
     input.value = '';
     input.focus();
@@ -484,21 +474,20 @@ function moveActive(delta) {
   }
   updateResultsSection();
 
-  // اطمینان از دیده شدن آیتم فعال
-  const activeEl = qs('.search-modal__result.is-active', state.modalEl);
+  const activeEl = qs('.vault-search__result.is-active', state.modalEl);
   activeEl?.scrollIntoView({ block: 'nearest' });
 }
 
 function setActiveIndex(idx) {
   if (state.activeIndex === idx) return;
   state.activeIndex = idx;
-  qsa('.search-modal__result', state.modalEl).forEach(el => {
+  qsa('.vault-search__result', state.modalEl).forEach(el => {
     el.classList.toggle('is-active', Number(el.dataset.idx) === idx);
   });
 }
 
 function applyRecent(q) {
-  const input = qs('.search-modal__input', state.modalEl);
+  const input = qs('.vault-search__input', state.modalEl);
   if (input) {
     input.value = q;
     input.focus();
@@ -526,7 +515,7 @@ function goToFullPage() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Full Page — /search?q=...
+//  Full Page
 // ═══════════════════════════════════════════════════════════
 async function showFullPage(query = {}) {
   const q = String(query.q || '').trim();
@@ -570,17 +559,18 @@ function FullPage() {
   else if (items.length===0) body = PageNoResults(q);
   else                       body = PageResults();
 
-  return h('div', { class: 'search-page' },
+  return h('div', { class: 'vault-search-page' },
     h('div', { class: 'container' },
-      h('header', { class: 'search-page__header' },
-        h('h1', { class: 'search-page__title' }, i18n.t('search.pageTitle')),
+      h('header', { class: 'vault-search-page__header' },
+        h('span', { class: 'vault-search-page__eyebrow' }, 'SEARCH'),
+        h('h1', { class: 'vault-search-page__title' }, i18n.t('search.pageTitle')),
         q
-          ? h('p', { class: 'search-page__subtitle' },
+          ? h('p', { class: 'vault-search-page__subtitle' },
               i18n.t('search.resultsFor', { query: q }))
-          : h('p', { class: 'search-page__subtitle' }, i18n.t('search.noQuery')),
+          : h('p', { class: 'vault-search-page__subtitle' }, i18n.t('search.noQuery')),
         q
           ? h('button', {
-              class: 'btn btn--ghost search-page__new',
+              class: 'vault-search-page__new',
               type: 'button',
               onclick: () => openModal(q),
             }, i18n.t('search.backToSearch'))
@@ -592,20 +582,20 @@ function FullPage() {
 }
 
 function LoadingGrid() {
-  return h('div', { class: 'products-grid' }, ...Skeleton.grid(8));
+  return h('div', { class: 'vault-grid' }, ...Skeleton.grid(8));
 }
 
 function PageResults() {
   const { items, total, offset } = state.page;
   const hasMore = offset < total;
 
-  return h('div', { class: 'search-page__results' },
-    h('p', { class: 'search-page__count' },
+  return h('div', { class: 'vault-search-page__results' },
+    h('p', { class: 'vault-search-page__count' },
       total === 1
         ? i18n.t('search.resultCountOne')
         : i18n.t('search.resultCount', { n: i18n.formatNumber(total) }),
     ),
-    h('div', { class: 'products-grid' },
+    h('div', { class: 'vault-grid' },
       ...items.map(p => ProductCard(p)),
     ),
     hasMore
@@ -640,22 +630,22 @@ async function loadMore() {
 }
 
 function PageNoQuery() {
-  return h('div', { class: 'search-page__empty' },
+  return h('div', { class: 'vault-search-page__empty' },
     h('p', {}, i18n.t('search.noQuery')),
     h('a', { class: 'btn btn--accent', href: '#/products' }, i18n.t('search.emptyCta')),
   );
 }
 
 function PageNoResults(q) {
-  return h('div', { class: 'search-page__empty' },
+  return h('div', { class: 'vault-search-page__empty' },
     h('p', {}, i18n.t('search.noResults', { query: q })),
-    h('p', { class: 'search-page__empty-hint' }, i18n.t('search.noResultsHint')),
+    h('p', { class: 'vault-search-page__empty-hint' }, i18n.t('search.noResultsHint')),
     h('a', { class: 'btn btn--accent', href: '#/products' }, i18n.t('search.emptyCta')),
   );
 }
 
 function PageError() {
-  return h('div', { class: 'search-page__empty search-page__empty--error' },
+  return h('div', { class: 'vault-search-page__empty vault-search-page__empty--error' },
     h('p', {}, i18n.t('search.errorLoad')),
     h('button', {
       class: 'btn btn--accent',
@@ -666,7 +656,7 @@ function PageError() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Highlight (XSS-safe, DOM-based)
+//  Highlight
 // ═══════════════════════════════════════════════════════════
 function highlightText(text, query) {
   const wrap = document.createElement('span');
@@ -691,7 +681,7 @@ function highlightText(text, query) {
     }
     if (idx > i) wrap.append(document.createTextNode(str.slice(i, idx)));
     const mark = document.createElement('mark');
-    mark.className = 'search-highlight';
+    mark.className = 'vault-search__highlight';
     mark.textContent = str.slice(idx, idx + qLen);
     wrap.append(mark);
     i = idx + qLen;

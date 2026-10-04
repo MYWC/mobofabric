@@ -1,8 +1,12 @@
+// ═══════════════════════════════════════════════════════════
+//  Cart — Velvet Luxury
+//  Phase 26 — Obsidian Vault
+// ═══════════════════════════════════════════════════════════
+
 import { h, qs, qsa, on, render, html } from '../../core/dom.js';
 import { events } from '../../core/events.js';
 import { store } from '../../core/store.js';
 import { i18n } from '../../core/i18n.js';
-import { api } from '../../core/api.js';
 import { router } from '../../core/router.js';
 import { CONFIG } from '../../core/config.js';
 import { icons } from '../../shared/icons/icons.js';
@@ -48,7 +52,6 @@ export const cart = {
       }
     });
 
-    // ← فاز ۱۰: وقتی کد تخفیف اعمال/حذف شد، خلاصه سفارش را دوباره رندر کن
     events.on('discount:changed', () => {
       if (state.container) updateSummary();
     });
@@ -126,12 +129,10 @@ function findIndex(id) {
   return state.items.findIndex(i => i.id === id);
 }
 
-// ← فاز ۱۰: محاسبه تخفیف کد بر اساس مبنا (بعد از تخفیف محصولات)
 function computeCodeDiscount(base) {
   const d = store.get('discount');
   if (!d || !d.active) return 0;
   if (base < (d.min_order_amount ?? 0)) return 0;
-
   let amount;
   if (d.type === 'percent') {
     amount = Math.floor(base * d.value / 100);
@@ -170,7 +171,6 @@ function onAdd({ product, qty = 1 } = {}) {
   }
 
   saveToStorage();
-
   const name = i18n.localizeField(product, 'name');
   toast(i18n.t('cart.addedQty', { name, n: i18n.formatNumber(qty) }), 'success');
 
@@ -253,7 +253,7 @@ function renderPage() {
 
   const isEmpty = state.items.length === 0;
 
-  const page = h('div', { class: 'cart-page' },
+  const page = h('div', { class: 'vault-cart' },
     h('div', { class: 'container' },
       Header(isEmpty),
       isEmpty ? EmptyState() : Layout(),
@@ -266,9 +266,8 @@ function renderPage() {
 
   requestAnimationFrame(() => {
     wirePage();
-    // ← فاز ۱۰: اطلاع به discounts.js که خلاصه رندر شد
     if (!isEmpty) {
-      const aside = qs('.cart-aside', state.container);
+      const aside = qs('.vault-cart__aside', state.container);
       if (aside) events.emit('cart:summary:rendered', { aside });
     }
   });
@@ -280,24 +279,28 @@ function Header(isEmpty) {
     ? i18n.t('cart.itemsCountOne')
     : i18n.t('cart.itemsCount', { n: i18n.formatNumber(count) });
 
-  return h('header', { class: 'cart-header' },
-    h('h1', { class: 'cart-header__title' }, i18n.t('cart.pageTitle')),
+  return h('header', { class: 'vault-cart__header' },
+    h('div', { class: 'vault-cart__header-left' },
+      h('span', { class: 'vault-cart__eyebrow' }, 'CART'),
+      h('h1', { class: 'vault-cart__title' }, i18n.t('cart.pageTitle')),
+      !isEmpty ? h('span', { class: 'vault-cart__count' }, countLabel) : null,
+    ),
     !isEmpty
-      ? h('div', { class: 'cart-header__meta' },
-          h('span', { class: 'cart-header__count' }, countLabel),
-          h('button', {
-            class: 'cart-header__clear',
-            type: 'button',
-            onclick: openConfirm,
-          }, i18n.t('cart.clearCart')),
+      ? h('button', {
+          class: 'vault-cart__clear',
+          type: 'button',
+          onclick: openConfirm,
+        },
+          h('span', { innerHTML: icons.trash }),
+          h('span', {}, i18n.t('cart.clearCart')),
         )
       : null,
   );
 }
 
 function Layout() {
-  return h('div', { class: 'cart-layout' },
-    h('section', { class: 'cart-list', 'aria-label': 'cart items' },
+  return h('div', { class: 'vault-cart__layout' },
+    h('section', { class: 'vault-cart__list' },
       ...state.items.map(ItemRow),
     ),
     Aside(),
@@ -312,36 +315,45 @@ function ItemRow(item) {
   const stock = item.stock ?? 0;
   const lowStock = stock > 0 && stock <= 5;
 
-  return h('article', { class: 'cart-item', dataset: { id: item.id } },
-    h('a', { class: 'cart-item__media', href: `#/product/${item.slug}` },
-      h('img', { src: item.cover_url, alt: name, loading: 'lazy' })),
+  return h('article', {
+    class: 'vault-cart-item',
+    dataset: { id: item.id },
+  },
+    h('a', {
+      class: 'vault-cart-item__media',
+      href: `#/product/${item.slug}`,
+    }, h('img', { src: item.cover_url, alt: name, loading: 'lazy' })),
 
-    h('div', { class: 'cart-item__info' },
+    h('div', { class: 'vault-cart-item__info' },
       brand
-        ? h('a', { class: 'cart-item__brand', href: `#/products?brand=${item.brandSlug}` }, brand)
+        ? h('a', {
+            class: 'vault-cart-item__brand',
+            href: `#/products?brand=${item.brandSlug}`,
+          }, brand)
         : null,
-      h('a', { class: 'cart-item__title', href: `#/product/${item.slug}` }, name),
-      h('div', { class: 'cart-item__unit' },
-        h('span', { class: 'cart-item__unit-label' }, i18n.t('cart.unitPrice')),
-        h('span', { class: 'cart-item__unit-value' }, i18n.formatPrice(unit)),
+      h('a', {
+        class: 'vault-cart-item__title',
+        href: `#/product/${item.slug}`,
+      }, name),
+      h('div', { class: 'vault-cart-item__unit' },
+        h('span', {}, i18n.t('cart.unitPrice')),
+        h('span', { class: 'vault-cart-item__unit-value' }, i18n.formatPrice(unit)),
       ),
-      h('div', { class: 'cart-item__stock' },
-        h('span', {
-          class: `cart-item__stock-badge ${stock <= 0 ? 'is-out' : lowStock ? 'is-low' : 'is-ok'}`,
-        }, stock <= 0
-          ? i18n.t('cart.outOfStock')
-          : lowStock
-            ? i18n.t('cart.lowStock', { n: i18n.formatNumber(stock) })
-            : i18n.t('cart.inStock')
-        ),
+      h('div', {
+        class: `vault-cart-item__stock ${stock <= 0 ? 'is-out' : lowStock ? 'is-low' : 'is-ok'}`,
+      }, stock <= 0
+        ? i18n.t('cart.outOfStock')
+        : lowStock
+          ? i18n.t('cart.lowStock', { n: i18n.formatNumber(stock) })
+          : i18n.t('cart.inStock')
       ),
     ),
 
-    h('div', { class: 'cart-item__controls' },
+    h('div', { class: 'vault-cart-item__controls' },
       QtyStepper(item),
-      h('div', { class: 'cart-item__price' }, i18n.formatPrice(lineTotal)),
+      h('div', { class: 'vault-cart-item__price' }, i18n.formatPrice(lineTotal)),
       h('button', {
-        class: 'cart-item__remove',
+        class: 'vault-cart-item__remove',
         type: 'button',
         'aria-label': i18n.t('cart.remove'),
         dataset: { action: 'remove', id: item.id },
@@ -355,17 +367,16 @@ function QtyStepper(item) {
   const canInc = item.qty < (item.stock ?? 0);
   const canDec = item.qty > 1;
 
-  return h('div', { class: 'qty', role: 'group', 'aria-label': i18n.t('cart.qty') },
+  return h('div', { class: 'vault-qty', role: 'group', 'aria-label': i18n.t('cart.qty') },
     h('button', {
-      class: 'qty__btn', type: 'button',
+      class: 'vault-qty__btn', type: 'button',
       'aria-label': i18n.t('cart.decrease'),
       disabled: !canDec,
       dataset: { action: 'dec', id: item.id },
     }, '−'),
-    h('span', { class: 'qty__value', 'aria-live': 'polite' },
-      i18n.formatNumber(item.qty)),
+    h('span', { class: 'vault-qty__value' }, i18n.formatNumber(item.qty)),
     h('button', {
-      class: 'qty__btn', type: 'button',
+      class: 'vault-qty__btn', type: 'button',
       'aria-label': i18n.t('cart.increase'),
       disabled: !canInc,
       dataset: { action: 'inc', id: item.id },
@@ -377,24 +388,20 @@ function Aside() {
   const subtotal = state.items.reduce((s, i) => s + i.price * i.qty, 0);
   const productDiscount = state.items.reduce((s, i) => s + unitDiscount(i) * i.qty, 0);
   const afterProductDiscount = subtotal - productDiscount;
-
-  // ← فاز ۱۰: تخفیف کد
   const codeDiscount = computeCodeDiscount(afterProductDiscount);
-
   const shipping = 0;
   const payable  = afterProductDiscount - codeDiscount + shipping;
   const hasProductDiscount = productDiscount > 0;
   const hasCodeDiscount    = codeDiscount > 0;
   const isEmpty = state.items.length === 0;
 
-  return h('aside', { class: 'cart-aside' },
-    h('div', { class: 'cart-summary' },
-      h('h2', { class: 'cart-summary__title' }, i18n.t('cart.summary')),
+  return h('aside', { class: 'vault-cart__aside' },
+    h('div', { class: 'vault-cart-summary' },
+      h('h2', { class: 'vault-cart-summary__title' }, i18n.t('cart.summary')),
 
-      // ← فاز ۱۰: اسلاتی که discounts.js محتوایش را پر می‌کند
-      h('div', { class: 'cart-summary__discount-slot' }),
+      h('div', { class: 'vault-cart-summary__discount-slot' }),
 
-      h('dl', { class: 'cart-summary__rows' },
+      h('dl', { class: 'vault-cart-summary__rows' },
         Row(i18n.t('cart.subtotal'), i18n.formatPrice(subtotal)),
         hasProductDiscount
           ? Row(i18n.t('cart.discount'), `− ${i18n.formatPrice(productDiscount)}`, 'is-discount')
@@ -405,28 +412,28 @@ function Aside() {
         Row(i18n.t('cart.shipping'), i18n.t('cart.shippingFree'), 'is-success'),
       ),
 
-      h('div', { class: 'cart-summary__total' },
+      h('div', { class: 'vault-cart-summary__total' },
         h('span', {}, i18n.t('cart.total')),
         h('strong', {}, i18n.formatPrice(payable)),
       ),
 
       (hasProductDiscount || hasCodeDiscount)
-        ? h('p', { class: 'cart-summary__savings' },
+        ? h('p', { class: 'vault-cart-summary__savings' },
             i18n.t('cart.savings', {
               amount: i18n.formatPrice(productDiscount + codeDiscount),
             }))
         : null,
 
-      h('div', { class: 'cart-summary__actions' },
+      h('div', { class: 'vault-cart-summary__actions' },
         h('button', {
-          class: 'btn btn--accent btn--block cart-summary__checkout',
+          class: 'vault-cart-summary__checkout',
           type: 'button',
           disabled: isEmpty,
           onclick: openCheckout,
         }, i18n.t('cart.checkout')),
 
         h('a', {
-          class: 'btn btn--ghost btn--block cart-summary__continue',
+          class: 'vault-cart-summary__continue',
           href: '#/products',
         }, i18n.t('cart.continueShopping')),
       ),
@@ -435,18 +442,21 @@ function Aside() {
 }
 
 function Row(label, value, mod = '') {
-  return h('div', { class: `cart-summary__row ${mod ? `cart-summary__row--${mod}` : ''}` },
+  return h('div', { class: `vault-cart-summary__row ${mod ? `vault-cart-summary__row--${mod}` : ''}` },
     h('dt', {}, label),
     h('dd', {}, value),
   );
 }
 
 function EmptyState() {
-  return h('div', { class: 'cart-empty' },
-    h('div', { class: 'cart-empty__icon', innerHTML: icons.cart }),
-    h('h2', {}, i18n.t('cart.empty')),
-    h('p',  {}, i18n.t('cart.emptyHint')),
-    h('a', { class: 'btn btn--accent', href: '#/products' }, i18n.t('cart.emptyCta')),
+  return h('div', { class: 'vault-cart-empty' },
+    h('div', { class: 'vault-cart-empty__icon', innerHTML: icons.cart }),
+    h('h2', { class: 'vault-cart-empty__title' }, i18n.t('cart.empty')),
+    h('p', { class: 'vault-cart-empty__text' }, i18n.t('cart.emptyHint')),
+    h('a', { class: 'vault-cart-empty__cta', href: '#/products' },
+      h('span', {}, i18n.t('cart.emptyCta')),
+      h('span', { innerHTML: icons.arrowL }),
+    ),
   );
 }
 
@@ -455,11 +465,11 @@ function EmptyState() {
 // ═══════════════════════════════════════════════════════════
 function updateItemRow(id) {
   const item = state.items.find(i => i.id === id);
-  const row  = qs(`.cart-item[data-id="${id}"]`);
+  const row  = qs(`.vault-cart-item[data-id="${id}"]`);
   if (!item || !row) return;
 
-  const qtyEl   = qs('.qty__value', row);
-  const priceEl = qs('.cart-item__price', row);
+  const qtyEl   = qs('.vault-qty__value', row);
+  const priceEl = qs('.vault-cart-item__price', row);
   const decBtn  = qs('[data-action="dec"]', row);
   const incBtn  = qs('[data-action="inc"]', row);
 
@@ -470,11 +480,10 @@ function updateItemRow(id) {
 }
 
 function updateSummary() {
-  const aside = qs('.cart-aside');
+  const aside = qs('.vault-cart__aside');
   if (!aside) return;
   const fresh = Aside();
   aside.replaceWith(fresh);
-  // ← فاز ۱۰: اطلاع به discounts.js برای تزریق مجدد
   events.emit('cart:summary:rendered', { aside: fresh });
 }
 
@@ -482,10 +491,10 @@ function updateSummary() {
 //  Modals
 // ═══════════════════════════════════════════════════════════
 function ConfirmModal() {
-  const overlay = h('div', { class: 'modal-overlay', onclick: closeConfirm });
-  const modal = h('div', { class: 'modal', onclick: e => e.stopPropagation(), role: 'dialog', 'aria-modal': 'true' },
-    h('h3', { class: 'modal__title' }, i18n.t('cart.confirmClear')),
-    h('div', { class: 'modal__actions' },
+  const overlay = h('div', { class: 'vault-modal-overlay', onclick: closeConfirm });
+  const modal = h('div', { class: 'vault-modal', onclick: e => e.stopPropagation(), role: 'dialog' },
+    h('h3', { class: 'vault-modal__title' }, i18n.t('cart.confirmClear')),
+    h('div', { class: 'vault-modal__actions' },
       h('button', { class: 'btn btn--ghost', type: 'button', onclick: closeConfirm },
         i18n.t('cart.confirmClearNo')),
       h('button', {
@@ -505,15 +514,15 @@ function CheckoutModal() {
   const codeDiscount = computeCodeDiscount(afterProductDiscount);
   const total = afterProductDiscount - codeDiscount;
 
-  const overlay = h('div', { class: 'modal-overlay', onclick: closeCheckout });
-  const modal = h('div', { class: 'modal modal--checkout', onclick: e => e.stopPropagation(), role: 'dialog', 'aria-modal': 'true' },
-    h('h3', { class: 'modal__title' }, i18n.t('cart.checkoutTitle')),
-    h('p', { class: 'modal__hint' }, i18n.t('cart.checkoutHint')),
-    h('div', { class: 'modal__total' },
+  const overlay = h('div', { class: 'vault-modal-overlay', onclick: closeCheckout });
+  const modal = h('div', { class: 'vault-modal', onclick: e => e.stopPropagation(), role: 'dialog' },
+    h('h3', { class: 'vault-modal__title' }, i18n.t('cart.checkoutTitle')),
+    h('p', { class: 'vault-modal__hint' }, i18n.t('cart.checkoutHint')),
+    h('div', { class: 'vault-modal__total' },
       h('span', {}, i18n.t('cart.total')),
       h('strong', {}, i18n.formatPrice(total)),
     ),
-    h('div', { class: 'modal__actions' },
+    h('div', { class: 'vault-modal__actions' },
       h('button', { class: 'btn btn--ghost', type: 'button', onclick: closeCheckout },
         i18n.t('cart.checkoutClose')),
     ),

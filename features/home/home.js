@@ -1,10 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  Home — Phase 13
-//  صفحه اصلی مستقل از Products
-//
-//  ⚠️ نکته معماری:
-//  این فیچر route "/" را ثبت می‌کند و چون در bootstrap
-//  بعد از products لود می‌شود، route را override می‌کند.
+//  Home — Obsidian Vault
+//  Phase 26
 // ═══════════════════════════════════════════════════════════
 
 import { h, qs, on, render } from '../../core/dom.js';
@@ -39,8 +35,6 @@ let offLang = null;
 export const home = {
   register() {
     i18n.register('home', homeLang);
-
-    // ✅ این ثبت، route "/" را override می‌کند (last-registered wins)
     router.register('/', () => showHome());
 
     offLang = events.on('lang:changed', () => {
@@ -67,7 +61,6 @@ async function showHome() {
 
     state.featured = featured || [];
 
-    // حذف محصولات تکراری از New Arrivals
     const featuredIds = new Set(state.featured.map(p => p.id));
     state.newArrivals = (newestRes.data || [])
       .filter(p => !featuredIds.has(p.id))
@@ -75,7 +68,6 @@ async function showHome() {
 
     state.brands = brands || [];
 
-    // شمارش محصولات هر برند از داده‌های موجود
     state.brandCounts = {};
     (newestRes.data || []).forEach(p => {
       const slug = p.brands?.slug;
@@ -99,210 +91,168 @@ function renderPage() {
 
   const page = h('div', { class: 'home-page' },
     Hero(),
-    TrustStrip(),
-    BrandsSection(),
     FeaturedSection(),
     NewArrivalsSection(),
+    BrandsSection(),
     PromoSection(),
-    WhySection(),
   );
 
   render(state.container, page);
+  requestAnimationFrame(() => {
+    setupHeroInteractions();
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
-//  01. HERO
+//  01. HERO — Obsidian Stage
 // ═══════════════════════════════════════════════════════════
 function Hero() {
-  return h('section', { class: 'home-hero' },
-    h('div', { class: 'container home-hero__inner' },
-      h('div', { class: 'home-hero__content' },
-        h('span', { class: 'home-hero__eyebrow' },
-          h('span', { class: 'home-hero__eyebrow-dot', 'aria-hidden': 'true' }),
-          i18n.t('home.heroEyebrow'),
+  return h('section', { class: 'vault-hero' },
+    // ── Background layers ──
+    h('div', { class: 'vault-hero__bg' },
+      h('div', { class: 'vault-hero__spotlight' }),
+      h('div', { class: 'vault-hero__noise' }),
+    ),
+
+    // ── Content ──
+    h('div', { class: 'vault-hero__inner' },
+
+      // ── Left: Text ──
+      h('div', { class: 'vault-hero__content' },
+
+        h('div', { class: 'vault-hero__eyebrow' },
+          h('span', { class: 'vault-hero__eyebrow-line' }),
+          h('span', { class: 'vault-hero__eyebrow-text' },
+            i18n.t('home.heroEyebrow')),
+          h('span', { class: 'vault-hero__eyebrow-line' }),
         ),
-        h('h1', { class: 'home-hero__title' },
-          i18n.t('home.heroTitle'),
+
+        h('h1', { class: 'vault-hero__title', 'data-weight-shift': '' },
+          Line(i18n.t('home.heroTitleLine1')),
+          Line(i18n.t('home.heroTitleLine2'), 'is-gold'),
         ),
-        h('p', { class: 'home-hero__subtitle' },
+
+        h('p', { class: 'vault-hero__subtitle' },
           i18n.t('home.heroSubtitle'),
         ),
-        h('div', { class: 'home-hero__actions' },
+
+        h('div', { class: 'vault-hero__actions' },
           h('a', {
-            class: 'btn btn--accent home-hero__cta',
+            class: 'vault-btn vault-btn--primary',
             href: '#/products',
-          }, i18n.t('home.heroCtaPrimary')),
+          },
+            h('span', {}, i18n.t('home.heroCtaPrimary')),
+            h('span', { class: 'vault-btn__arrow', innerHTML: icons.arrowL }),
+          ),
           h('a', {
-            class: 'btn btn--ghost home-hero__cta',
+            class: 'vault-btn vault-btn--ghost',
             href: '#/brands',
           }, i18n.t('home.heroCtaSecondary')),
         ),
-        h('div', { class: 'home-hero__badge' },
-          h('span', { class: 'home-hero__badge-icon', innerHTML: icons.check }),
-          i18n.t('home.heroBadge'),
+
+        h('div', { class: 'vault-hero__trust' },
+          Trust('✓', i18n.t('home.heroTrust1')),
+          Trust('✓', i18n.t('home.heroTrust2')),
+          Trust('✓', i18n.t('home.heroTrust3')),
         ),
       ),
-      HeroVisual(),
+
+      // ── Right: 3D Phone ──
+      PhoneStage(),
     ),
   );
 }
 
-function HeroVisual() {
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', '0 0 400 500');
-  svg.setAttribute('class', 'home-hero__phone-svg');
-  svg.setAttribute('aria-hidden', 'true');
+function Line(text, className = '') {
+  return h('span', { class: `vault-hero__title-line ${className}` },
+    h('span', { class: 'vault-hero__title-inner', 'data-weight-inner': '' }, text),
+  );
+}
 
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="heroPhoneBody" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="var(--color-text)" stop-opacity="0.94"/>
-        <stop offset="1" stop-color="var(--color-text)" stop-opacity="0.82"/>
-      </linearGradient>
-      <linearGradient id="heroScreen" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="var(--color-accent)"/>
-        <stop offset="1" stop-color="color-mix(in srgb, var(--color-accent) 60%, #7a3dff)"/>
-      </linearGradient>
-      <radialGradient id="heroGlow" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0" stop-color="var(--color-accent)" stop-opacity="0.35"/>
-        <stop offset="1" stop-color="var(--color-accent)" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-
-    <!-- Glow پشت گوشی -->
-    <circle cx="200" cy="240" r="200" fill="url(#heroGlow)"/>
-
-    <!-- بدنه گوشی -->
-    <rect x="110" y="60" width="180" height="360" rx="32"
-          fill="url(#heroPhoneBody)"
-          stroke="var(--color-accent)" stroke-width="1.2" stroke-opacity="0.35"/>
-
-    <!-- ناچ -->
-    <rect x="175" y="70" width="50" height="12" rx="6"
-          fill="var(--color-bg)" opacity="0.5"/>
-
-    <!-- صفحه -->
-    <rect x="122" y="90" width="156" height="300" rx="20"
-          fill="url(#heroScreen)" opacity="0.85"/>
-
-    <!-- جزئیات داخل صفحه -->
-    <rect x="140" y="120" width="120" height="8" rx="4" fill="#fff" opacity="0.35"/>
-    <rect x="140" y="140" width="90" height="8" rx="4" fill="#fff" opacity="0.2"/>
-    <rect x="140" y="180" width="120" height="80" rx="12" fill="#fff" opacity="0.15"/>
-    <rect x="140" y="280" width="120" height="8" rx="4" fill="#fff" opacity="0.3"/>
-    <rect x="140" y="300" width="70" height="8" rx="4" fill="#fff" opacity="0.2"/>
-
-    <!-- دکمه پایین -->
-    <circle cx="200" cy="405" r="4" fill="var(--color-accent)" opacity="0.6"/>
-
-    <!-- ذرات شناور -->
-    <circle cx="80" cy="150" r="6" fill="var(--color-accent)" opacity="0.35"/>
-    <circle cx="330" cy="180" r="4" fill="var(--color-accent)" opacity="0.45"/>
-    <circle cx="60" cy="360" r="5" fill="var(--color-accent)" opacity="0.3"/>
-    <circle cx="340" cy="380" r="7" fill="var(--color-accent)" opacity="0.25"/>
-    <circle cx="320" cy="80"  r="3" fill="var(--color-accent)" opacity="0.5"/>
-  `;
-
-  return h('div', { class: 'home-hero__visual' },
-    h('div', { class: 'home-hero__visual-glow', 'aria-hidden': 'true' }),
-    svg,
+function Trust(icon, text) {
+  return h('div', { class: 'vault-hero__trust-item' },
+    h('span', { class: 'vault-hero__trust-icon' }, icon),
+    h('span', {}, text),
   );
 }
 
 // ═══════════════════════════════════════════════════════════
-//  02. TRUST STRIP
+//  Phone Stage — 3D Phone with Gold Pedestal
 // ═══════════════════════════════════════════════════════════
-function TrustStrip() {
-  const items = [
-    { icon: 'shield', titleKey: 'home.trust1Title', textKey: 'home.trust1Text' },
-    { icon: 'tag',    titleKey: 'home.trust2Title', textKey: 'home.trust2Text' },
-    { icon: 'box',    titleKey: 'home.trust3Title', textKey: 'home.trust3Text' },
-    { icon: 'user',   titleKey: 'home.trust4Title', textKey: 'home.trust4Text' },
-  ];
+function PhoneStage() {
+  return h('div', { class: 'vault-stage' },
+    // ── Glow behind phone ──
+    h('div', { class: 'vault-stage__glow' }),
 
-  return h('section', { class: 'home-trust' },
-    h('div', { class: 'container home-trust__inner' },
-      ...items.map(item => h('div', { class: 'home-trust__item' },
-        h('div', { class: 'home-trust__icon', innerHTML: icons[item.icon] }),
-        h('div', { class: 'home-trust__text' },
-          h('strong', {}, i18n.t(item.titleKey)),
-          h('span', {}, i18n.t(item.textKey)),
+    // ── Pedestal shadow ──
+    h('div', { class: 'vault-stage__pedestal' }),
+
+    // ── Particles ──
+    ParticlesLayer(),
+
+    // ── The phone ──
+    h('div', { class: 'vault-stage__phone', 'data-phone': '' },
+      h('div', { class: 'vault-stage__phone-body' },
+        h('div', { class: 'vault-stage__phone-notch' }),
+        h('div', { class: 'vault-stage__phone-screen' },
+          h('div', { class: 'vault-stage__screen-line vault-stage__screen-line--1' }),
+          h('div', { class: 'vault-stage__screen-line vault-stage__screen-line--2' }),
+          h('div', { class: 'vault-stage__screen-block' }),
+          h('div', { class: 'vault-stage__screen-line vault-stage__screen-line--3' }),
+          h('div', { class: 'vault-stage__screen-line vault-stage__screen-line--4' }),
         ),
-      )),
+      ),
+      h('div', { class: 'vault-stage__phone-glow' }),
+    ),
+
+    // ── Floating badges ──
+    h('div', { class: 'vault-stage__badge vault-stage__badge--1' },
+      h('span', { class: 'vault-stage__badge-dot' }),
+      h('span', {}, '4.9'),
+      h('span', { class: 'vault-stage__badge-label' }, 'rating'),
+    ),
+
+    h('div', { class: 'vault-stage__badge vault-stage__badge--2' },
+      h('span', { class: 'vault-stage__badge-icon' }, '⚡'),
+      h('span', {}, '2h'),
+      h('span', { class: 'vault-stage__badge-label' }, 'delivery'),
     ),
   );
 }
 
-// ═══════════════════════════════════════════════════════════
-//  03. POPULAR BRANDS
-// ═══════════════════════════════════════════════════════════
-function BrandsSection() {
-  return h('section', { class: 'home-section home-brands reveal' },
-    h('div', { class: 'container' },
-      SectionHeader({
-        titleKey: 'home.brandsTitle',
-        subtitleKey: 'home.brandsSubtitle',
-        viewAllHref: '#/brands',
-        viewAllKey:  'home.brandsViewAll',
-      }),
-
-      state.loading
-        ? h('div', { class: 'home-brands__grid' },
-            ...Array.from({ length: 4 }, () => h('div', { class: 'brand-pill brand-pill--skeleton' },
-              h('div', { class: 'skeleton skeleton--line', style: { width: '60%' } }),
-            )),
-          )
-        : h('div', { class: 'home-brands__grid' },
-            ...state.brands.slice(0, 8).map(b => BrandPill(b)),
-          ),
-    ),
-  );
-}
-
-function BrandPill(brand) {
-  const name = i18n.localizeField(brand, 'name');
-  const initial = (name || '?').trim().charAt(0).toUpperCase();
-  const count = state.brandCounts[brand.slug] || 0;
-
-  return h('a', {
-    class: 'brand-pill',
-    href: `#/products?brand=${brand.slug}`,
-    'aria-label': name,
-  },
-    h('span', { class: 'brand-pill__logo' },
-      brand.logo_url
-        ? h('img', { src: brand.logo_url, alt: name, loading: 'lazy' })
-        : h('span', { class: 'brand-pill__initial' }, initial),
-    ),
-    h('span', { class: 'brand-pill__name' }, name),
-    count > 0
-      ? h('span', { class: 'brand-pill__count' },
-          count === 1
-            ? i18n.t('home.brandsCountOne')
-            : i18n.t('home.brandsCount', { n: i18n.formatNumber(count) }))
-      : null,
-  );
+function ParticlesLayer() {
+  const wrap = h('div', { class: 'vault-stage__particles' });
+  for (let i = 0; i < 12; i++) {
+    const p = h('span', { class: 'vault-particle' });
+    p.style.setProperty('--x', `${20 + Math.random() * 60}%`);
+    p.style.setProperty('--y', `${20 + Math.random() * 60}%`);
+    p.style.setProperty('--delay', `${Math.random() * 6}s`);
+    p.style.setProperty('--duration', `${6 + Math.random() * 6}s`);
+    p.style.setProperty('--size', `${1 + Math.random() * 2}px`);
+    wrap.append(p);
+  }
+  return wrap;
 }
 
 // ═══════════════════════════════════════════════════════════
-//  04. FEATURED PRODUCTS
+//  Featured Section
 // ═══════════════════════════════════════════════════════════
 function FeaturedSection() {
-  return h('section', { class: 'home-section home-products reveal' },
+  return h('section', { class: 'vault-section vault-section--featured reveal' },
     h('div', { class: 'container' },
       SectionHeader({
-        titleKey:    'home.featuredTitle',
+        eyebrow:  'CURATED',
+        titleKey: 'home.featuredTitle',
         subtitleKey: 'home.featuredSubtitle',
         viewAllHref: '#/products',
         viewAllKey:  'home.featuredViewAll',
       }),
 
       state.loading
-        ? h('div', { class: 'products-grid' }, ...Skeleton.grid(4))
+        ? h('div', { class: 'vault-grid' }, ...Skeleton.grid(4))
         : state.featured.length === 0
-          ? h('div', { class: 'home-empty' }, i18n.t('home.featuredEmpty'))
-          : h('div', { class: 'products-grid' },
+          ? h('div', { class: 'vault-empty' }, i18n.t('home.featuredEmpty'))
+          : h('div', { class: 'vault-grid' },
               ...state.featured.slice(0, 4).map(p => ProductCard(p)),
             ),
     ),
@@ -310,23 +260,24 @@ function FeaturedSection() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  05. NEW ARRIVALS
+//  New Arrivals
 // ═══════════════════════════════════════════════════════════
 function NewArrivalsSection() {
-  return h('section', { class: 'home-section home-products reveal' },
+  return h('section', { class: 'vault-section reveal' },
     h('div', { class: 'container' },
       SectionHeader({
-        titleKey:    'home.newTitle',
+        eyebrow:  'FRESH',
+        titleKey: 'home.newTitle',
         subtitleKey: 'home.newSubtitle',
         viewAllHref: '#/products?sort=newest',
         viewAllKey:  'home.newViewAll',
       }),
 
       state.loading
-        ? h('div', { class: 'products-grid' }, ...Skeleton.grid(4))
+        ? h('div', { class: 'vault-grid' }, ...Skeleton.grid(4))
         : state.newArrivals.length === 0
-          ? h('div', { class: 'home-empty' }, i18n.t('home.newEmpty'))
-          : h('div', { class: 'products-grid' },
+          ? h('div', { class: 'vault-empty' }, i18n.t('home.newEmpty'))
+          : h('div', { class: 'vault-grid' },
               ...state.newArrivals.slice(0, 4).map(p => ProductCard(p)),
             ),
     ),
@@ -334,35 +285,94 @@ function NewArrivalsSection() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  06. PROMO BANNER
+//  Brands — Gold Marquee
+// ═══════════════════════════════════════════════════════════
+function BrandsSection() {
+  return h('section', { class: 'vault-section vault-brands reveal' },
+    h('div', { class: 'container' },
+      SectionHeader({
+        eyebrow:  'PARTNERS',
+        titleKey: 'home.brandsTitle',
+        subtitleKey: 'home.brandsSubtitle',
+        viewAllHref: '#/brands',
+        viewAllKey:  'home.brandsViewAll',
+      }),
+
+      state.loading
+        ? h('div', { class: 'vault-brands__grid' },
+            ...Array.from({ length: 6 }, () =>
+              h('div', { class: 'vault-brand vault-brand--skeleton' })
+            ),
+          )
+        : h('div', { class: 'vault-brands__grid' },
+            ...state.brands.slice(0, 10).map(b => BrandCard(b)),
+          ),
+    ),
+  );
+}
+
+function BrandCard(brand) {
+  const name = i18n.localizeField(brand, 'name');
+  const initial = (name || '?').trim().charAt(0).toUpperCase();
+  const count = state.brandCounts[brand.slug] || 0;
+
+  return h('a', {
+    class: 'vault-brand',
+    href: `#/products?brand=${brand.slug}`,
+    'aria-label': name,
+  },
+    h('div', { class: 'vault-brand__logo' },
+      brand.logo_url
+        ? h('img', { src: brand.logo_url, alt: name, loading: 'lazy' })
+        : h('span', { class: 'vault-brand__initial' }, initial),
+    ),
+    h('div', { class: 'vault-brand__body' },
+      h('div', { class: 'vault-brand__name' }, name),
+      count > 0
+        ? h('div', { class: 'vault-brand__count' },
+            count === 1
+              ? i18n.t('home.brandsCountOne')
+              : i18n.t('home.brandsCount', { n: i18n.formatNumber(count) }))
+        : null,
+    ),
+    h('span', { class: 'vault-brand__arrow', innerHTML: icons.arrowL }),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Promo — Full Width Gold
 // ═══════════════════════════════════════════════════════════
 function PromoSection() {
-  return h('section', { class: 'home-section home-promo reveal' },
+  return h('section', { class: 'vault-section vault-promo reveal' },
     h('div', { class: 'container' },
-      h('div', { class: 'home-promo__inner' },
-        h('div', { class: 'home-promo__content' },
-          h('span', { class: 'home-promo__badge' },
-            h('span', { class: 'home-promo__badge-dot', 'aria-hidden': 'true' }),
+      h('div', { class: 'vault-promo__card' },
+        h('div', { class: 'vault-promo__left' },
+          h('div', { class: 'vault-promo__eyebrow' },
+            h('span', { class: 'vault-promo__pulse' }),
             i18n.t('home.promoBadge'),
           ),
-          h('h2', { class: 'home-promo__title' }, i18n.t('home.promoTitle')),
-          h('p',  { class: 'home-promo__text' },  i18n.t('home.promoText')),
+          h('h2', { class: 'vault-promo__title' }, i18n.t('home.promoTitle')),
+          h('p',  { class: 'vault-promo__text' },  i18n.t('home.promoText')),
 
-          h('div', { class: 'home-promo__footer' },
-            h('div', { class: 'home-promo__code' },
-              h('span', { class: 'home-promo__code-label' }, i18n.t('home.promoCode')),
-              h('code', { class: 'home-promo__code-value' }, 'SUMMER20'),
+          h('div', { class: 'vault-promo__footer' },
+            h('div', { class: 'vault-promo__code' },
+              h('span', { class: 'vault-promo__code-label' }, i18n.t('home.promoCode')),
+              h('code', { class: 'vault-promo__code-value' }, 'SUMMER20'),
             ),
             h('a', {
-              class: 'btn btn--accent home-promo__cta',
+              class: 'vault-btn vault-btn--primary',
               href: '#/products',
-            }, i18n.t('home.promoCta')),
+            },
+              h('span', {}, i18n.t('home.promoCta')),
+              h('span', { class: 'vault-btn__arrow', innerHTML: icons.arrowL }),
+            ),
           ),
         ),
-        h('div', { class: 'home-promo__visual', 'aria-hidden': 'true' },
-          h('div', { class: 'home-promo__discount' },
-            h('span', { class: 'home-promo__discount-num' }, i18n.t('home.promoDiscount')),
-            h('span', { class: 'home-promo__discount-label' }, i18n.t('home.promoLabel')),
+
+        h('div', { class: 'vault-promo__right', 'aria-hidden': 'true' },
+          h('div', { class: 'vault-promo__discount' },
+            h('span', { class: 'vault-promo__discount-num' }, i18n.t('home.promoDiscount')),
+            h('span', { class: 'vault-promo__discount-label' }, i18n.t('home.promoLabel')),
           ),
         ),
       ),
@@ -371,49 +381,23 @@ function PromoSection() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  07. WHY PHONE STORE
+//  Section Header
 // ═══════════════════════════════════════════════════════════
-function WhySection() {
-  const items = [
-    { icon: 'shield', titleKey: 'home.why1Title', textKey: 'home.why1Text' },
-    { icon: 'tag',    titleKey: 'home.why2Title', textKey: 'home.why2Text' },
-    { icon: 'box',    titleKey: 'home.why3Title', textKey: 'home.why3Text' },
-    { icon: 'user',   titleKey: 'home.why4Title', textKey: 'home.why4Text' },
-  ];
-
-  return h('section', { class: 'home-section home-why reveal' },
-    h('div', { class: 'container' },
-      h('header', { class: 'home-section__header home-section__header--center' },
-        h('h2', { class: 'home-section__title' }, i18n.t('home.whyTitle')),
-        h('p',  { class: 'home-section__subtitle' }, i18n.t('home.whySubtitle')),
-      ),
-
-      h('div', { class: 'home-why__grid' },
-        ...items.map(item => h('article', { class: 'home-why__card' },
-          h('div', { class: 'home-why__icon', innerHTML: icons[item.icon] }),
-          h('h3', { class: 'home-why__title' }, i18n.t(item.titleKey)),
-          h('p',  { class: 'home-why__text' },  i18n.t(item.textKey)),
-        )),
-      ),
-    ),
-  );
-}
-
-// ═══════════════════════════════════════════════════════════
-//  Section Header helper
-// ═══════════════════════════════════════════════════════════
-function SectionHeader({ titleKey, subtitleKey, viewAllHref, viewAllKey }) {
-  return h('header', { class: 'home-section__header' },
-    h('div', {},
-      h('h2', { class: 'home-section__title' }, i18n.t(titleKey)),
+function SectionHeader({ eyebrow, titleKey, subtitleKey, viewAllHref, viewAllKey }) {
+  return h('header', { class: 'vault-section__header' },
+    h('div', { class: 'vault-section__left' },
+      eyebrow
+        ? h('span', { class: 'vault-section__eyebrow' }, eyebrow)
+        : null,
+      h('h2', { class: 'vault-section__title' }, i18n.t(titleKey)),
       subtitleKey
-        ? h('p', { class: 'home-section__subtitle' }, i18n.t(subtitleKey))
+        ? h('p', { class: 'vault-section__subtitle' }, i18n.t(subtitleKey))
         : null,
     ),
     viewAllHref
-      ? h('a', { class: 'home-section__view-all', href: viewAllHref },
+      ? h('a', { class: 'vault-section__view-all', href: viewAllHref },
           h('span', {}, i18n.t(viewAllKey)),
-          h('span', { class: 'home-section__view-all-arrow', innerHTML: icons.arrowL }),
+          h('span', { class: 'vault-section__view-all-arrow', innerHTML: icons.arrowL }),
         )
       : null,
   );
@@ -423,11 +407,9 @@ function SectionHeader({ titleKey, subtitleKey, viewAllHref, viewAllKey }) {
 //  Reveal on scroll
 // ═══════════════════════════════════════════════════════════
 function setupReveal() {
-  // پاک‌سازی observer قبلی
   if (state.observer) state.observer.disconnect();
 
   if (!('IntersectionObserver' in window)) {
-    // اگر پشتیبانی نبود، همه رو نشون بده
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-revealed'));
     return;
   }
@@ -445,4 +427,83 @@ function setupReveal() {
   });
 
   document.querySelectorAll('.reveal').forEach(el => state.observer.observe(el));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Hero Interactions — Weight Shift + Phone Tilt
+// ═══════════════════════════════════════════════════════════
+function setupHeroInteractions() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // ── Weight Shift: تیتر با ورود از ۳۰۰ به ۹۰۰ ──
+  const titleInners = document.querySelectorAll('[data-weight-inner]');
+  titleInners.forEach((el, i) => {
+    el.animate(
+      [
+        { fontVariationSettings: "'wght' 300", letterSpacing: '0.02em', opacity: 0 },
+        { fontVariationSettings: "'wght' 900", letterSpacing: '-0.04em', opacity: 1 },
+      ],
+      {
+        duration: 1400,
+        delay: 300 + i * 200,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        fill: 'both',
+      }
+    );
+  });
+
+  // ── Phone Tilt با حرکت موس ──
+  const phone = document.querySelector('[data-phone]');
+  const hero  = document.querySelector('.vault-hero');
+  if (!phone || !hero) return;
+
+  let rafId = null;
+  let targetRX = 0, targetRY = 0;
+  let curRX = 0, curRY = 0;
+
+  const onMove = (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+    targetRY = x * 16;
+    targetRX = -y * 10;
+
+    if (!rafId) tick();
+  };
+
+  const onLeave = () => {
+    targetRX = 0;
+    targetRY = 0;
+    if (!rafId) tick();
+  };
+
+  const tick = () => {
+    curRX += (targetRX - curRX) * 0.08;
+    curRY += (targetRY - curRY) * 0.08;
+
+    phone.style.transform = `
+      rotateX(${curRX.toFixed(2)}deg)
+      rotateY(${curRY.toFixed(2)}deg)
+    `;
+
+    const done =
+      Math.abs(targetRX - curRX) < 0.05 &&
+      Math.abs(targetRY - curRY) < 0.05;
+
+    if (done) {
+      curRX = targetRX;
+      curRY = targetRY;
+      rafId = null;
+      if (targetRX === 0 && targetRY === 0) {
+        phone.style.transform = '';
+      }
+      return;
+    }
+
+    rafId = requestAnimationFrame(tick);
+  };
+
+  hero.addEventListener('mousemove', onMove);
+  hero.addEventListener('mouseleave', onLeave);
 }

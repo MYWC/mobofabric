@@ -1,22 +1,27 @@
+// ═══════════════════════════════════════════════════════════
+//  Search — ترجمه‌ها
+//  Phase 26 — Obsidian Vault
+// ═══════════════════════════════════════════════════════════
+
 export const searchLang = {
   fa: {
-    // Modal
+    // ── Modal ──
     title:       'جستجو',
     placeholder: 'جستجوی گوشی، برند یا مدل...',
-    hint:        'برای بستن Esc، برای رفتن Enter',
-    hintNav:     '↑↓ برای ناوبری، Enter برای انتخاب',
+    hint:        'Esc برای بستن · Enter برای رفتن',
+    hintNav:     '↑↓ ناوبری · Enter انتخاب',
     shortcut:    'Ctrl',
 
-    // Recent
+    // ── Recent ──
     recent:       'جستجوهای اخیر',
     recentClear:  'پاک کردن',
     remove:       'حذف',
 
-    // Suggestions
-    suggestions:  'جستجوهای پیشنهادی',
+    // ── Suggestions ──
+    suggestions:  'پیشنهادی',
     noRecent:     'هنوز جستجویی نکرده‌اید',
 
-    // Results
+    // ── Results ──
     results:      'نتایج',
     resultCount:  '{n} نتیجه',
     resultCountOne: '۱ نتیجه',
@@ -26,7 +31,7 @@ export const searchLang = {
     viewAll:      'مشاهده همه نتایج',
     errorLoad:    'خطا در جستجو',
 
-    // Full page
+    // ── Full page ──
     pageTitle:    'جستجو',
     resultsFor:   'نتایج جستجو برای «{query}»',
     noQuery:      'عبارتی برای جستجو وارد کنید.',
@@ -38,8 +43,8 @@ export const searchLang = {
   en: {
     title:       'Search',
     placeholder: 'Search phones, brands, or models...',
-    hint:        'Press Esc to close, Enter to open',
-    hintNav:     '↑↓ to navigate, Enter to select',
+    hint:        'Esc to close · Enter to open',
+    hintNav:     '↑↓ navigate · Enter select',
     shortcut:    'Ctrl',
 
     recent:       'Recent searches',

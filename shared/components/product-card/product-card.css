@@ -1,78 +1,632 @@
-.product-card {
+/* ═══════════════════════════════════════════════════════════
+   Product Card — Velvet Luxury
+   Phase 26 — Obsidian Vault
+   ═══════════════════════════════════════════════════════════ */
+
+.vault-card {
+  position: relative;
+  display: block;
+  perspective: 1200px;
+}
+
+.vault-card__inner {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
+  height: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
-}
-.product-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-  border-color: transparent;
+  transition:
+    transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 400ms ease,
+    box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.product-card__link { display: flex; flex-direction: column; }
+/* ═══════════════════════════════════════════════════════════
+   Hover State — Gold Glow
+   ═══════════════════════════════════════════════════════════ */
+.vault-card:hover .vault-card__inner {
+  transform: translateY(-6px);
+  border-color: var(--card-hover-border);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    0 0 40px var(--color-gold-glow),
+    0 0 0 1px var(--card-hover-border);
+}
 
-.product-card__media {
+/* ── خط طلایی بالای کارت در hover ── */
+.vault-card__inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--color-gold) 50%,
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 400ms ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.vault-card:hover .vault-card__inner::before {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Media
+   ═══════════════════════════════════════════════════════════ */
+.vault-card__media {
   position: relative;
-  aspect-ratio: 1;
-  background: var(--color-bg-secondary);
+  display: block;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
+  background: var(--color-bg-secondary);
 }
-.product-card__media img {
+
+/* ── پس‌زمینه‌ی مخملی ── */
+.vault-card__media-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 30%,
+      color-mix(in srgb, var(--color-gold) 6%, transparent) 0%,
+      transparent 60%),
+    radial-gradient(circle at 70% 70%,
+      color-mix(in srgb, var(--color-gold) 4%, transparent) 0%,
+      transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.vault-card__img {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--t-slow);
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.product-card:hover .product-card__media img { transform: scale(1.04); }
 
-.product-card__badge {
+.vault-card:hover .vault-card__img {
+  transform: scale(1.06);
+}
+
+/* ── Shine: نوری که در hover از کنار رد می‌شه ── */
+.vault-card__shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(201, 169, 97, 0.15) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 70%);
+  z-index: 2;
+  pointer-events: none;
+  transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vault-card:hover .vault-card__shine {
+  left: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Badges
+   ═══════════════════════════════════════════════════════════ */
+.vault-card__badge {
   position: absolute;
   top: var(--space-3);
   inset-inline-start: var(--space-3);
-  background: var(--color-danger);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.product-card__body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-1); }
-.product-card__brand {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.vault-card__badge--discount {
+  background: linear-gradient(135deg,
+    var(--color-gold-light) 0%,
+    var(--color-gold) 100%);
+  color: #0B0B0F;
+  box-shadow:
+    0 4px 12px var(--color-gold-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
-.product-card__title {
-  font-size: var(--text-base);
-  font-weight: 600;
+
+.vault-card__badge--hot {
+  background: rgba(255, 107, 90, 0.9);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(255, 107, 90, 0.3);
+}
+
+/* ── Stock Badge ── */
+.vault-card__stock {
+  position: absolute;
+  bottom: var(--space-3);
+  inset-inline-start: var(--space-3);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.vault-card__stock::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  animation: vault-card-stock-pulse 2s ease-in-out infinite;
+}
+
+@keyframes vault-card-stock-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.vault-card__stock--low {
+  background: rgba(245, 184, 96, 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 184, 96, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Actions (فقط در hover)
+   ═══════════════════════════════════════════════════════════ */
+.vault-card__actions {
+  position: absolute;
+  top: var(--space-3);
+  inset-inline-end: var(--space-3);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+[dir="rtl"] .vault-card__actions {
+  transform: translateX(-8px);
+}
+
+.vault-card:hover .vault-card__actions {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.vault-card__action {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(19, 19, 24, 0.85);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(201, 169, 97, 0.2);
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.vault-card__action svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.vault-card__action:hover {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: #0B0B0F;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px var(--color-gold-glow);
+}
+
+.vault-card__action.is-active {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #FFFFFF;
+}
+
+.vault-card__action.is-active svg {
+  fill: currentColor;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Body
+   ═══════════════════════════════════════════════════════════ */
+.vault-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  flex: 1;
+}
+
+/* ── Brand ── */
+.vault-card__brand {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  opacity: 0.85;
+}
+
+/* ── Title ── */
+.vault-card__title {
+  display: block;
+  font-family: var(--font-fa);
+  font-size: 15px;
+  font-weight: var(--fw-bold);
+  font-variation-settings: 'wght' 700;
   line-height: 1.35;
   color: var(--color-text);
+  letter-spacing: -0.01em;
   min-height: 2.7em;
+  transition: color 200ms ease;
 }
 
-.product-card__price { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-1); }
-.product-card__price-current { font-weight: 700; font-size: var(--text-base); }
-.product-card__price-old {
-  font-size: var(--text-xs);
+.vault-card:hover .vault-card__title {
+  color: var(--color-gold-light);
+}
+
+/* ── Specs ── */
+.vault-card__specs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.04em;
+  margin-block: 2px;
+}
+
+.vault-card__spec {
+  font-weight: var(--fw-medium);
+}
+
+.vault-card__spec-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Price Row
+   ═══════════════════════════════════════════════════════════ */
+.vault-card__price-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.vault-card__price-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vault-card__price {
+  font-family: var(--font-fa);
+  font-size: 17px;
+  font-weight: var(--fw-black);
+  font-variation-settings: 'wght' 900;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  transition: color 300ms ease;
+}
+
+.vault-card:hover .vault-card__price {
+  color: var(--color-gold-light);
+}
+
+.vault-card__price-old {
+  font-family: var(--font-fa);
+  font-size: 12px;
+  font-weight: var(--fw-regular);
   color: var(--color-text-tertiary);
   text-decoration: line-through;
+  white-space: nowrap;
 }
 
-.product-card__cta {
-  margin: 0 var(--space-4) var(--space-4);
-  padding: 10px 16px;
-  border-radius: var(--radius-full);
-  background: var(--color-bg-secondary);
+/* ═══════════════════════════════════════════════════════════
+   CTA Button — Gold Circle
+   ═══════════════════════════════════════════════════════════ */
+.vault-card__cta {
+  position: relative;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid var(--color-border-strong);
   color: var(--color-text);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  transition: background var(--t-fast), color var(--t-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.product-card__cta:hover:not(:disabled) { background: var(--color-accent); color: #fff; }
-.product-card__cta:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.vault-card__cta svg {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  z-index: 1;
+  transition: transform 300ms ease;
+}
+
+.vault-card__cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg,
+    var(--color-gold-light) 0%,
+    var(--color-gold) 100%);
+  transform: scale(0);
+  transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 0;
+}
+
+.vault-card__cta:hover:not(:disabled) {
+  border-color: var(--color-gold);
+  color: #0B0B0F;
+  box-shadow:
+    0 0 24px var(--color-gold-glow),
+    0 6px 16px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+.vault-card__cta:hover:not(:disabled)::before {
+  transform: scale(1);
+}
+
+.vault-card__cta:hover:not(:disabled) svg {
+  transform: rotate(-90deg);
+}
+
+.vault-card__cta.is-clicked {
+  animation: vault-card-cta-click 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes vault-card-cta-click {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.vault-card__cta:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--color-border);
+  color: var(--color-text-tertiary);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Dark Mode Adjustments
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="dark"] .vault-card__inner {
+  background: linear-gradient(160deg,
+    #131318 0%,
+    #0F0F14 100%);
+}
+
+[data-theme="dark"] .vault-card:hover .vault-card__inner {
+  background: linear-gradient(160deg,
+    #18181F 0%,
+    #131318 100%);
+}
+
+[data-theme="dark"] .vault-card__media {
+  background: #0A0A0F;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Light Mode Adjustments
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="light"] .vault-card__inner {
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04);
+}
+
+[data-theme="light"] .vault-card:hover .vault-card__inner {
+  box-shadow:
+    0 24px 48px rgba(26, 26, 26, 0.1),
+    0 8px 24px rgba(26, 26, 26, 0.06),
+    0 0 0 1px var(--color-gold);
+}
+
+[data-theme="light"] .vault-card__media {
+  background: #F2EFE6;
+}
+
+[data-theme="light"] .vault-card__action {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(168, 136, 71, 0.3);
+  color: #1A1A1A;
+}
+
+[data-theme="light"] .vault-card__action:hover {
+  background: var(--color-gold);
+  color: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+
+/* تبلت */
+@media (max-width: 900px) {
+  .vault-card__actions {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .vault-card__action {
+    width: 34px;
+    height: 34px;
+  }
+
+  .vault-card__action svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* موبایل */
+@media (max-width: 640px) {
+  .vault-card__inner:hover {
+    transform: none;
+  }
+
+  .vault-card__body {
+    padding: var(--space-3);
+    gap: 5px;
+  }
+
+  .vault-card__brand {
+    font-size: 9.5px;
+  }
+
+  .vault-card__title {
+    font-size: 13.5px;
+    min-height: 2.5em;
+  }
+
+  .vault-card__specs {
+    font-size: 10px;
+    gap: 6px;
+  }
+
+  .vault-card__price {
+    font-size: 15px;
+  }
+
+  .vault-card__price-old {
+    font-size: 11px;
+  }
+
+  .vault-card__cta {
+    width: 36px;
+    height: 36px;
+  }
+
+  .vault-card__cta svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .vault-card__action {
+    width: 32px;
+    height: 32px;
+  }
+
+  .vault-card__action svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .vault-card__badge {
+    font-size: 9.5px;
+    padding: 4px 8px;
+  }
+
+  .vault-card__stock {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+}
+
+/* موبایل کوچک */
+@media (max-width: 380px) {
+  .vault-card__title {
+    font-size: 13px;
+  }
+
+  .vault-card__price {
+    font-size: 14px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .vault-card__inner,
+  .vault-card__img,
+  .vault-card__shine,
+  .vault-card__actions,
+  .vault-card__action,
+  .vault-card__cta,
+  .vault-card__cta::before,
+  .vault-card__stock::before {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .vault-card:hover .vault-card__inner {
+    transform: none;
+  }
+
+  .vault-card:hover .vault-card__img {
+    transform: none;
+  }
+
+  .vault-card:hover .vault-card__shine {
+    left: -100%;
+  }
+}

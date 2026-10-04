@@ -1,27 +1,210 @@
+/* ═══════════════════════════════════════════════════════════
+   Skeleton — Velvet Luxury
+   Phase 26 — Obsidian Vault
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
+   Base Shimmer
+   ═══════════════════════════════════════════════════════════ */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-gold) 8%, transparent) 50%,
+    transparent 100%);
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 2s ease-in-out infinite;
+}
+
+[data-theme="light"] .skeleton::after {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(168, 136, 71, 0.1) 50%,
+    transparent 100%);
+}
+
+@keyframes skeleton-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Shapes
+   ═══════════════════════════════════════════════════════════ */
+.skeleton--img {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-lg);
+}
+
+.skeleton--thumb {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+}
+
+.skeleton--line {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.skeleton--title {
+  height: 20px;
+  border-radius: 6px;
+}
+
+.skeleton--circle {
+  border-radius: 50%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Product Card Skeleton
+   ═══════════════════════════════════════════════════════════ */
 .skeleton-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+/* خط طلایی ظریف بالای skeleton */
+.skeleton-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--color-gold) 50%,
+    transparent 100%);
+  opacity: 0.15;
+}
+
+.skeleton-card .skeleton--img {
+  border-radius: var(--radius-md);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Layout Skeletons
+   ═══════════════════════════════════════════════════════════ */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Detail Page Skeleton
+   ═══════════════════════════════════════════════════════════ */
+.skeleton-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.skeleton-detail__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.skeleton-detail__thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.skeleton-detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Cart Skeleton
+   ═══════════════════════════════════════════════════════════ */
+.skeleton-cart-item {
+  display: grid;
+  grid-template-columns: 96px 1fr 120px;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
 }
 
-.skeleton {
-  background: linear-gradient(90deg,
-    var(--color-bg-secondary) 0%,
-    var(--color-border) 50%,
-    var(--color-bg-secondary) 100%);
-  background-size: 200% 100%;
-  border-radius: var(--radius-md);
-  animation: skeleton-shimmer 1.4s linear infinite;
+/* ═══════════════════════════════════════════════════════════
+   Pulse (جایگزین برای دیزاین‌های خاص)
+   ═══════════════════════════════════════════════════════════ */
+.skeleton--pulse {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
 }
 
-.skeleton--img  { aspect-ratio: 1; border-radius: var(--radius-lg); }
-.skeleton--line { height: 12px; }
+.skeleton--pulse::after {
+  display: none;
+}
 
-@keyframes skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .skeleton-detail {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 640px) {
+  .skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .skeleton-cart-item {
+    grid-template-columns: 72px 1fr;
+    grid-template-areas:
+      "media info"
+      "controls controls";
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+
+  .skeleton--pulse {
+    animation: none;
+  }
 }

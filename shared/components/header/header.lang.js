@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  Header — ترجمه‌ها (فاز ۱۳)
+//  Header — ترجمه‌ها
+//  Phase 26 — Obsidian Vault
 // ═══════════════════════════════════════════════════════════
 
 export const headerLang = {
@@ -25,13 +26,16 @@ export const headerLang = {
     menuTitle:   'منوی اصلی',
     account:     'حساب کاربری',
   },
+
   en: {
+    // ── ناوبری اصلی ──
     home:        'Home',
     products:    'Products',
     brands:      'Brands',
     about:       'About',
     contact:     'Contact',
 
+    // ── Action ها ──
     search:      'Search',
     cart:        'Cart',
     favorites:   'Favorites',
@@ -39,6 +43,7 @@ export const headerLang = {
     toggleTheme: 'Toggle theme',
     toggleLang:  'Switch language',
 
+    // ── منوی موبایل ──
     menu:        'Menu',
     closeMenu:   'Close menu',
     menuTitle:   'Main menu',
