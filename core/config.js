@@ -37,17 +37,18 @@ export const CONFIG = {
   },
 
   // ═══════════════════════════════════════════════════════════
-  //  Auth UI — تنظیمات صفحه ورود/ثبت‌نام (فاز ۱۹)
+  //  Auth UI
   // ═══════════════════════════════════════════════════════════
   authUI: {
-    splitLayout:      true,    // چیدمان دو تایی (Split)
-    particles:        true,    // ذرات شناور
-    animatedGradient: true,    // گرادیان متحرک
-    passwordStrength: true,    // نشانگر قدرت رمز
-    socialLogin:      true,    // دکمه‌های ورود اجتماعی
-    confetti:         true,    // جشن بعد از ورود
-    shakeOnError:     true,    // لرزش در خطا
-    magneticButton:   true,    // دکمه مغناطیسی
+    splitLayout:      true,
+    particles:        true,
+    animatedGradient: true,
+    passwordStrength: true,
+    socialLogin:      true,
+    socialProviders:  ['google', 'github'],
+    confetti:         true,
+    shakeOnError:     true,
+    magneticButton:   true,
   },
 
   // ═══════════════════════════════════════════════════════════
@@ -89,7 +90,5 @@ export const CONFIG = {
     recentlyViewed:    true,
     // ── فاز 18 ──
     sound:             true,
-    // ── فاز 19 ──
-    authAnimations:    true,
   },
 };
