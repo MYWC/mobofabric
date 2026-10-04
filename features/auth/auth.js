@@ -1,6 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-//  Auth — Phase 20 (Complete Rewrite)
-//  همه چیز تو یک فایل — بدون 404، بدون import اضافه
+//  Auth — Phase 21 (Centered Single-Page Design)
 // ═══════════════════════════════════════════════════════════
 
 import { h, qs, on, render } from '../../core/dom.js';
@@ -26,8 +25,8 @@ const state = {
   socialLoading: null,
   inputs:    {},
   showPass:  false,
-  passwordStrength: 0,
   pwsVisible: false,
+  pwsEl:     null,
 };
 
 let offAuth = null;
@@ -41,7 +40,7 @@ const SVG = (inner, size = 20) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 
 const I = {
-  logo: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>`,
+  logo: `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>`,
   mail: SVG(`<rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 8 10 6 10-6"/>`),
   lock: SVG(`<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`),
   user: SVG(`<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/>`),
@@ -49,7 +48,6 @@ const I = {
   eyeOff: SVG(`<path d="M9.88 9.88a3 3 0 0 0 4.24 4.24M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61M2 2l20 20"/>`),
   arrow: SVG(`<path d="m15 18-6-6 6-6"/>`, 18),
   check: SVG(`<path d="M20 6 9 17l-5-5"/>`, 14),
-  close: SVG(`<path d="M18 6 6 18M6 6l12 12"/>`, 18),
   spinner: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56" opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>`,
   google: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`,
   github: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>`,
@@ -84,7 +82,7 @@ function showAuth() {
   state.inputs = {};
   state.showPass = false;
   state.pwsVisible = false;
-  state.passwordStrength = 0;
+  state.pwsEl = null;
 
   if (state.profile) {
     router.navigate('/');
@@ -101,135 +99,51 @@ function renderPage() {
   if (!state.container) return;
 
   const page = h('div', { class: 'au-page' },
-    HeroSide(),
-    FormSide(),
+    Background(),
+    Content(),
   );
 
   render(state.container, page);
 
-  // reveal animations
-  requestAnimationFrame(() => {
-    page.classList.add('is-ready');
-  });
+  requestAnimationFrame(() => page.classList.add('is-ready'));
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Hero Side
+//  Background
 // ═══════════════════════════════════════════════════════════
-function HeroSide() {
-  const hero = h('div', { class: 'au-hero' });
+function Background() {
+  const bg = h('div', { class: 'au-bg' });
 
-  hero.append(
-    h('div', { class: 'au-hero__bg' }),
-    h('div', { class: 'au-hero__grid' }),
-    h('div', { class: 'au-hero__glow' }),
+  bg.append(
+    h('div', { class: 'au-bg__gradient' }),
+    h('div', { class: 'au-bg__grid' }),
+    h('div', { class: 'au-bg__glow au-bg__glow--1' }),
+    h('div', { class: 'au-bg__glow au-bg__glow--2' }),
   );
 
   // ── ذرات ──
-  const particles = h('div', { class: 'au-hero__particles' });
-  for (let i = 0; i < 15; i++) {
+  const particles = h('div', { class: 'au-bg__particles' });
+  for (let i = 0; i < 20; i++) {
     const p = h('span', { class: 'au-particle' });
     p.style.setProperty('--x', `${Math.random() * 100}%`);
     p.style.setProperty('--y', `${Math.random() * 100}%`);
-    p.style.setProperty('--delay', `${Math.random() * 4}s`);
+    p.style.setProperty('--delay', `${Math.random() * 5}s`);
+    p.style.setProperty('--duration', `${5 + Math.random() * 5}s`);
     p.style.setProperty('--size', `${2 + Math.random() * 4}px`);
     particles.append(p);
   }
-  hero.append(particles);
+  bg.append(particles);
 
-  // ── Content ──
-  hero.append(
-    h('div', { class: 'au-hero__content' },
-
-      // Brand
-      h('div', { class: 'au-hero__brand' },
-        h('span', { class: 'au-hero__logo', innerHTML: I.logo }),
-        h('span', {}, 'Phone Store'),
-      ),
-
-      // Center
-      h('div', { class: 'au-hero__center' },
-        HeroPhone(),
-        h('h2', { class: 'au-hero__title' }, i18n.t('auth.splitTitle')),
-        h('p', { class: 'au-hero__subtitle' }, i18n.t('auth.splitSubtitle')),
-      ),
-
-      // Stats + benefits
-      h('div', { class: 'au-hero__footer' },
-        h('div', { class: 'au-stats' },
-          h('div', { class: 'au-stat' },
-            h('div', { class: 'au-stat__value' }, i18n.t('auth.statCustomers')),
-            h('div', { class: 'au-stat__label' }, i18n.t('auth.statCustomersLabel')),
-          ),
-          h('span', { class: 'au-stat__divider' }),
-          h('div', { class: 'au-stat' },
-            h('div', { class: 'au-stat__stars' }, '★★★★★'),
-            h('div', { class: 'au-stat__label' }, i18n.t('auth.statRatingLabel')),
-          ),
-        ),
-        h('ul', { class: 'au-benefits' },
-          benefit('auth.benefit1'),
-          benefit('auth.benefit2'),
-          benefit('auth.benefit3'),
-          benefit('auth.benefit4'),
-        ),
-      ),
-    ),
-  );
-
-  return hero;
-}
-
-function HeroPhone() {
-  const el = h('div', { class: 'au-phone' });
-  el.innerHTML = `
-    <svg viewBox="0 0 300 440" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="phoneBody" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="rgba(255,255,255,0.98)"/>
-          <stop offset="1" stop-color="rgba(255,255,255,0.82)"/>
-        </linearGradient>
-        <linearGradient id="phoneScreen" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#0071e3"/>
-          <stop offset="0.5" stop-color="#5856d6"/>
-          <stop offset="1" stop-color="#af52de"/>
-        </linearGradient>
-        <radialGradient id="phoneGlow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.5"/>
-          <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <ellipse cx="150" cy="220" rx="140" ry="180" fill="url(#phoneGlow)"/>
-      <rect x="60" y="30" width="180" height="380" rx="32" fill="url(#phoneBody)"/>
-      <rect x="60" y="30" width="180" height="380" rx="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
-      <rect x="130" y="42" width="40" height="12" rx="6" fill="rgba(0,0,0,0.18)"/>
-      <rect x="74" y="66" width="152" height="312" rx="22" fill="url(#phoneScreen)" opacity="0.92"/>
-      <rect x="90" y="100" width="120" height="8" rx="4" fill="#fff" opacity="0.35"/>
-      <rect x="90" y="118" width="80" height="8" rx="4" fill="#fff" opacity="0.22"/>
-      <rect x="90" y="152" width="120" height="80" rx="12" fill="#fff" opacity="0.2"/>
-      <circle cx="118" cy="192" r="12" fill="#fff" opacity="0.4"/>
-      <rect x="90" y="252" width="120" height="8" rx="4" fill="#fff" opacity="0.35"/>
-      <rect x="90" y="270" width="90" height="8" rx="4" fill="#fff" opacity="0.22"/>
-      <rect x="90" y="310" width="120" height="40" rx="20" fill="#fff" opacity="0.35"/>
-      <circle cx="150" cy="392" r="4" fill="#fff" opacity="0.7"/>
-    </svg>
-  `;
-  return el;
-}
-
-function benefit(key) {
-  return h('li', { class: 'au-benefit' },
-    h('span', { class: 'au-benefit__icon', innerHTML: I.check }),
-    h('span', {}, i18n.t(key)),
-  );
+  return bg;
 }
 
 // ═══════════════════════════════════════════════════════════
-//  Form Side
+//  Content
 // ═══════════════════════════════════════════════════════════
-function FormSide() {
-  return h('div', { class: 'au-form-side' },
+function Content() {
+  return h('div', { class: 'au-content' },
     Card(),
+    Footer(),
   );
 }
 
@@ -306,9 +220,6 @@ function Form() {
   return form;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  Input
-// ═══════════════════════════════════════════════════════════
 function Input({ name, type, label, icon, autocomplete, next, required = true }) {
   const id = `au-${name}`;
   const value = state.inputs[name] || '';
@@ -317,10 +228,7 @@ function Input({ name, type, label, icon, autocomplete, next, required = true })
 
   const inputEl = h('input', {
     class: 'au-input',
-    id,
-    name,
-    type,
-    value,
+    id, name, type, value,
     autocomplete: autocomplete || 'off',
     placeholder: ' ',
     required: required || undefined,
@@ -328,9 +236,7 @@ function Input({ name, type, label, icon, autocomplete, next, required = true })
       state.inputs[name] = e.target.value;
       clearInputError(wrapper);
     },
-    onblur: (e) => {
-      validateField(name, e.target.value, wrapper);
-    },
+    onblur: (e) => validateField(name, e.target.value, wrapper),
     onkeydown: (e) => {
       if (e.key === 'Enter' && next) {
         e.preventDefault();
@@ -444,12 +350,10 @@ function clearInputError(wrapper) {
 //  Password Strength
 // ═══════════════════════════════════════════════════════════
 function PasswordStrength() {
-  const wrap = h('div', { class: `au-pws ${state.pwsVisible ? 'is-visible' : ''}` });
-
+  const wrap = h('div', { class: 'au-pws' });
   const bar = h('div', { class: 'au-pws__bar' },
     h('span', {}), h('span', {}), h('span', {}), h('span', {}),
   );
-
   const label = h('div', { class: 'au-pws__label' });
 
   wrap.append(
@@ -462,7 +366,6 @@ function PasswordStrength() {
 
   wrap.dataset.state = 'empty';
   wrap.labelEl = label;
-  wrap.barEl = bar;
   wrap.slots = bar.querySelectorAll('span');
 
   state.pwsEl = wrap;
@@ -481,7 +384,6 @@ function updatePasswordStrength(password) {
   }
 
   const checks = {
-    length:    password.length >= 8,
     lowercase: /[a-z]/.test(password),
     uppercase: /[A-Z]/.test(password),
     digit:     /[0-9]/.test(password),
@@ -497,21 +399,25 @@ function updatePasswordStrength(password) {
   if (checks.special)        score++;
 
   let level, filled;
-
   if (score <= 2)      { level = 'weak';        filled = 1; }
-  else if (score <= 3) { level = 'weak';        filled = 1; }
-  else if (score <= 4) { level = 'medium';      filled = 2; }
-  else if (score <= 5) { level = 'strong';      filled = 3; }
+  else if (score <= 3) { level = 'medium';      filled = 2; }
+  else if (score <= 4) { level = 'strong';      filled = 3; }
   else                 { level = 'very-strong'; filled = 4; }
 
+  const labels = {
+    weak:        i18n.t('auth.passwordWeak'),
+    medium:      i18n.t('auth.passwordMedium'),
+    strong:      i18n.t('auth.passwordStrong'),
+    'very-strong': i18n.t('auth.passwordVeryStrong'),
+  };
+
   wrap.dataset.state = level;
-  wrap.labelEl.textContent = i18n.t(`auth.password${level === 'very-strong' ? 'VeryStrong' : level.charAt(0).toUpperCase() + level.slice(1)}`);
+  wrap.labelEl.textContent = labels[level];
 
   wrap.slots.forEach((s, i) => {
     s.classList.toggle('is-filled', i < filled);
   });
 
-  // اگه طولانی‌تر از ۱، نمایان
   if (password.length > 0 && !state.pwsVisible) {
     state.pwsVisible = true;
     wrap.classList.add('is-visible');
@@ -588,7 +494,6 @@ function Divider() {
 
 function SocialRow() {
   if (!CONFIG.authUI.socialLogin) return null;
-
   return h('div', { class: 'au-social' },
     SocialButton('google', I.google, i18n.t('auth.socialGoogle')),
     SocialButton('github', I.github, i18n.t('auth.socialGitHub')),
@@ -629,7 +534,7 @@ function SwitchRow() {
         state.inputs = {};
         state.showPass = false;
         state.pwsVisible = false;
-        state.passwordStrength = 0;
+        state.pwsEl = null;
         state.socialLoading = null;
         renderPage();
       },
@@ -637,6 +542,24 @@ function SwitchRow() {
       h('span', {}, isLogin ? i18n.t('auth.switchToSignup') : i18n.t('auth.switchToLogin')),
       h('span', { class: 'au-switch__arrow', innerHTML: I.arrow }),
     ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Footer (مزایا زیر کارت)
+// ═══════════════════════════════════════════════════════════
+function Footer() {
+  return h('div', { class: 'au-footer' },
+    FooterItem(I.check, i18n.t('auth.benefit1')),
+    FooterItem(I.check, i18n.t('auth.benefit2')),
+    FooterItem(I.check, i18n.t('auth.benefit3')),
+  );
+}
+
+function FooterItem(icon, text) {
+  return h('div', { class: 'au-footer__item' },
+    h('span', { class: 'au-footer__icon', innerHTML: icon }),
+    h('span', {}, text),
   );
 }
 
@@ -649,8 +572,6 @@ async function handleSubmit(e) {
 
   const form = e.currentTarget;
   const isLogin = state.mode === 'login';
-
-  // Validate all
   let hasError = false;
 
   if (!isLogin) {
@@ -726,9 +647,7 @@ async function handleSocialClick(provider) {
   } catch (err) {
     const msg = String(err?.message || '').toLowerCase();
 
-    let userMsg = i18n.getLang() === 'fa'
-      ? 'ورود ناموفق بود'
-      : 'Login failed';
+    let userMsg = i18n.getLang() === 'fa' ? 'ورود ناموفق بود' : 'Login failed';
 
     if (msg.includes('not enabled') || msg.includes('not supported')) {
       userMsg = i18n.getLang() === 'fa'
