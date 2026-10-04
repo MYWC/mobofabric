@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-//  Auth — Phase 19 (Redesign + Animations)
+//  Auth — Phase 19 (Final)
+//  با CSS auto-loader برای کامپوننت‌های زیرمجموعه
 // ═══════════════════════════════════════════════════════════
 
 import { h, qs, on, render } from '../../core/dom.js';
@@ -13,6 +14,32 @@ import { authLang } from './auth.lang.js';
 import { createSplitHero } from './auth-components/split-hero.js';
 import { createGlassForm } from './auth-components/glass-form.js';
 import { authAnimations } from './auth-animations.js';
+
+// ═══════════════════════════════════════════════════════════
+//  CSS Auto-loader — همه‌ی CSSهای auth رو لود می‌کنه
+// ═══════════════════════════════════════════════════════════
+const AUTH_CSS_FILES = [
+  './features/auth/auth.css',
+  './features/auth/auth-animations.css',
+  './features/auth/auth-components/floating-input.css',
+  './features/auth/auth-components/password-strength.css',
+  './features/auth/auth-components/split-hero.css',
+  './features/auth/auth-components/glass-form.css',
+];
+
+function loadAuthCSS() {
+  AUTH_CSS_FILES.forEach(href => {
+    if (document.querySelector(`link[href="${href}"]`)) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.onerror = () => {
+      console.warn(`[auth] CSS not found: ${href}`);
+    };
+    document.head.append(link);
+  });
+}
 
 // ═══════════════════════════════════════════════════════════
 //  State
@@ -36,6 +63,9 @@ let offOutside = null;
 // ═══════════════════════════════════════════════════════════
 export const auth = {
   register() {
+    // 🎯 لود همه‌ی CSSها — قبل از هر چیز
+    loadAuthCSS();
+
     i18n.register('auth', authLang);
     router.register('/login', () => showAuth());
     offAuth = api.auth.onChange(() => refreshProfile());
@@ -78,7 +108,6 @@ function renderPage() {
     onSubmit: handleAuthSubmit,
     onSwitch: (newMode) => {
       state.mode = newMode;
-      // 🎬 انیمیشن تعویض mode
       requestAnimationFrame(() => {
         const card = qs('.glass-card', state.container);
         if (card) authAnimations.playModeSwitch(card);
@@ -93,7 +122,6 @@ function renderPage() {
 
   render(state.container, page);
 
-  // 🎬 اجرای entrance animation
   requestAnimationFrame(() => {
     authAnimations.playEntrance(page);
   });
