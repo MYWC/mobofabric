@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 //  Home — Monochrome Glass
-//  Phase 27
+//  Phase 28 — Banner Carousel + Category Bar
 // ═══════════════════════════════════════════════════════════
 
-import { h, qs, on, render } from '../../core/dom.js';
+import { h, qs, qsa, on, render } from '../../core/dom.js';
 import { events } from '../../core/events.js';
 import { i18n } from '../../core/i18n.js';
 import { api } from '../../core/api.js';
@@ -25,6 +25,16 @@ const state = {
   brands:      [],
   brandCounts: {},
   observer:    null,
+};
+
+const carousel = {
+  index:    0,
+  count:    3,
+  timer:    null,
+  trackEl:  null,
+  dotsEl:   null,
+  paused:   false,
+  interval: 6000,
 };
 
 let offLang = null;
@@ -50,6 +60,8 @@ async function showHome() {
   state.container = qs('#app');
   state.loading   = true;
   state.error     = false;
+
+  cleanupCarousel();
   renderPage();
 
   try {
@@ -89,9 +101,13 @@ async function showHome() {
 function renderPage() {
   if (!state.container) return;
 
+  cleanupCarousel();
+
   const page = h('div', { class: 'home' },
     Hero(),
+    BannerCarousel(),          // ← NEW
     QuickActions(),
+    CategoryBar(),             // ← NEW
     BrandsStrip(),
     FeaturedSection(),
     Promo1(),
@@ -101,6 +117,10 @@ function renderPage() {
   );
 
   render(state.container, page);
+
+  requestAnimationFrame(() => {
+    wireCarousel();
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -108,17 +128,12 @@ function renderPage() {
 // ═══════════════════════════════════════════════════════════
 function Hero() {
   return h('section', { class: 'hero' },
-    // ── Banner placeholder ──
     h('div', { class: 'hero__banner' },
       h('div', { class: 'img-placeholder hero__banner-img' },
         h('span', {}, i18n.t('home.heroBannerLabel')),
       ),
     ),
-
-    // ── Overlay gradient ──
     h('div', { class: 'hero__overlay' }),
-
-    // ── Content ──
     h('div', { class: 'container hero__content' },
       h('span', { class: 'hero__eyebrow' }, i18n.t('home.heroEyebrow')),
       h('h1', { class: 'hero__title' }, i18n.t('home.heroTitle')),
@@ -137,7 +152,205 @@ function Hero() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  02. QUICK ACTIONS
+//  02. BANNER CAROUSEL
+// ═══════════════════════════════════════════════════════════
+function BannerCarousel() {
+  const slides = [
+    {
+      titleKey: 'banner1Title',
+      subKey:   'banner1Subtitle',
+      ctaKey:   'banner1Cta',
+      labelKey: 'banner1Label',
+      href:     '#/products',
+    },
+    {
+      titleKey: 'banner2Title',
+      subKey:   'banner2Subtitle',
+      ctaKey:   'banner2Cta',
+      labelKey: 'banner2Label',
+      href:     '#/products',
+    },
+    {
+      titleKey: 'banner3Title',
+      subKey:   'banner3Subtitle',
+      ctaKey:   'banner3Cta',
+      labelKey: 'banner3Label',
+      href:     '#/products',
+    },
+  ];
+
+  const track = h('div', { class: 'carousel__track' });
+  const dots  = h('div', { class: 'carousel__dots' });
+
+  slides.forEach((s, i) => {
+    track.append(CarouselSlide(s, i));
+    dots.append(h('button', {
+      class: `carousel__dot ${i === 0 ? 'is-active' : ''}`,
+      type: 'button',
+      'aria-label': `Slide ${i + 1}`,
+      dataset: { idx: String(i) },
+    }));
+  });
+
+  const el = h('section', { class: 'carousel', 'aria-label': 'Banners' },
+    h('div', { class: 'container' },
+      h('div', { class: 'carousel__viewport' },
+        track,
+        // Arrows
+        h('button', {
+          class: 'carousel__arrow carousel__arrow--prev',
+          type: 'button',
+          'aria-label': i18n.t('home.bannerPrev'),
+          innerHTML: icons.arrowL,
+        }),
+        h('button', {
+          class: 'carousel__arrow carousel__arrow--next',
+          type: 'button',
+          'aria-label': i18n.t('home.bannerNext'),
+          innerHTML: icons.arrowR,
+        }),
+        // Dots
+        dots,
+      ),
+    ),
+  );
+
+  return el;
+}
+
+function CarouselSlide(slide, index) {
+  return h('article', { class: 'carousel__slide', dataset: { idx: String(index) } },
+    // Image placeholder
+    h('div', { class: 'carousel__media' },
+      h('div', { class: 'img-placeholder carousel__media-img' },
+        h('span', {}, i18n.t(`home.${slide.labelKey}`)),
+      ),
+    ),
+    // Overlay
+    h('div', { class: 'carousel__overlay' }),
+    // Content
+    h('div', { class: 'carousel__content' },
+      h('h3', { class: 'carousel__title' }, i18n.t(`home.${slide.titleKey}`)),
+      h('p',  { class: 'carousel__subtitle' }, i18n.t(`home.${slide.subKey}`)),
+      h('a',  { class: 'btn btn--accent carousel__cta', href: slide.href },
+        h('span', {}, i18n.t(`home.${slide.ctaKey}`)),
+        h('span', { class: 'btn__arrow', innerHTML: icons.arrowL }),
+      ),
+    ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Carousel — wiring
+// ═══════════════════════════════════════════════════════════
+function wireCarousel() {
+  const el = qs('.carousel', state.container);
+  if (!el) return;
+
+  carousel.trackEl = qs('.carousel__track', el);
+  carousel.dotsEl  = qs('.carousel__dots', el);
+  carousel.index   = 0;
+  carousel.paused  = false;
+
+  if (!carousel.trackEl) return;
+
+  // ── Arrows ──
+  const prev = qs('.carousel__arrow--prev', el);
+  const next = qs('.carousel__arrow--next', el);
+  if (prev) on(prev, 'click', () => goSlide(carousel.index - 1));
+  if (next) on(next, 'click', () => goSlide(carousel.index + 1));
+
+  // ── Dots ──
+  qsa('.carousel__dot', el).forEach(dot => {
+    on(dot, 'click', () => {
+      const i = Number(dot.dataset.idx);
+      if (i === carousel.index) return;
+      goSlide(i);
+    });
+  });
+
+  // ── Pause on hover ──
+  on(el, 'mouseenter', () => { carousel.paused = true; });
+  on(el, 'mouseleave', () => { carousel.paused = false; });
+
+  // ── Touch swipe ──
+  let touchStartX = 0;
+  on(el, 'touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  on(el, 'touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) {
+      goSlide(carousel.index + (dx < 0 ? 1 : -1));
+    }
+  });
+
+  // ── Keyboard ──
+  on(el, 'keydown', (e) => {
+    if (e.key === 'ArrowLeft')  goSlide(carousel.index - 1);
+    if (e.key === 'ArrowRight') goSlide(carousel.index + 1);
+  });
+  el.tabIndex = 0;
+
+  // ── Auto-rotate ──
+  startAutoRotate();
+
+  // ── Apply initial state ──
+  applySlide(0, false);
+}
+
+function startAutoRotate() {
+  stopAutoRotate();
+  carousel.timer = setInterval(() => {
+    if (carousel.paused) return;
+    goSlide(carousel.index + 1);
+  }, carousel.interval);
+}
+
+function stopAutoRotate() {
+  if (carousel.timer) {
+    clearInterval(carousel.timer);
+    carousel.timer = null;
+  }
+}
+
+function cleanupCarousel() {
+  stopAutoRotate();
+  carousel.trackEl = null;
+  carousel.dotsEl = null;
+  carousel.index = 0;
+  carousel.paused = false;
+}
+
+function goSlide(i) {
+  const n = carousel.count;
+  const next = ((i % n) + n) % n;
+  if (next === carousel.index) return;
+  applySlide(next, true);
+}
+
+function applySlide(i, animate = true) {
+  if (!carousel.trackEl) return;
+  carousel.index = i;
+
+  const offset = -i * 100;
+  if (animate) {
+    carousel.trackEl.style.transition = 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)';
+  } else {
+    carousel.trackEl.style.transition = 'none';
+  }
+  carousel.trackEl.style.transform = `translate3d(${offset}%, 0, 0)`;
+
+  // Dots
+  if (carousel.dotsEl) {
+    qsa('.carousel__dot', carousel.dotsEl).forEach((dot, idx) => {
+      dot.classList.toggle('is-active', idx === i);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  03. QUICK ACTIONS
 // ═══════════════════════════════════════════════════════════
 function QuickActions() {
   const items = [
@@ -165,7 +378,42 @@ function QuickActions() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  03. BRANDS STRIP
+//  04. CATEGORY BAR
+// ═══════════════════════════════════════════════════════════
+function CategoryBar() {
+  const cats = [
+    { icon: 'star',    key: 'catFlagship', search: 'Pro' },
+    { icon: 'box',     key: 'catMidrange', search: 'Note' },
+    { icon: 'tag',     key: 'catBudget',   search: 'Redmi' },
+    { icon: 'compare', key: 'catFoldable', search: 'Fold' },
+    { icon: 'bolt',    key: 'catGaming',   search: 'GT' },
+    { icon: 'eye',     key: 'catCamera',   search: 'Ultra' },
+    { icon: 'check',   key: 'catBattery',  search: 'Power' },
+    { icon: 'globe',   key: 'cat5G',       search: '5G' },
+  ];
+
+  return h('section', { class: 'catbar reveal' },
+    h('div', { class: 'container' },
+      h('header', { class: 'catbar__head' },
+        h('h2', { class: 'catbar__title' }, i18n.t('home.categoriesTitle')),
+        h('p',  { class: 'catbar__sub' },   i18n.t('home.categoriesSubtitle')),
+      ),
+
+      h('div', { class: 'catbar__scroll' },
+        ...cats.map(cat => h('a', {
+          class: 'catbar__item',
+          href: `#/search?q=${encodeURIComponent(cat.search)}`,
+        },
+          h('span', { class: 'catbar__icon', innerHTML: icons[cat.icon] }),
+          h('span', { class: 'catbar__label' }, i18n.t(`home.${cat.key}`)),
+        )),
+      ),
+    ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  05. BRANDS STRIP
 // ═══════════════════════════════════════════════════════════
 function BrandsStrip() {
   return h('section', { class: 'brands reveal' },
@@ -210,7 +458,7 @@ function BrandChip(brand) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  04. FEATURED
+//  06. FEATURED
 // ═══════════════════════════════════════════════════════════
 function FeaturedSection() {
   return h('section', { class: 'section reveal' },
@@ -233,18 +481,16 @@ function FeaturedSection() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  05. PROMO 1
+//  07. PROMO 1
 // ═══════════════════════════════════════════════════════════
 function Promo1() {
   return h('section', { class: 'promo reveal' },
     h('div', { class: 'container' },
       h('div', { class: 'promo__card' },
-        // ── Text side ──
         h('div', { class: 'promo__text' },
           h('span', { class: 'promo__badge' }, i18n.t('home.promo1Badge')),
           h('h2', { class: 'promo__title' }, i18n.t('home.promo1Title')),
           h('p',  { class: 'promo__desc' },  i18n.t('home.promo1Text')),
-
           h('div', { class: 'promo__row' },
             h('div', { class: 'promo__code' },
               h('span', { class: 'promo__code-label' }, i18n.t('home.promo1Code')),
@@ -256,8 +502,6 @@ function Promo1() {
             ),
           ),
         ),
-
-        // ── Image side ──
         h('div', { class: 'promo__image' },
           h('div', { class: 'img-placeholder' },
             h('span', {}, i18n.t('home.promo1ImageLabel')),
@@ -269,7 +513,7 @@ function Promo1() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  06. NEW ARRIVALS
+//  08. NEW ARRIVALS
 // ═══════════════════════════════════════════════════════════
 function NewArrivals() {
   return h('section', { class: 'section reveal' },
@@ -292,25 +536,21 @@ function NewArrivals() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  07. PROMO 2
+//  09. PROMO 2
 // ═══════════════════════════════════════════════════════════
 function Promo2() {
   return h('section', { class: 'promo promo--reverse reveal' },
     h('div', { class: 'container' },
       h('div', { class: 'promo__card' },
-        // ── Image side (چپ در این نسخه) ──
         h('div', { class: 'promo__image' },
           h('div', { class: 'img-placeholder' },
             h('span', {}, i18n.t('home.promo2ImageLabel')),
           ),
         ),
-
-        // ── Text side ──
         h('div', { class: 'promo__text' },
           h('span', { class: 'promo__badge' }, i18n.t('home.promo2Badge')),
           h('h2', { class: 'promo__title' }, i18n.t('home.promo2Title')),
           h('p',  { class: 'promo__desc' },  i18n.t('home.promo2Text')),
-
           h('div', { class: 'promo__row' },
             h('a', { class: 'btn btn--accent', href: '#/products' },
               h('span', {}, i18n.t('home.promo2Cta')),
@@ -324,7 +564,7 @@ function Promo2() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  08. TRUST
+//  10. TRUST
 // ═══════════════════════════════════════════════════════════
 function TrustSection() {
   const items = [
@@ -394,3 +634,10 @@ function setupReveal() {
 
   document.querySelectorAll('.reveal').forEach(el => state.observer.observe(el));
 }
+
+// ═══════════════════════════════════════════════════════════
+//  Cleanup on route change
+// ═══════════════════════════════════════════════════════════
+events.on('route:changed', () => {
+  if (carousel.timer) cleanupCarousel();
+});

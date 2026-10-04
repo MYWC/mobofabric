@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  Home — ترجمه‌ها
-//  Phase 27 — Monochrome Glass
+//  Phase 28 — Banner Carousel + Category Bar
 // ═══════════════════════════════════════════════════════════
 
 export const homeLang = {
@@ -12,6 +12,37 @@ export const homeLang = {
     heroCtaPrimary:   'مشاهده محصولات',
     heroCtaSecondary: 'مشاهده برندها',
     heroBannerLabel:  'BANNER — 1920×720',
+
+    // ── Banner Carousel ──
+    banner1Title:    'آیفون ۱۵ پرو مکس',
+    banner1Subtitle: 'تراشه A17 Pro · بدنه تیتانیومی · دوربین ۴۸ مگاپیکسل',
+    banner1Cta:      'مشاهده محصول',
+    banner1Label:    'BANNER 1 — 1600×600',
+
+    banner2Title:    'گلکسی S24 اولترا',
+    banner2Subtitle: 'دوربین ۲۰۰ مگاپیکسل · قلم S Pen · هوش مصنوعی Galaxy AI',
+    banner2Cta:      'مشاهده محصول',
+    banner2Label:    'BANNER 2 — 1600×600',
+
+    banner3Title:    'پیکسل ۸ پرو',
+    banner3Subtitle: 'تراشه Tensor G3 · هوش مصنوعی گوگل · دوربین استثنایی',
+    banner3Cta:      'مشاهده محصول',
+    banner3Label:    'BANNER 3 — 1600×600',
+
+    bannerPrev: 'قبلی',
+    bannerNext: 'بعدی',
+
+    // ── Categories ──
+    categoriesTitle:    'دسته‌بندی محصولات',
+    categoriesSubtitle: 'سریع‌ترین راه پیدا کردن گوشی مناسب',
+    catFlagship: 'پرچم‌دار',
+    catMidrange: 'میان‌رده',
+    catBudget:   'اقتصادی',
+    catFoldable: 'تاشو',
+    catGaming:   'گیمینگ',
+    catCamera:   'عکاسی',
+    catBattery:  'باتری قوی',
+    cat5G:       'نسل ۵',
 
     // ── Quick Actions ──
     quickTitle:    'دسترسی سریع',
@@ -79,6 +110,35 @@ export const homeLang = {
     heroCtaPrimary:   'Browse products',
     heroCtaSecondary: 'View brands',
     heroBannerLabel:  'BANNER — 1920×720',
+
+    banner1Title:    'iPhone 15 Pro Max',
+    banner1Subtitle: 'A17 Pro chip · Titanium body · 48MP camera',
+    banner1Cta:      'View product',
+    banner1Label:    'BANNER 1 — 1600×600',
+
+    banner2Title:    'Galaxy S24 Ultra',
+    banner2Subtitle: '200MP camera · S Pen · Galaxy AI',
+    banner2Cta:      'View product',
+    banner2Label:    'BANNER 2 — 1600×600',
+
+    banner3Title:    'Pixel 8 Pro',
+    banner3Subtitle: 'Tensor G3 chip · Google AI · Exceptional camera',
+    banner3Cta:      'View product',
+    banner3Label:    'BANNER 3 — 1600×600',
+
+    bannerPrev: 'Previous',
+    bannerNext: 'Next',
+
+    categoriesTitle:    'Product categories',
+    categoriesSubtitle: 'The fastest way to find your phone',
+    catFlagship: 'Flagship',
+    catMidrange: 'Mid-range',
+    catBudget:   'Budget',
+    catFoldable: 'Foldable',
+    catGaming:   'Gaming',
+    catCamera:   'Camera',
+    catBattery:  'Big battery',
+    cat5G:       '5G',
 
     quickTitle:    'Quick access',
     quickPhones:   'Phones',
