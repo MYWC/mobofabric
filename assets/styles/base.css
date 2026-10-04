@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   Base — Typography & Foundation
-   Phase 26 — Obsidian Vault
+   Base — Monochrome Modern
+   Phase 27
    ═══════════════════════════════════════════════════════════ */
 
 body {
@@ -15,104 +15,44 @@ body {
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
 }
 
 main {
   flex: 1;
-  padding-block: var(--space-6);
 }
 
 /* ═══════════════════════════════════════════════════════════
    Typography
    ═══════════════════════════════════════════════════════════ */
-
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
   font-weight: var(--fw-bold);
   line-height: 1.15;
-  letter-spacing: -0.03em;
-  font-variation-settings: 'wght' 700;
+  letter-spacing: -0.025em;
 }
 
-h1 {
-  font-size: clamp(36px, 5vw, var(--text-5xl));
-  font-weight: var(--fw-black);
-  font-variation-settings: 'wght' 900;
-  letter-spacing: -0.04em;
-}
-
-h2 {
-  font-size: clamp(28px, 3.5vw, var(--text-4xl));
-  font-weight: var(--fw-black);
-  font-variation-settings: 'wght' 900;
-  letter-spacing: -0.035em;
-}
-
-h3 {
-  font-size: clamp(22px, 2.5vw, var(--text-3xl));
-  font-weight: var(--fw-bold);
-  font-variation-settings: 'wght' 700;
-}
-
-h4 {
-  font-size: var(--text-2xl);
-  font-weight: var(--fw-bold);
-  font-variation-settings: 'wght' 700;
-}
-
-h5 {
-  font-size: var(--text-xl);
-  font-weight: var(--fw-semibold);
-  font-variation-settings: 'wght' 600;
-}
-
-h6 {
-  font-size: var(--text-lg);
-  font-weight: var(--fw-semibold);
-  font-variation-settings: 'wght' 600;
-}
+h1 { font-size: clamp(32px, 5vw, 56px); font-weight: var(--fw-black); letter-spacing: -0.035em; }
+h2 { font-size: clamp(26px, 3.5vw, 40px); font-weight: var(--fw-black); letter-spacing: -0.03em; }
+h3 { font-size: clamp(20px, 2.5vw, 28px); font-weight: var(--fw-bold); }
+h4 { font-size: var(--text-xl); font-weight: var(--fw-bold); }
+h5 { font-size: var(--text-lg); font-weight: var(--fw-semibold); }
+h6 { font-size: var(--text-base); font-weight: var(--fw-semibold); }
 
 p {
   color: var(--color-text-secondary);
-  line-height: 1.75;
+  line-height: 1.7;
 }
 
-/* ── Eyebrow (برچسب کوچک بالای تیتر) ── */
+/* Eyebrow */
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-gold);
+  color: var(--color-text-tertiary);
   margin-bottom: var(--space-3);
-}
-
-.eyebrow::before {
-  content: '';
-  width: 24px;
-  height: 1px;
-  background: var(--color-gold);
-  opacity: 0.6;
-}
-
-/* ── تیتر با خط طلایی ── */
-.title-accent {
-  position: relative;
-  padding-inline-start: 0;
-}
-
-.title-accent::after {
-  content: '';
-  display: block;
-  width: 48px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-gold), transparent);
-  margin-top: var(--space-4);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -124,62 +64,35 @@ a {
   transition: color var(--t-fast);
 }
 
-.link-gold {
-  color: var(--color-gold);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--t-fast);
-}
-.link-gold:hover {
-  border-bottom-color: var(--color-gold);
-}
-
 /* ═══════════════════════════════════════════════════════════
-   Buttons
+   Buttons — Monochrome
    ═══════════════════════════════════════════════════════════ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 8px;
   padding: 14px 28px;
   border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: var(--text-sm);
+  font-size: 14px;
   font-weight: var(--fw-semibold);
-  letter-spacing: 0.02em;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--t-base);
+  transition: background-color var(--t-base), color var(--t-base), border-color var(--t-base), transform var(--t-fast);
   white-space: nowrap;
-  position: relative;
-  overflow: hidden;
 }
 
-/* ── Accent (مشکی در روشن / طلایی در تاریک) ── */
 .btn--accent {
   background: var(--color-accent);
-  color: var(--color-bg);
-  font-weight: var(--fw-bold);
+  color: var(--color-accent-text);
 }
 
 .btn--accent:hover {
   background: var(--color-accent-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
-[data-theme="dark"] .btn--accent {
-  color: #0B0B0F;
-  box-shadow: 0 8px 24px var(--color-gold-glow);
-}
-
-[data-theme="dark"] .btn--accent:hover {
-  box-shadow:
-    0 12px 32px var(--color-gold-glow),
-    0 0 40px var(--color-gold-glow);
-}
-
-/* ── Ghost ── */
 .btn--ghost {
   background: transparent;
   color: var(--color-text);
@@ -191,13 +104,12 @@ a {
   border-color: var(--color-text);
 }
 
-/* ── Block ── */
 .btn--block {
   width: 100%;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Input Base
+   Input
    ═══════════════════════════════════════════════════════════ */
 .input {
   width: 100%;
@@ -208,54 +120,80 @@ a {
   color: var(--color-text);
   font-family: inherit;
   font-size: var(--text-sm);
-  transition: all var(--t-fast);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--input-focus);
-  box-shadow: 0 0 0 4px var(--color-gold-glow);
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-text) 8%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Selection
+   Selection + Scrollbar
    ═══════════════════════════════════════════════════════════ */
 ::selection {
-  background: var(--color-gold);
-  color: #0B0B0F;
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Scrollbar (لوکس)
-   ═══════════════════════════════════════════════════════════ */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-bg);
-}
-
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb {
   background: var(--color-border-strong);
   border-radius: 5px;
   border: 2px solid var(--color-bg);
 }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gold);
+/* ═══════════════════════════════════════════════════════════
+   Image Placeholder — برای بنرهایی که بعداً عکس می‌ذاری
+   ═══════════════════════════════════════════════════════════ */
+.img-placeholder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg) 100%);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  overflow: hidden;
+  user-select: none;
+}
+
+.img-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(45deg, transparent 49%, var(--color-border) 49%, var(--color-border) 51%, transparent 51%),
+    linear-gradient(-45deg, transparent 49%, var(--color-border) 49%, var(--color-border) 51%, transparent 51%);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.img-placeholder > span {
+  position: relative;
+  padding: 12px 20px;
+  background: var(--color-bg);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  z-index: 1;
 }
 
 /* ═══════════════════════════════════════════════════════════
    Reduced Motion
    ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }

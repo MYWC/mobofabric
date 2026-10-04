@@ -1,180 +1,138 @@
 /* ═══════════════════════════════════════════════════════════
-   Design Tokens — Obsidian Vault
-   Phase 27 — Complete Font Setup
+   Design Tokens — Monochrome Glass
+   Phase 27
    ═══════════════════════════════════════════════════════════ */
 
 :root {
   /* ═══════════════════════════════════════════════════════════
-     LIGHT — Warm Paper (Editorial Luxury)
+     LIGHT
      ═══════════════════════════════════════════════════════════ */
-  --color-bg:             #FAF8F3;
-  --color-bg-secondary:   #F2EFE6;
+  --color-bg:             #FFFFFF;
+  --color-bg-secondary:   #F5F5F7;
   --color-bg-elevated:    #FFFFFF;
 
-  --color-text:           #1A1A1A;
-  --color-text-secondary: #6B6B6B;
-  --color-text-tertiary:  #A8A8A8;
+  --color-text:           #000000;
+  --color-text-secondary: #6E6E73;
+  --color-text-tertiary:  #86868B;
 
-  --color-border:         #E5DFD0;
-  --color-border-strong:  #D4CBB6;
+  --color-border:         #E5E5E7;
+  --color-border-strong:  #D2D2D7;
 
-  --color-accent:         #1A1A1A;
-  --color-accent-hover:   #000000;
+  --color-accent:         #000000;
+  --color-accent-hover:   #1D1D1F;
+  --color-accent-text:    #FFFFFF;
 
-  --color-gold:           #A88847;
-  --color-gold-light:     #C9A961;
-  --color-gold-glow:      rgba(201, 169, 97, 0.25);
+  --color-success:        #34C759;
+  --color-danger:         #FF3B30;
+  --color-warning:        #FF9500;
 
-  --color-success:        #2D7A4F;
-  --color-danger:         #B33A3A;
-  --color-warning:        #C77D30;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.08);
 
-  /* ── سایه‌های روشن ── */
-  --shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.04);
-  --shadow-md: 0 4px 16px rgba(26, 26, 26, 0.06);
-  --shadow-lg: 0 16px 48px rgba(26, 26, 26, 0.08);
-  --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
+  --glass-bg:     rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(0, 0, 0, 0.06);
 
-  /* ── لایه‌های شیشه‌ای روشن ── */
-  --glass-bg:     rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.9);
-  --glass-blur:   20px;
-
-  --header-bg:    rgba(250, 248, 243, 0.75);
-  --header-border: rgba(26, 26, 26, 0.06);
+  --header-bg:    rgba(255, 255, 255, 0.72);
 
   --card-bg:      #FFFFFF;
-  --card-border:  #E5DFD0;
-  --card-hover-border: var(--color-gold);
+  --card-border:  #E5E5E7;
 
   --input-bg:     #FFFFFF;
-  --input-border: #E5DFD0;
-  --input-focus:  var(--color-gold);
+  --input-border: #D2D2D7;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   DARK — Obsidian Vault (Luxury Night)
+   DARK
    ═══════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --color-bg:             #0B0B0F;
-  --color-bg-secondary:   #101015;
-  --color-bg-elevated:    #131318;
+  --color-bg:             #000000;
+  --color-bg-secondary:   #0A0A0A;
+  --color-bg-elevated:    #1C1C1E;
 
-  --color-text:           #F5F4F0;
-  --color-text-secondary: #A8A8A8;
-  --color-text-tertiary:  #6B6B70;
+  --color-text:           #FFFFFF;
+  --color-text-secondary: #A1A1A6;
+  --color-text-tertiary:  #6E6E73;
 
-  --color-border:         #1F1F26;
-  --color-border-strong:  #2D2D36;
+  --color-border:         #1C1C1E;
+  --color-border-strong:  #2C2C2E;
 
-  --color-accent:         #C9A961;
-  --color-accent-hover:   #E8D9A8;
+  --color-accent:         #FFFFFF;
+  --color-accent-hover:   #F5F5F7;
+  --color-accent-text:    #000000;
 
-  --color-gold:           #C9A961;
-  --color-gold-light:     #E8D9A8;
-  --color-gold-glow:      rgba(201, 169, 97, 0.35);
+  --color-success:        #30D158;
+  --color-danger:         #FF453A;
+  --color-warning:        #FF9F0A;
 
-  --color-success:        #6EE7A8;
-  --color-danger:         #F87171;
-  --color-warning:        #F5B860;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.7);
 
-  /* ── سایه‌های تاریک ── */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 40px var(--color-gold-glow);
+  --glass-bg:     rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
-  /* ── لایه‌های شیشه‌ای تاریک ── */
-  --glass-bg:     rgba(19, 19, 24, 0.6);
-  --glass-border: rgba(201, 169, 97, 0.12);
-  --glass-blur:   16px;
+  --header-bg:    rgba(0, 0, 0, 0.72);
 
-  --header-bg:    rgba(11, 11, 15, 0.7);
-  --header-border: rgba(201, 169, 97, 0.08);
+  --card-bg:      #1C1C1E;
+  --card-border:  #2C2C2E;
 
-  --card-bg:      #131318;
-  --card-border:  #1F1F26;
-  --card-hover-border: rgba(201, 169, 97, 0.5);
-
-  --input-bg:     #131318;
-  --input-border: #1F1F26;
-  --input-focus:  var(--color-gold);
+  --input-bg:     #1C1C1E;
+  --input-border: #2C2C2E;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   مشترک — Layout / Spacing / Radius / Font / Animation
+   مشترک
    ═══════════════════════════════════════════════════════════ */
-
 :root {
-  /* ── فاصله ── */
+  /* فاصله */
   --space-1: 4px;   --space-2: 8px;   --space-3: 12px;
   --space-4: 16px;  --space-5: 24px;  --space-6: 32px;
   --space-7: 48px;  --space-8: 64px;  --space-9: 96px;
 
-  /* ── گردی ── */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 20px;
+  /* گردی */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* ═══════════════════════════════════════════════════════════
-     فونت‌ها — Mahoor + Vazirmatn + Inter
-     ═══════════════════════════════════════════════════════════ */
-  --font-fa:    'Mahoor', 'Vazirmatn', system-ui, -apple-system, sans-serif;
-  --font-en:    'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono:  'Inter', ui-monospace, 'Courier New', monospace;
+  /* فونت */
+  --font-fa:   'Vazirmatn', system-ui, -apple-system, sans-serif;
+  --font-en:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Inter', ui-monospace, 'Courier New', monospace;
 
-  /* ── اندازه متن ── */
-  --text-xs:   12px;
-  --text-sm:   14px;
-  --text-base: 16px;
-  --text-lg:   18px;
-  --text-xl:   22px;
-  --text-2xl:  28px;
-  --text-3xl:  36px;
-  --text-4xl:  48px;
-  --text-5xl:  64px;
+  /* اندازه */
+  --text-xs:   12px;  --text-sm:   14px;  --text-base: 16px;
+  --text-lg:   18px;  --text-xl:   22px;  --text-2xl:  28px;
+  --text-3xl:  36px;  --text-4xl:  48px;  --text-5xl:  64px;
 
-  /* ── وزن‌ها (Variable Font) ── */
-  --fw-thin:     300;
+  /* وزن */
   --fw-regular:  400;
   --fw-medium:   500;
   --fw-semibold: 600;
   --fw-bold:     700;
   --fw-black:    900;
 
-  /* ── انیمیشن ── */
-  --ease:         cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* انیمیشن */
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
 
   --t-fast: 150ms var(--ease);
   --t-base: 250ms var(--ease);
-  --t-slow: 400ms var(--ease-out);
 
-  /* ── چیدمان ── */
+  /* چیدمان */
   --container-max: 1280px;
   --container-pad: 24px;
-  --header-height: 72px;
+  --header-height: 64px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   جهت — RTL/LTR
-   ═══════════════════════════════════════════════════════════ */
-[dir="rtl"] {
-  font-family: var(--font-fa);
-}
+[dir="rtl"] { font-family: var(--font-fa); }
+[dir="ltr"] { font-family: var(--font-en); }
 
-[dir="ltr"] {
-  font-family: var(--font-en);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Global transition برای تم
-   ═══════════════════════════════════════════════════════════ */
+/* Transition نرم برای تغییر تم */
 * {
-  transition-property: background-color, border-color;
-  transition-duration: 300ms;
+  transition-property: background-color, border-color, color;
+  transition-duration: 250ms;
   transition-timing-function: var(--ease);
 }
