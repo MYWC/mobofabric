@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   Auth — Phase 19 (Redesign)
+   Auth — Phase 19 (Final — Google + GitHub)
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════
@@ -12,12 +12,10 @@
   position: relative;
 }
 
-/* ── Split (desktop) ── */
 .auth-page--split {
   grid-template-columns: 1fr 1fr;
 }
 
-/* ── Without split (fallback) ── */
 .auth-page:not(.auth-page--split) {
   grid-template-columns: 1fr;
 }
@@ -33,7 +31,6 @@
   overflow: hidden;
 }
 
-/* الگوی نقطه‌ای ظریف */
 .auth-page__form-side::before {
   content: '';
   position: absolute;
@@ -47,7 +44,6 @@
   -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }
 
-/* Glow ظریف */
 .auth-page__form-side::after {
   content: '';
   position: absolute;
@@ -65,7 +61,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Header Auth (keep existing)
+   Header Auth
    ═══════════════════════════════════════════════════════════ */
 .header-auth { position: relative; }
 
@@ -211,10 +207,118 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   Social Grid — 2 ستونه (Google + GitHub)
+   ═══════════════════════════════════════════════════════════ */
+.glass-social {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.glass-social__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-bg) 60%, transparent);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition:
+    transform 200ms cubic-bezier(.34, 1.56, .64, 1),
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-social__btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center,
+    color-mix(in srgb, var(--color-accent) 15%, transparent),
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.glass-social__btn:hover:not(:disabled)::after {
+  opacity: 1;
+}
+
+.glass-social__btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+  background: var(--color-bg);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.glass-social__btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.glass-social__btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.glass-social__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.glass-social__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ── Loading ── */
+.glass-social__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.glass-social__btn.is-loading {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg));
+  animation: social-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes social-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 0%, transparent);
+  }
+}
+
+.glass-social__spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  animation: glass-spin 0.8s linear infinite;
+}
+
+@keyframes glass-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════
    Responsive
    ═══════════════════════════════════════════════════════════ */
 
-/* موبایل و تبلت کوچک — Split رو حذف کن */
 @media (max-width: 900px) {
   .auth-page,
   .auth-page--split {
@@ -227,10 +331,13 @@
   }
 }
 
-/* موبایل کوچک */
 @media (max-width: 480px) {
   .auth-page__form-side {
     padding: 16px 12px;
+  }
+
+  .glass-social__btn {
+    height: 44px;
   }
 }
 
@@ -239,4 +346,8 @@
    ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   .header-auth__menu { animation: none; }
+
+  .glass-social__btn,
+  .glass-social__btn.is-loading,
+  .glass-social__spinner { animation: none; transition: none; }
 }
