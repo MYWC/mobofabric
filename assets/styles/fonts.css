@@ -1,24 +1,21 @@
 /* ═══════════════════════════════════════════════════════════
    Fonts — Mahoor + Vazirmatn (Local)
-   Phase 25
+   Phase 27 — Complete Setup
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════
-   MAHOOR — Variable Font (بهترین گزینه)
-   شامل تمام وزن‌ها + تنظیم Contrast
+   MAHOOR — Variable Font (تمام وزن‌ها 100-900)
+   URL-encoded: [ = %5B , ] = %5D , , = %2C
    ═══════════════════════════════════════════════════════════ */
 @font-face {
   font-family: 'Mahoor';
-  src: url('../fonts/Mahoor[CNTR,wght].woff2') format('woff2-variations'),
-       url('../fonts/Mahoor[CNTR,wght].woff2') format('woff2');
+  src: url('../fonts/Mahoor%5BCNTR%2Cwght%5D.woff2') format('woff2-variations');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
-/* ── نسخه Fallback: اگه Variable Font پشتیبانی نشد ── */
-
-/* Light (300) */
+/* ── Static Fallbacks — Light ── */
 @font-face {
   font-family: 'Mahoor';
   src: url('../fonts/Mahoor-Regular.woff2') format('woff2');
@@ -27,7 +24,7 @@
   font-display: swap;
 }
 
-/* Regular (400) */
+/* ── Static — Regular (400) ── */
 @font-face {
   font-family: 'Mahoor';
   src: url('../fonts/Mahoor-Regular.woff2') format('woff2');
@@ -36,7 +33,7 @@
   font-display: swap;
 }
 
-/* Medium (500) */
+/* ── Static — Medium (500) ── */
 @font-face {
   font-family: 'Mahoor';
   src: url('../fonts/Mahoor-Medium.woff2') format('woff2');
@@ -45,7 +42,7 @@
   font-display: swap;
 }
 
-/* SemiBold (600) */
+/* ── Static — SemiBold (600) ── */
 @font-face {
   font-family: 'Mahoor';
   src: url('../fonts/Mahoor-SemiBold.woff2') format('woff2');
@@ -54,7 +51,7 @@
   font-display: swap;
 }
 
-/* Bold (700) */
+/* ── Static — Bold (700) ── */
 @font-face {
   font-family: 'Mahoor';
   src: url('../fonts/Mahoor-Bold.woff2') format('woff2');
@@ -63,11 +60,20 @@
   font-display: swap;
 }
 
-/* ExtraBold (800) */
+/* ── Static — ExtraBold (800) ── */
 @font-face {
   font-family: 'Mahoor';
   src: url('../fonts/Mahoor-ExtraBold.woff2') format('woff2');
   font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Static — Black (900) — از ExtraBold برای Black استفاده می‌کنیم ── */
+@font-face {
+  font-family: 'Mahoor';
+  src: url('../fonts/Mahoor-ExtraBold.woff2') format('woff2');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -77,36 +83,13 @@
    ═══════════════════════════════════════════════════════════ */
 @font-face {
   font-family: 'Vazirmatn';
-  src: url('../fonts/Vazirmatn-VariableFont_wght.ttf') format('truetype-variations'),
-       url('../fonts/Vazirmatn-VariableFont_wght.ttf') format('truetype');
+  src: url('../fonts/Vazirmatn-VariableFont_wght.ttf') format('truetype-variations');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
-/* ── Vazirmatn Fallback Static ── */
-
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('../fonts/Vazirmatn-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('../fonts/Vazirmatn-ExtraLight.ttf') format('truetype');
-  font-weight: 200;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('../fonts/Vazirmatn-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-display: swap;
-}
-
+/* ── Vazirmatn Static Fallbacks ── */
 @font-face {
   font-family: 'Vazirmatn';
   src: url('../fonts/Vazirmatn-Regular.ttf') format('truetype');

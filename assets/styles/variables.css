@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    Design Tokens — Obsidian Vault
-   Phase 26
+   Phase 27 — Complete Font Setup
    ═══════════════════════════════════════════════════════════ */
 
 :root {
@@ -18,10 +18,10 @@
   --color-border:         #E5DFD0;
   --color-border-strong:  #D4CBB6;
 
-  --color-accent:         #1A1A1A;    /* مشکی به عنوان accent */
+  --color-accent:         #1A1A1A;
   --color-accent-hover:   #000000;
 
-  --color-gold:           #A88847;    /* طلایی تیره برای روشن */
+  --color-gold:           #A88847;
   --color-gold-light:     #C9A961;
   --color-gold-glow:      rgba(201, 169, 97, 0.25);
 
@@ -29,11 +29,11 @@
   --color-danger:         #B33A3A;
   --color-warning:        #C77D30;
 
-  /* ── سایه‌های روشن (نرم و کاغذی) ── */
+  /* ── سایه‌های روشن ── */
   --shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.04);
   --shadow-md: 0 4px 16px rgba(26, 26, 26, 0.06);
   --shadow-lg: 0 16px 48px rgba(26, 26, 26, 0.08);
-  --shadow-glow: 0 0 0 rgba(0,0,0,0);
+  --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
 
   /* ── لایه‌های شیشه‌ای روشن ── */
   --glass-bg:     rgba(255, 255, 255, 0.7);
@@ -67,7 +67,7 @@
   --color-border:         #1F1F26;
   --color-border-strong:  #2D2D36;
 
-  --color-accent:         #C9A961;    /* طلایی به عنوان accent */
+  --color-accent:         #C9A961;
   --color-accent-hover:   #E8D9A8;
 
   --color-gold:           #C9A961;
@@ -78,7 +78,7 @@
   --color-danger:         #F87171;
   --color-warning:        #F5B860;
 
-  /* ── سایه‌های تاریک (عمیق و مخملی) ── */
+  /* ── سایه‌های تاریک ── */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
@@ -111,17 +111,19 @@
   --space-4: 16px;  --space-5: 24px;  --space-6: 32px;
   --space-7: 48px;  --space-8: 64px;  --space-9: 96px;
 
-  /* ── گردی (کمتر برای لوکس) ── */
+  /* ── گردی ── */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* ── فونت ── */
-  --font-fa: 'Mahoor', 'Vazirmatn', system-ui, -apple-system, sans-serif;
-  --font-en: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Inter', ui-monospace, monospace;
+  /* ═══════════════════════════════════════════════════════════
+     فونت‌ها — Mahoor + Vazirmatn + Inter
+     ═══════════════════════════════════════════════════════════ */
+  --font-fa:    'Mahoor', 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  --font-en:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:  'Inter', ui-monospace, 'Courier New', monospace;
 
   /* ── اندازه متن ── */
   --text-xs:   12px;
@@ -135,17 +137,17 @@
   --text-5xl:  64px;
 
   /* ── وزن‌ها (Variable Font) ── */
-  --fw-thin: 300;
-  --fw-regular: 400;
-  --fw-medium: 500;
+  --fw-thin:     300;
+  --fw-regular:  400;
+  --fw-medium:   500;
   --fw-semibold: 600;
-  --fw-bold: 700;
-  --fw-black: 900;
+  --fw-bold:     700;
+  --fw-black:    900;
 
   /* ── انیمیشن ── */
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease:         cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
 
   --t-fast: 150ms var(--ease);
   --t-base: 250ms var(--ease);
@@ -158,11 +160,12 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   جهت
+   جهت — RTL/LTR
    ═══════════════════════════════════════════════════════════ */
 [dir="rtl"] {
   font-family: var(--font-fa);
 }
+
 [dir="ltr"] {
   font-family: var(--font-en);
 }
