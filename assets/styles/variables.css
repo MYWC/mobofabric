@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════════════
+   Design Tokens — Phase 25
+   ═══════════════════════════════════════════════════════════ */
+
 :root {
   /* ── رنگ — تم روشن ── */
   --color-bg:             #ffffff;
@@ -27,8 +31,8 @@
   --shadow-md: 0 4px 16px rgba(0,0,0,.08);
   --shadow-lg: 0 12px 32px rgba(0,0,0,.12);
 
-  /* ── فونت ── */
-  --font-fa: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  /* ── فونت — Mahoor + Vazirmatn ── */
+  --font-fa: 'Mahoor', 'Vazirmatn', system-ui, -apple-system, sans-serif;
   --font-en: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* ── اندازه متن ── */

@@ -58,8 +58,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://vfryimqanhragilrmtxf.supabase.co" crossorigin>
 
-  <!-- ═══ Fonts ═══ -->
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- ═══ Inter (فقط برای متن انگلیسی) ═══ -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- ═══ Structured Data ═══ -->
   <script type="application/ld+json">
@@ -73,10 +73,9 @@
   </script>
 
   <!-- ═══════════════════════════════════════════════════════════
-       ⚡ PRELOADER — Critical CSS (inline, قبل از همه چیز)
+       ⚡ PRELOADER — Critical CSS (inline)
        ═══════════════════════════════════════════════════════════ -->
   <style>
-    /* ═════ Preloader Base ═════ */
     #preloader {
       position: fixed;
       inset: 0;
@@ -105,7 +104,6 @@
       overflow: hidden;
     }
 
-    /* ═════ Logo ═════ */
     .preloader-logo {
       position: relative;
       width: 80px;
@@ -140,9 +138,8 @@
       z-index: 1;
     }
 
-    /* ═════ Title ═════ */
     .preloader-title {
-      font-family: 'Vazirmatn', 'Inter', system-ui, sans-serif;
+      font-family: 'Mahoor', 'Vazirmatn', system-ui, sans-serif;
       font-size: 22px;
       font-weight: 800;
       color: #1d1d1f;
@@ -150,7 +147,6 @@
       animation: preloader-fade-up 700ms 200ms cubic-bezier(.4, 0, .2, 1) both;
     }
 
-    /* ═════ Progress Bar ═════ */
     .preloader-bar {
       width: 240px;
       height: 4px;
@@ -174,16 +170,10 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.6) 50%,
-        transparent 100%
-      );
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
       animation: preloader-shimmer 1.4s linear infinite;
     }
 
-    /* ═════ Keyframes ═════ */
     @keyframes preloader-scale-in {
       from { opacity: 0; transform: scale(0.5); }
       to   { opacity: 1; transform: scale(1); }
@@ -204,45 +194,26 @@
       100% { transform: translateX(100%); }
     }
 
-    /* ═════ Dark Mode ═════ */
-    [data-theme="dark"] #preloader {
-      background: #000000;
-    }
-    [data-theme="dark"] .preloader-title {
-      color: #f5f5f7;
-    }
-    [data-theme="dark"] .preloader-bar {
-      background: rgba(255, 255, 255, 0.12);
-    }
+    [data-theme="dark"] #preloader { background: #000000; }
+    [data-theme="dark"] .preloader-title { color: #f5f5f7; }
+    [data-theme="dark"] .preloader-bar { background: rgba(255, 255, 255, 0.12); }
 
-    /* ═════ Reduced Motion ═════ */
     @media (prefers-reduced-motion: reduce) {
       .preloader-logo,
       .preloader-title,
-      .preloader-bar {
-        animation: none !important;
-      }
+      .preloader-bar { animation: none !important; }
       .preloader-logo::before { animation: none !important; opacity: 0.15; }
       .preloader-bar__fill::after { animation: none !important; }
     }
 
-    /* ═════ Responsive ═════ */
     @media (max-width: 480px) {
-      .preloader-logo {
-        width: 68px;
-        height: 68px;
-        border-radius: 18px;
-      }
-      .preloader-logo svg {
-        width: 36px;
-        height: 36px;
-      }
+      .preloader-logo { width: 68px; height: 68px; border-radius: 18px; }
+      .preloader-logo svg { width: 36px; height: 36px; }
       .preloader-title { font-size: 19px; }
       .preloader-bar { width: 180px; }
     }
   </style>
 
-  <!-- ⚡ Skip Preloader اگه قبلاً دیده شده -->
   <script>
     (function () {
       try {
@@ -252,6 +223,11 @@
       } catch (e) {}
     })();
   </script>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ⚡ LOCAL FONTS — Mahoor + Vazirmatn (قبل از همه)
+       ═══════════════════════════════════════════════════════════ -->
+  <link rel="stylesheet" href="./assets/styles/fonts.css">
 
   <!-- ═══ Core CSS ═══ -->
   <link rel="stylesheet" href="./assets/styles/reset.css">
@@ -271,9 +247,7 @@
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       ⚡ PRELOADER
-       ═══════════════════════════════════════════════════════════ -->
+  <!-- ═══ PRELOADER ═══ -->
   <div id="preloader" role="status" aria-live="polite" aria-label="در حال بارگذاری">
     <div class="preloader-logo" aria-hidden="true">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -287,7 +261,6 @@
     </div>
   </div>
 
-  <!-- Skip link -->
   <a href="#app" class="skip-link" style="position:absolute;inset-inline-start:-9999px;top:0;z-index:99999;padding:12px 20px;background:var(--color-accent);color:#fff;border-radius:0 0 8px 0" onfocus="this.style.insetInlineStart='0'" onblur="this.style.insetInlineStart='-9999px'">
     رفتن به محتوای اصلی
   </a>
@@ -298,7 +271,6 @@
 
   <div data-component="footer"></div>
 
-  <!-- ═══ Fail-safe: اگه بعد از ۶ ثانیه preloader گیر کرد ═══ -->
   <script>
     setTimeout(function () {
       var el = document.getElementById('preloader');
