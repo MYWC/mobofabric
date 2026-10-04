@@ -66,7 +66,6 @@
 .fi__input:disabled {
   cursor: not-allowed;
 }
-.fi__input:disabled ~ *,
 .fi:has(.fi__input:disabled) {
   opacity: 0.6;
 }
@@ -96,7 +95,7 @@
   width: 100%;
   min-width: 0;
   padding: 0;
-  padding-top: 18px;   /* جا برای label شناور در حالت فعال */
+  padding-top: 18px;
   border: none;
   outline: none;
   background: transparent;
@@ -151,12 +150,6 @@
 .fi--focused .fi__label { color: var(--color-accent); }
 .fi--error   .fi__label { color: var(--color-danger); }
 .fi--success .fi__label { color: var(--color-success); }
-
-/* اگه placeholder داره، لیبل مخفی نشه */
-.fi__input:focus:not(:placeholder-shown) ~ .fi__label,
-.fi__input:not(:placeholder-shown) ~ .fi__label {
-  /* همینطور شناور بمونه */
-}
 
 /* ═══ Toggle (رمز) ═══ */
 .fi__toggle {
